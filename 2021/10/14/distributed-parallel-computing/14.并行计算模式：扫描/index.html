@@ -1,0 +1,906 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="yi-ge-dian">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="前缀和 全面扫描（前缀和）定义 这 扫描 操作采用二元结合运算符 ⊕（读作圆加号）， 和 n 个元素的数组[X0, X1, ..., Xn-1]，并返回数组[X0, (X0 ⊕ X1), ..., (X0 ⊕ X1 ⊕ … ⊕ Xn-1)]。 如果 ⊕ 是加法，则对数组[3 1 7 0 4 1 6 3]的扫描操作将返回[3 4 11 11 15 16 22 25]. 一个全面扫描应用例子 假设有一">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第十四章：并行计算模式：扫描">
+<meta property="og:url" content="http://onepoint.link/2021/10/14/distributed-parallel-computing/14.%E5%B9%B6%E8%A1%8C%E8%AE%A1%E7%AE%97%E6%A8%A1%E5%BC%8F%EF%BC%9A%E6%89%AB%E6%8F%8F/index.html">
+<meta property="og:site_name" content="onepoint">
+<meta property="og:description" content="前缀和 全面扫描（前缀和）定义 这 扫描 操作采用二元结合运算符 ⊕（读作圆加号）， 和 n 个元素的数组[X0, X1, ..., Xn-1]，并返回数组[X0, (X0 ⊕ X1), ..., (X0 ⊕ X1 ⊕ … ⊕ Xn-1)]。 如果 ⊕ 是加法，则对数组[3 1 7 0 4 1 6 3]的扫描操作将返回[3 4 11 11 15 16 22 25]. 一个全面扫描应用例子 假设有一">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/parallel.jpeg">
+<meta property="article:published_time" content="2021-10-13T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-10-13T16:00:00.000Z">
+<meta property="article:author" content="yi-ge-dian">
+<meta property="article:tag" content="分布式">
+<meta property="article:tag" content="CUDA">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/parallel.jpeg">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>第十四章：并行计算模式：扫描 - onepoint</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"onepoint.link","root":"/","version":"1.9.2","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":"dd82cbda8f486148a18105c55a23ec08","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>OnePoint</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="第十四章：并行计算模式：扫描"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2021-10-14 00:00" pubdate>
+          2021年10月14日 凌晨
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.8k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          32 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">第十四章：并行计算模式：扫描</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="前缀和">前缀和</h2>
+<h3 id="全面扫描前缀和定义">全面扫描（前缀和）定义</h3>
+<p>这 扫描 操作采用二元结合运算符 ⊕（读作圆加号）， 和 n
+个元素的数组<code>[X0, X1, ..., Xn-1]</code>，并返回数组<code>[X0, (X0 ⊕ X1), ..., (X0 ⊕ X1 ⊕ … ⊕ Xn-1)]</code>。
+如果 ⊕
+是加法，则对数组<code>[3 1 7 0 4 1 6 3]</code>的扫描操作将返回<code>[3 4 11 11 15 16 22 25]</code>.</p>
+<h3 id="一个全面扫描应用例子">一个全面扫描应用例子</h3>
+<p>假设有一个 100 米长的三明治需要喂给10个人，
+假设我们知道每个人需要的长度为： A=[3 5 2 7 28 4 3 0 8 1]
+问题1：我们如何快速分割三明治？ 问题2：三明治会剩下多少？</p>
+<h4 id="方法1">方法1</h4>
+<p>按顺序分割：第一次切3米，第二次切5米，第三次切2米…依此类推。</p>
+<h4 id="方法2">方法2</h4>
+<p>计算前缀和(prefix sum)[3, 8, 10, 17, 45, 49,52,52,60,61] (剩下39)
+在3米，8米，10米。。。。的位置分割就会得到每一段的长度</p>
+<h3 id="scan的典型应用">Scan的典型应用</h3>
+<p>Scan是一个简单并且有用的并行构筑模块</p>
+<p>将顺序递归转换为:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> j=<span class="hljs-number">1</span>;j&lt;n;j++)<br>	output[j]=output[j<span class="hljs-number">-1</span>]+f(j);<br></code></pre></td></tr></table></figure>
+<p>进入并行</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c">forall(j)&#123;<br>	temp[j]=f(j)<br>&#125;;<br>scan(out, temp);<br></code></pre></td></tr></table></figure>
+<ul>
+<li>受益的并行算法：</li>
+</ul>
+<p>Radix sort，Quick sort，String comparison，Lexical analysis，Stream
+compaction，Polynomial evaluation，Solving recurrence，Tree
+operations，Histograms</p>
+<ul>
+<li>其他应用</li>
+</ul>
+<p>Assigning camping spots Assigning Farmer‘s Market spaces Allocating
+memory to parallel threads Allocating memory bugger space for
+communication channels…</p>
+<h3 id="全面顺序扫描算法">全面顺序扫描算法</h3>
+<p>给定一个序列：<code>[x0, x1, x2, ... ]</code>，计算输出<code>[y0, y1, y2, ... ]</code>，例如</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs c">y0 = x0<br>y1 = x0 + x1<br>y2 = x0 + x1+ x2....<br></code></pre></td></tr></table></figure>
+<p>使用递归的定义：<code>yi = yi − 1 + xi</code></p>
+<h4 id="高效的c实现">高效的C实现</h4>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs c">y[<span class="hljs-number">0</span>]=x[<span class="hljs-number">0</span>]<br><span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i=<span class="hljs-number">1</span>; i &lt; max_i; i++)<br>	y[i]=y[i<span class="hljs-number">-1</span>]+x[i]<br></code></pre></td></tr></table></figure>
+<p>Computationally efficient：计算效率高，只是比顺序规约稍微贵一点
+N个元素需要N次加法运算，O(N)</p>
+<h4 id="简单的全面并行扫描">简单的全面并行扫描</h4>
+<p>给每个y的计算分配一个thread(线程)，让每个thread将计算这个y所需要的x相加</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs c">y0 = x0<br>y1 = x0 + x1<br>y2 = x0 + x1+ x2....<br></code></pre></td></tr></table></figure>
+<blockquote>
+<p>并行计算在不考虑性能的时候十分简单</p>
+</blockquote>
+<h4 id="一个更好的并行扫描算法">一个更好的并行扫描算法</h4>
+<p>从 device global memory 中将数据读取到 shared memory 迭代 log(n)
+次，从1到n-1 跨步(stride)，每一次迭代跨步翻倍
+将输出从共享内存写入设备内存</p>
+<ul>
+<li>活跃的线程跨步到n-1（n-stride 线程）</li>
+<li>线程 j 添加元素 j 和 j-stride 从共享内存并将结果写入共享内存中的元素
+j</li>
+<li>需要障碍同步，读前一次，写前一次</li>
+</ul>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/201.png" srcset="/img/loading.gif" lazyload
+alt="201" />
+<figcaption aria-hidden="true">201</figcaption>
+</figure>
+<h4 id="处理依赖项">处理依赖项</h4>
+<p>在每次迭代时，每个 thread 都会重写另一个 thread 的输入</p>
+<ul>
+<li>barrier synchronization 屏障同步：确保每一个输入都正确的发生</li>
+<li>每个线程都必须保证能被重写输入项</li>
+<li>需要屏障同步确保所有线程确保其输入的安全</li>
+<li>所有线程执行加法和写输出操作</li>
+</ul>
+<h2 id="低效的并行扫描内核">低效的并行扫描内核</h2>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs c">__global__ <span class="hljs-type">void</span> <span class="hljs-title function_">work_inefficient_scan_kernel</span><span class="hljs-params">(<span class="hljs-type">float</span> *X, <span class="hljs-type">float</span> *Y, <span class="hljs-type">int</span> InputSize)</span> &#123;<br>    __shared__ <span class="hljs-type">float</span> XY[SECTION_SIZE];<br>    <span class="hljs-type">int</span> i = blockIdx.x * blockDim.x + threadIdx.x;<br>    <span class="hljs-keyword">if</span> (i &lt; InputSize) &#123;XY[threadIdx.x] = X[i];&#125;<br>        <span class="hljs-comment">// the code below performs iterative scan on XY</span><br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> stride = <span class="hljs-number">1</span>; stride &lt;= threadIdx.x; stride *= <span class="hljs-number">2</span>) &#123;<br>        __syncthreads();<br>            <span class="hljs-type">float</span> in1 = XY[threadIdx.x - stride];<br>            __syncthreads();<br>            XY[threadIdx.x] += in1;<br>        &#125;<br>      __ <span class="hljs-title function_">syncthreads</span><span class="hljs-params">()</span>;<br>      If (i &lt; InputSize) &#123;Y[i] = XY[threadIdx.x];&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="高效工作的考虑">高效工作的考虑</h3>
+<p>Scan 操作log(n)次并行迭代</p>
+<ul>
+<li>每一次迭代进行(n-1),(n-2),…,(n-n/2)次加法</li>
+<li>总加法数量为：<code>n∗log(n)−(n−1)</code>→
+<code>O (n∗log(n))</code></li>
+</ul>
+<p>这种 Scan 算法不是 work efficient的</p>
+<ul>
+<li>顺序 scan 算法进行 n 次加法，</li>
+<li>如果有1024 个元素，乘上一个log(n) 后运算次数将翻十倍。</li>
+</ul>
+<p>当执行资源因工作效率低而饱和时，一个并行的算法会比一个顺序的算法更慢</p>
+<blockquote>
+<p>评论频繁的双屏障同步。每个流处理器需要更多的块以确保高执行吞吐量</p>
+</blockquote>
+<h2 id="高效的并行扫描内核">高效的并行扫描内核</h2>
+<h3 id="提高工作效率">提高工作效率</h3>
+<p>Balanced Trees</p>
+<ul>
+<li>在输入数据上形成平衡的二叉树，并将其扫到根与根之间</li>
+<li>树不是实际的数据结构，而是确定每个线程在每个步骤中做什么的概念</li>
+</ul>
+<p>For Scan</p>
+<ul>
+<li><p>从叶子向下遍历到树中内部节点的部分根总和</p>
+<ul>
+<li>根拥有所有叶子的总和</li>
+</ul></li>
+<li><p>遍历备份树以建立部分和的输出</p></li>
+</ul>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/202.png" srcset="/img/loading.gif" lazyload
+alt="202" />
+<figcaption aria-hidden="true">202</figcaption>
+</figure>
+<h3 id="规约阶段内核代码">规约阶段内核代码</h3>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// XY[2*BLOCK_SIZE] is in shared memory</span><br><span class="hljs-keyword">for</span> (<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> stride = <span class="hljs-number">1</span>;stride &lt;= BLOCK_SIZE; stride *= <span class="hljs-number">2</span>) &#123;<br>    <span class="hljs-type">int</span> index = (threadIdx.x+<span class="hljs-number">1</span>)*stride*<span class="hljs-number">2</span> - <span class="hljs-number">1</span>;<br>    <span class="hljs-keyword">if</span>(index &lt; <span class="hljs-number">2</span>*BLOCK_SIZE)<br>        XY[index] += XY[index-stride];<br>    __syncthreads();<br>&#125;<br></code></pre></td></tr></table></figure>
+<blockquote>
+<p>threadIdx.x+1 = 1, 2, 3, 4…. stride = 1, index = 1, 3, 5, 7, …</p>
+</blockquote>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/203.png" srcset="/img/loading.gif" lazyload
+alt="203" />
+<figcaption aria-hidden="true">203</figcaption>
+</figure>
+<h3 id="反向规约内核代码">反向规约内核代码</h3>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">for</span> (<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> stride = BLOCK_SIZE/<span class="hljs-number">2</span>; stride &gt; <span class="hljs-number">0</span>; stride /= <span class="hljs-number">2</span>) &#123;<br>    __syncthreads();<br>    <span class="hljs-type">int</span> index = (threadIdx.x+<span class="hljs-number">1</span>)*stride*<span class="hljs-number">2</span> - <span class="hljs-number">1</span>;<br>    <span class="hljs-keyword">if</span>(index+stride &lt; <span class="hljs-number">2</span>*BLOCK_SIZE) &#123;<br>      	XY[index + stride] += XY[index];<br>     &#125;<br>  &#125;<br>   __syncthreads();<br>  <span class="hljs-keyword">if</span> (i &lt; InputSize) Y[i] = XY[threadIdx.x];<br></code></pre></td></tr></table></figure>
+<blockquote>
+<p>First iteration for 16-element section threadIdx.x = 0 stride =
+BLOCK_SIZE/2 = 8/2 = 4 index = 8-1 = 7</p>
+</blockquote>
+<h2 id="更多关于并行扫描">更多关于并行扫描</h2>
+<h3 id="高效工作内核的分析">高效工作内核的分析</h3>
+<p>工作效率高的内核在规约步骤中执行 log(n) 次并行迭代</p>
+<ul>
+<li>迭代做 n/2, n/4,..1 加法</li>
+<li>总加法：(n-1) → O(n) work</li>
+</ul>
+<p>它在反向规约步骤中执行 log(n)-1 并行迭代</p>
+<ul>
+<li>迭代做 2-1, 4-1, .... n/2-1 加法</li>
+<li>总增加数：(n-2) – (log(n)-1) →O(n) work</li>
+</ul>
+<p>两个阶段的执行最多不超过 2(n-1) 加法
+加法的总数不超过高效顺序算法的两倍</p>
+<ul>
+<li>当有足够的硬件时，并行的好处可以轻松克服 2X 工作</li>
+</ul>
+<h3 id="一些权衡">一些权衡</h3>
+<p>工作效率高的扫描内核通常更受欢迎</p>
+<ul>
+<li>更好的能源效率</li>
+<li>更少的执行资源需求</li>
+</ul>
+<p>然而，由于其单相特性(仅前向阶段)，工作效率低的内核可以在绝对性能方面做得更好。</p>
+<ul>
+<li>有足够的执行资源</li>
+</ul>
+<h3 id="处理大输入向量">处理大输入向量</h3>
+<p>1.建立在工作高效的扫描内核上 2.每节有 2*blockDim.x
+分配给块的元素，对每个部分进行并行扫描
+3.让每个块写它的部分的和到一个sum[]数组索引的blockIdx.x 4.在 Sum[]
+数组上运行扫描内核 5.将扫描的 Sum[] 数组值添加到相应部分的所有元素
+6.工作效率低下的内核适配也是类似的。</p>
+<h3 id="完整的扫描过程">完整的扫描过程</h3>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/204.png" srcset="/img/loading.gif" lazyload
+alt="204" />
+<figcaption aria-hidden="true">204</figcaption>
+</figure>
+<h3 id="独占扫描定义">独占扫描定义</h3>
+<p>这 扫描 操作采用二元结合运算符 ⊕（读作圆加号）， 和 n
+个元素的数组<code>[X0, X1, ..., Xn-1]</code>，并返回数组<code>[0,X0, (X0 ⊕ X1), ..., (X0 ⊕ X1 ⊕ … ⊕ Xn-2)]</code>。
+如果 ⊕
+是加法，则对数组<code>[3 1 7 0 4 1 6 3]</code>的扫描操作将返回<code>[0 3 4 11 11 15 16 22]</code></p>
+<p>为什么要使用独占扫描？</p>
+<blockquote>
+<p>查找已分配缓冲区的起始地址</p>
+</blockquote>
+<p>全面扫描和独占扫描可以很容易地相互推导出；这是一个方便的问题</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>3</th>
+<th>1</th>
+<th>7</th>
+<th>0</th>
+<th>4</th>
+<th>1</th>
+<th>6</th>
+<th>3</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>独占</td>
+<td>0</td>
+<td>3</td>
+<td>4</td>
+<td>11</td>
+<td>11</td>
+<td>15</td>
+<td>16</td>
+<td>22</td>
+</tr>
+<tr class="even">
+<td>全面</td>
+<td>3</td>
+<td>4</td>
+<td>11</td>
+<td>11</td>
+<td>15</td>
+<td>16</td>
+<td>22</td>
+<td>25</td>
+</tr>
+</tbody>
+</table>
+<h3 id="一个简单的独占扫描内核">一个简单的独占扫描内核</h3>
+<p>改写一个包容的、工作效率低下的扫描内核 块 0：</p>
+<ul>
+<li>程 0 将 0 加载到 XY[0]</li>
+<li>其他线程将 X[threadIdx.x-1] 加载到 XY[threadIdx.x]</li>
+</ul>
+<p>所有其他块：</p>
+<ul>
+<li>所有线程加载 X[blockIdx.x*blockDim.x+threadIdx.x-1] 到
+XY[threadIdx.x]</li>
+</ul>
+<p>类似的适应工作效率扫描内核但确保每个线程加载两个元素</p>
+<ul>
+<li>只应加载一个零</li>
+<li>所有元素应该只向右移动一个位置</li>
+</ul>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/distributed-parallel-computing/" class="category-chain-item">distributed-parallel-computing</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">#分布式</a>
+      
+        <a href="/tags/CUDA/">#CUDA</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>第十四章：并行计算模式：扫描</div>
+      <div>http://onepoint.link/2021/10/14/distributed-parallel-computing/14.并行计算模式：扫描/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>yi-ge-dian</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2021年10月14日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/04/15/postgraduate/postgraduate-timeline/" title="考研时间线">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">考研时间线</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/10/13/distributed-parallel-computing/13.%E5%B9%B6%E8%A1%8C%E8%AE%A1%E7%AE%97%E6%A8%A1%E5%BC%8F%EF%BC%9A%E7%9B%B4%E6%96%B9%E5%9B%BE/" title="第十三章：并行计算模式：直方图">
+                        <span class="hidden-mobile">第十三章：并行计算模式：直方图</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="lv-container" data-id="city" data-uid="MTAyMC81NjY1My8zMzExNw">
+    <script type="text/javascript">
+      Fluid.utils.loadComments('#lv-container', function() {
+        Fluid.utils.createScript('https://cdn-city.livere.com/js/embed.dist.js');
+      });
+    </script>
+    <noscript>Please enable JavaScript to view the comments</noscript>
+  </div>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+    <!-- 备案信息 ICP for China -->
+    <div class="beian">
+  <span>
+    <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+      蜀ICP备2022013781号
+    </a>
+  </span>
+  
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

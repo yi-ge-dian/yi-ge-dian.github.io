@@ -1,0 +1,1049 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="yi-ge-dian">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="并行直方图 文本直方图示例 1.将bin定义为字母表的四个字母部分（每隔四个字母为一个集合）：a-d、e-h、i-l、m-p、... 2.对于输入字符串中的每个字符，增加相应的 bin 计数器。 3.在短语“Programming Massively Parallel Processors”中，输出直方图如下所示：   190  一个简单的并行直方图算法 1.将输入分成几部分 2.让每个线程获取输">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第十三章：并行计算模式：直方图">
+<meta property="og:url" content="http://onepoint.link/2021/10/13/distributed-parallel-computing/13.%E5%B9%B6%E8%A1%8C%E8%AE%A1%E7%AE%97%E6%A8%A1%E5%BC%8F%EF%BC%9A%E7%9B%B4%E6%96%B9%E5%9B%BE/index.html">
+<meta property="og:site_name" content="onepoint">
+<meta property="og:description" content="并行直方图 文本直方图示例 1.将bin定义为字母表的四个字母部分（每隔四个字母为一个集合）：a-d、e-h、i-l、m-p、... 2.对于输入字符串中的每个字符，增加相应的 bin 计数器。 3.在短语“Programming Massively Parallel Processors”中，输出直方图如下所示：   190  一个简单的并行直方图算法 1.将输入分成几部分 2.让每个线程获取输">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/parallel.jpeg">
+<meta property="article:published_time" content="2021-10-12T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-10-12T16:00:00.000Z">
+<meta property="article:author" content="yi-ge-dian">
+<meta property="article:tag" content="分布式">
+<meta property="article:tag" content="CUDA">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/parallel.jpeg">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>第十三章：并行计算模式：直方图 - onepoint</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"onepoint.link","root":"/","version":"1.9.2","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":"dd82cbda8f486148a18105c55a23ec08","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>OnePoint</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="第十三章：并行计算模式：直方图"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2021-10-13 00:00" pubdate>
+          2021年10月13日 凌晨
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.9k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          33 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">第十三章：并行计算模式：直方图</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="并行直方图">并行直方图</h2>
+<h3 id="文本直方图示例">文本直方图示例</h3>
+<p>1.将bin定义为字母表的四个字母部分（每隔四个字母为一个集合）：a-d、e-h、i-l、m-p、...
+2.对于输入字符串中的每个字符，增加相应的 bin 计数器。
+3.在短语“Programming Massively Parallel
+Processors”中，输出直方图如下所示：</p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/190.png" srcset="/img/loading.gif" lazyload
+alt="190" />
+<figcaption aria-hidden="true">190</figcaption>
+</figure>
+<h3 id="一个简单的并行直方图算法">一个简单的并行直方图算法</h3>
+<p>1.将输入分成几部分 2.让每个线程获取输入的一部分
+3.每个线程遍历其部分。 4.对于每个字母，增加适当的 bin 计数器</p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/191.png" srcset="/img/loading.gif" lazyload
+alt="191" />
+<figcaption aria-hidden="true">191</figcaption>
+</figure>
+<h3 id="输入分区影响内存访问效率">输入分区影响内存访问效率</h3>
+<p>分区会导致内存访问效率低下</p>
+<ul>
+<li>相邻线程不访问相邻内存位置</li>
+<li>访问未合并</li>
+<li>DRAM 带宽利用率低</li>
+</ul>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/192.png" srcset="/img/loading.gif" lazyload
+alt="192" />
+<figcaption aria-hidden="true">192</figcaption>
+</figure>
+<p>改成 交错分区</p>
+<ul>
+<li>所有线程处理元素的连续部分</li>
+<li>他们都移动到下一部分并重复</li>
+<li>内存访问被合并</li>
+</ul>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/193.png" srcset="/img/loading.gif" lazyload
+alt="193" />
+<figcaption aria-hidden="true">193</figcaption>
+</figure>
+<h3 id="交错输入分区">交错输入分区</h3>
+<p>用于合并和更好的内存访问性能</p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/194.png" srcset="/img/loading.gif" lazyload
+alt="194" />
+<figcaption aria-hidden="true">194</figcaption>
+</figure>
+<h2 id="数据竞争条件">数据竞争条件</h2>
+<h3 id="并行线程执行中的数据竞争">并行线程执行中的数据竞争</h3>
+<p>thread1和thread2都要执行下面代码</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs c">Old←Mem[x]<br>New←Old + <span class="hljs-number">1</span><br>Mem[x]←New<br></code></pre></td></tr></table></figure>
+<p>Old 和 New 是每个线程寄存器变量。</p>
+<p>问题 1：如果 Mem[x] 最初为 0，那么在线程 1 和 2 完成后，Mem[x]
+的值是多少？ 问题 2：每个线程在它们的 Old 变量中得到什么？</p>
+<blockquote>
+<p>不幸的是，答案可能会根据两个线程之间的相对执行时间而有所不同，这被称为
+<strong>数据竞争.</strong>
+竞争条件，其中两个或多个同时更新操作的结果取决于所涉及操作的相对时间。</p>
+</blockquote>
+<h3 id="时序方案">时序方案</h3>
+<p>时序方案1:</p>
+<table>
+<thead>
+<tr class="header">
+<th><strong>Time</strong></th>
+<th><strong>Thread 1</strong></th>
+<th><strong>Thread 2</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>(0) Old ← Mem[x]</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>(1) New ← Old + 1</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>(1) Mem[x] ← New</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td></td>
+<td>(1) Old ←Mem[x]</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td></td>
+<td>(2) New ← Old + 1</td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td></td>
+<td>(2) Mem[x] ← New</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Thread 1 Old = 0；Thread 2 Old = 1；Mem[x] = 2 after the sequence</p>
+</blockquote>
+<p>时序方案2：</p>
+<table>
+<thead>
+<tr class="header">
+<th><strong>Time</strong></th>
+<th><strong>Thread 1</strong></th>
+<th><strong>Thread 2</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td></td>
+<td>(0) Old ←Mem[x]</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td></td>
+<td>(1) New ← Old + 1</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td></td>
+<td>(1) Mem[x] ← New</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>(0) Old ← Mem[x]</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>(2) New ← Old + 1</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>(2) Mem[x] ← New</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Thread 1 Old = 1；Thread 2 Old = 0；Mem[x] = 2 after the sequence</p>
+</blockquote>
+<p>时序方案3：</p>
+<table>
+<thead>
+<tr class="header">
+<th><strong>Time</strong></th>
+<th style="text-align: left;"><strong>Thread 1</strong></th>
+<th><strong>Thread 2</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td style="text-align: left;">(0) Old ← Mem[x]</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td style="text-align: left;">(1) New ← Old + 1</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td style="text-align: left;"></td>
+<td>(0) Old ←Mem[x]</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td style="text-align: left;">(1) Mem[x] ← New</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td style="text-align: left;"></td>
+<td>(1) New ← Old + 1</td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td style="text-align: left;"></td>
+<td>(1) Mem[x] ← New</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Thread 1 Old = 0；Thread 2 Old = 0；Mem[x] = 1 after the sequence</p>
+</blockquote>
+<p>时序方案4：</p>
+<table>
+<thead>
+<tr class="header">
+<th><strong>Time</strong></th>
+<th style="text-align: left;"><strong>Thread 1</strong></th>
+<th><strong>Thread 2</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td style="text-align: left;"></td>
+<td>(0) Old ←Mem[x]</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td style="text-align: left;"></td>
+<td>(1) New ← Old + 1</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td style="text-align: left;">(0) Old ← Mem[x]</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td style="text-align: left;"></td>
+<td>(1) Mem[x] ← New</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td style="text-align: left;">(1) New ← Old + 1</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td style="text-align: left;">(1) Mem[x] ← New</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Thread 1 Old = 0；Thread 2 Old = 0；Mem[x] = 1 after the sequence</p>
+</blockquote>
+<h3
+id="原子性操作的目的-确保好的结果">原子性操作的目的-确保好的结果</h3>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/195.png" srcset="/img/loading.gif" lazyload
+alt="195" />
+<figcaption aria-hidden="true">195</figcaption>
+</figure>
+<h3 id="原子性操作的关键思想">原子性操作的关键思想</h3>
+<p>由单个硬件指令对内存位置执行的<strong>读-修改-写</strong>地址操作</p>
+<ul>
+<li>读取旧值，计算新值，并将新值写入该位置</li>
+</ul>
+<p>硬件确保在当前原子操作完成之前，没有其他线程可以在同一位置执行另一个读-修改-写操作</p>
+<ul>
+<li>尝试在同一位置执行原子操作的任何其他线程通常将被保存在
+<strong>队列</strong></li>
+<li>所有线程都在同一个位置上串行地执行它们的原子操作</li>
+</ul>
+<h3 id="cuda中的原子操作">CUDA中的原子操作</h3>
+<p>通过调用转换成单个指令的函数来执行(也就是内在函数或内在函数)</p>
+<ul>
+<li>Atomic add, sub, inc, dec, min, max, exch (exchange), CAS (compare
+and swap)</li>
+<li>阅读 CUDA C 编程指南 4.0 或更高版本了解详细信息</li>
+</ul>
+<p>原子加法<code>int atomicAdd(int* address, int val)</code></p>
+<ul>
+<li>从全局或共享内存中的地址所指向的位置读取32位的字old，计算(old+val)，并将结果存储到相同的地址，函数返回old。</li>
+</ul>
+<p>CUDA中的更多原子加法：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">//Unsigned 32-bit integer atomic add</span><br><span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> <span class="hljs-title function_">atomicAdd</span><span class="hljs-params">(<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span>* address,<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> val)</span>; <br><br><span class="hljs-comment">//Unsigned 64-bit integer atomic add</span><br><span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> <span class="hljs-type">long</span> <span class="hljs-type">int</span> <span class="hljs-title function_">atomicAdd</span><span class="hljs-params">(<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> <span class="hljs-type">long</span> <span class="hljs-type">int</span>* address, <span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> <span class="hljs-type">long</span> <span class="hljs-type">int</span> val)</span>; <br><br><span class="hljs-comment">//Single-precision floating-point atomic add (capability &gt; 2.0)</span><br><span class="hljs-type">float</span> <span class="hljs-title function_">atomicAdd</span><span class="hljs-params">(<span class="hljs-type">float</span>* address, <span class="hljs-type">float</span> val)</span>; <br></code></pre></td></tr></table></figure>
+<h3 id="一个基本的直方图内核">一个基本的直方图内核</h3>
+<p>内核接收一个指向字节值输入缓冲区的指针 每个线程以步幅模式处理输入</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs c">__global__ <span class="hljs-type">void</span> <span class="hljs-title function_">histo_kernel</span><span class="hljs-params">(<span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> *buffer,<span class="hljs-type">long</span> size, <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> *histo)</span> <br>&#123;<br>   <span class="hljs-type">int</span> i = threadIdx.x + blockIdx.x * blockDim.x;<br>   <span class="hljs-comment">// stride is total number of threads</span><br>   <span class="hljs-type">int</span> stride = blockDim.x * gridDim.x;<br>   <span class="hljs-comment">// All threads handle blockDim.x * gridDim.x</span><br>   <span class="hljs-comment">// consecutive elements</span><br>   <span class="hljs-keyword">while</span> (i &lt; size) &#123;<br>      <span class="hljs-type">int</span> alphabet_position = buffer[i] – “a”;<br>      <span class="hljs-keyword">if</span> (alphabet_position &gt;= <span class="hljs-number">0</span> &amp;&amp; alpha_position &lt; <span class="hljs-number">26</span>) 		<br>		atomicAdd(&amp;(histo[alphabet_position/<span class="hljs-number">4</span>]), <span class="hljs-number">1</span>);<br>        i += stride;<br>   &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h2 id="私有化直方图内核">私有化直方图内核</h2>
+<h3 id="全局内存-dram-上的原子操作">全局内存 (DRAM) 上的原子操作</h3>
+<p>1.DRAM 位置上的原子操作从读取开始，其延迟为数百个周期
+2.原子操作以对同一位置的写入结束，延迟为几百个周期
+3.在这整个过程中，没有其他人可以访问该位置</p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/196.png" srcset="/img/loading.gif" lazyload
+alt="196" />
+<figcaption aria-hidden="true">196</figcaption>
+</figure>
+<p>每个 Read-Modify-Write 有两个完整的内存访问延迟 对同一变量（DRAM
+位置）的所有原子操作都被序列化</p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/197.png" srcset="/img/loading.gif" lazyload
+alt="197" />
+<figcaption aria-hidden="true">197</figcaption>
+</figure>
+<p><strong>延迟决定吞吐量</strong></p>
+<p>1.同一 DRAM 位置上原子操作的吞吐量是应用程序可以执行原子操作的速率。
+2.特定位置上的原子操作速率受读取-修改-写入序列的总延迟限制，对于全局存储器
+(DRAM) 位置通常超过 1000 个周期。
+3.这意味着如果许多线程尝试在同一位置（争用）上执行原子操作，则内存
+吞吐量 减少到一个内存通道峰值带宽的 &lt; 1/1000！</p>
+<p><strong>硬件改进</strong></p>
+<p>Fermi L2 缓存上的原子操作</p>
+<ul>
+<li>中等延迟，约为 DRAM 延迟的 1/10</li>
+<li>在所有块之间共享</li>
+<li>全局内存原子的“免费改进”</li>
+</ul>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/198.png" srcset="/img/loading.gif" lazyload
+alt="198" />
+<figcaption aria-hidden="true">198</figcaption>
+</figure>
+<p>共享内存上的原子操作</p>
+<ul>
+<li>非常短的延迟</li>
+<li>每个线程块私有</li>
+<li>需要程序员的算法工作（稍后详细介绍）</li>
+</ul>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/199.png" srcset="/img/loading.gif" lazyload
+alt="199" />
+<figcaption aria-hidden="true">199</figcaption>
+</figure>
+<h3 id="私有化">私有化</h3>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/200.png" srcset="/img/loading.gif" lazyload
+alt="200" />
+<figcaption aria-hidden="true">200</figcaption>
+</figure>
+<p><strong>私有化的成本和收益</strong></p>
+<p>成本</p>
+<ul>
+<li>创建和初始化私有副本的开销</li>
+<li>将私人副本的内容累积到最终副本的开销</li>
+</ul>
+<p>益处</p>
+<ul>
+<li>访问私有副本和最终副本时的争用和序列化要少得多</li>
+<li>整体性能通常可以提高 10 倍以上</li>
+</ul>
+<p><strong>直方图的共享内存原子</strong></p>
+<ul>
+<li>每个线程子集都在同一个块中</li>
+<li>吞吐量远高于 DRAM (100x) 或 L2 (10x) 原子</li>
+<li>减少争用——只有同一块中的线程才能访问共享内存变量</li>
+<li>这是共享内存的一个非常重要的用例！</li>
+</ul>
+<p><strong>共享内存原子需要私有化</strong></p>
+<p>给每个线程块创建私有的<code>histo[]</code>数组副本</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs c">__global__ <span class="hljs-type">void</span> <span class="hljs-title function_">histo_kernel</span><span class="hljs-params">(<span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> *buffer,<span class="hljs-type">long</span> size, <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> *histo)</span> <br>&#123;<br>    __shared__ <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> histo_private[<span class="hljs-number">7</span>];<br>    <span class="hljs-comment">/*Build Private Histogram*/</span><br>    <span class="hljs-type">int</span> i = threadIdx.x + blockIdx.x * blockDim.x;<br>	<span class="hljs-comment">// stride is total number of threads</span><br>    <span class="hljs-type">int</span> stride = blockDim.x * gridDim.x;<br>    <br>    <span class="hljs-type">int</span> alphabet_position = <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">while</span> (i &lt; size) &#123;<br>       alphabet_position = buffer[i] – “a”;       <br>       <span class="hljs-keyword">if</span> (alphabet_position &gt;= <span class="hljs-number">0</span> &amp;&amp; alpha_position &lt; <span class="hljs-number">26</span>)      				 atomicAdd(&amp;(private_histo[alphabet_position/<span class="hljs-number">4</span>]), <span class="hljs-number">1</span>); <br>  	   i += stride;<br>  &#125;<br>   <span class="hljs-comment">/*Build Final Histogram*/</span><br>   <span class="hljs-comment">// wait for all other threads in the block to finish</span><br>  __syncthreads();<br><br>  <span class="hljs-keyword">if</span> (threadIdx.x &lt; <span class="hljs-number">7</span>) &#123;<br>         atomicAdd(&amp;(histo[threadIdx.x]), private_histo[threadIdx.x] );<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="更多关于私有化">更多关于私有化</h3>
+<p>私有化是用于并行化应用程序的强大且常用的技术
+私有直方图大小需要很小</p>
+<ul>
+<li>适合共享内存</li>
+</ul>
+<p>如果直方图太大而无法私有化怎么办？</p>
+<ul>
+<li>有时可以部分私有化输出直方图并使用范围测试转到全局内存或共享内存</li>
+</ul>
+<p>一些数据集在局部区域有大量相同的数据值</p>
+<ul>
+<li>一个简单而有效的优化是针对每个线程 <strong>聚合连续更新</strong>
+，如果它们正在更新直方图的相同元素，则转换为单个更新</li>
+</ul>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/distributed-parallel-computing/" class="category-chain-item">distributed-parallel-computing</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">#分布式</a>
+      
+        <a href="/tags/CUDA/">#CUDA</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>第十三章：并行计算模式：直方图</div>
+      <div>http://onepoint.link/2021/10/13/distributed-parallel-computing/13.并行计算模式：直方图/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>yi-ge-dian</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2021年10月13日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/10/14/distributed-parallel-computing/14.%E5%B9%B6%E8%A1%8C%E8%AE%A1%E7%AE%97%E6%A8%A1%E5%BC%8F%EF%BC%9A%E6%89%AB%E6%8F%8F/" title="第十四章：并行计算模式：扫描">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">第十四章：并行计算模式：扫描</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/10/12/distributed-parallel-computing/12.%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" title="第十二章：性能优化">
+                        <span class="hidden-mobile">第十二章：性能优化</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="lv-container" data-id="city" data-uid="MTAyMC81NjY1My8zMzExNw">
+    <script type="text/javascript">
+      Fluid.utils.loadComments('#lv-container', function() {
+        Fluid.utils.createScript('https://cdn-city.livere.com/js/embed.dist.js');
+      });
+    </script>
+    <noscript>Please enable JavaScript to view the comments</noscript>
+  </div>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+    <!-- 备案信息 ICP for China -->
+    <div class="beian">
+  <span>
+    <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+      蜀ICP备2022013781号
+    </a>
+  </span>
+  
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

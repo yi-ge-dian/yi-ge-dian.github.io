@@ -1,0 +1,995 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="yi-ge-dian">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="绝对最短路径 算法理解，可以看这个视频：https:&#x2F;&#x2F;www.bilibili.com&#x2F;video&#x2F;BV1w54y1Q79E?from&#x3D;search&amp;seid&#x3D;7588385719585366372  邻接表的结果    A 0 6 3 6 4      A B C D E   B 4 0 7 10 8   C 12 6 0 3 1   D 7 3 10 0 11   E 9 5 12">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第七章：Floyd算法">
+<meta property="og:url" content="http://onepoint.link/2021/10/07/distributed-parallel-computing/7.Floyd%E7%AE%97%E6%B3%95/index.html">
+<meta property="og:site_name" content="onepoint">
+<meta property="og:description" content="绝对最短路径 算法理解，可以看这个视频：https:&#x2F;&#x2F;www.bilibili.com&#x2F;video&#x2F;BV1w54y1Q79E?from&#x3D;search&amp;seid&#x3D;7588385719585366372  邻接表的结果    A 0 6 3 6 4      A B C D E   B 4 0 7 10 8   C 12 6 0 3 1   D 7 3 10 0 11   E 9 5 12">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/parallel.jpeg">
+<meta property="article:published_time" content="2021-10-06T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-10-06T16:00:00.000Z">
+<meta property="article:author" content="yi-ge-dian">
+<meta property="article:tag" content="分布式">
+<meta property="article:tag" content="MPI">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/parallel.jpeg">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>第七章：Floyd算法 - onepoint</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"onepoint.link","root":"/","version":"1.9.2","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":"dd82cbda8f486148a18105c55a23ec08","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>OnePoint</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="第七章：Floyd算法"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2021-10-07 00:00" pubdate>
+          2021年10月7日 凌晨
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          6.1k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          52 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">第七章：Floyd算法</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="绝对最短路径">绝对最短路径</h2>
+<p>算法理解，可以看这个视频：https://www.bilibili.com/video/BV1w54y1Q79E?from=search&amp;seid=7588385719585366372</p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/96.png" srcset="/img/loading.gif" lazyload alt="96" style="zoom:67%;" /></p>
+<p>邻接表的结果</p>
+<table>
+<thead>
+<tr class="header">
+<th>A</th>
+<th>0</th>
+<th>6</th>
+<th>3</th>
+<th>6</th>
+<th>4</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td></td>
+<td>A</td>
+<td>B</td>
+<td>C</td>
+<td>D</td>
+<td>E</td>
+</tr>
+<tr class="even">
+<td>B</td>
+<td>4</td>
+<td>0</td>
+<td>7</td>
+<td>10</td>
+<td>8</td>
+</tr>
+<tr class="odd">
+<td>C</td>
+<td>12</td>
+<td>6</td>
+<td>0</td>
+<td>3</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>D</td>
+<td>7</td>
+<td>3</td>
+<td>10</td>
+<td>0</td>
+<td>11</td>
+</tr>
+<tr class="odd">
+<td>E</td>
+<td>9</td>
+<td>5</td>
+<td>12</td>
+<td>2</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<p>算法：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">for</span> k ← <span class="hljs-number">0</span> to n<span class="hljs-number">-1</span><br>	<span class="hljs-keyword">for</span> i ← <span class="hljs-number">0</span> to n<span class="hljs-number">-1</span><br>		<span class="hljs-keyword">for</span> j ← <span class="hljs-number">0</span> to n<span class="hljs-number">-1</span><br>			a[i,j] ←  min (a[i,j], a[i,k] + a[k,j])<br>		endfor<br>	endfor<br>endfor<br></code></pre></td></tr></table></figure>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/97.png" srcset="/img/loading.gif" lazyload alt="97" style="zoom:67%;" /></p>
+<h2 id="动态二维数组">动态二维数组</h2>
+<h3 id="动态一维数组建立">动态一维数组建立</h3>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/98.png" srcset="/img/loading.gif" lazyload alt="98" style="zoom: 67%;" /></p>
+<h3 id="动态二维数组建立">动态二维数组建立</h3>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/99.png" srcset="/img/loading.gif" lazyload alt="99" style="zoom:67%;" /></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> *BStorage, **B;<br>B = <span class="hljs-built_in">malloc</span>(M * <span class="hljs-keyword">sizeof</span>(<span class="hljs-type">int</span> *));<br>BStorage = <span class="hljs-built_in">malloc</span>(SIZE * <span class="hljs-keyword">sizeof</span>(<span class="hljs-type">int</span>));<br><span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; M; i++)<br>B[i] = &amp;BStorage[i * N];<br></code></pre></td></tr></table></figure>
+<h2 id="设计并行算法">设计并行算法</h2>
+<h3 id="分区">分区</h3>
+<p>区域分解还是函数分解？</p>
+<ul>
+<li>看伪代码</li>
+<li>执行相同的赋值语句 n^3 次</li>
+<li>没有并行性的函数</li>
+</ul>
+<p>区域分解：将矩阵 A 分解为其 n^2 元素</p>
+<ul>
+<li>每个a[i，j]代表一项任务-需要找到一个最短的距离。</li>
+<li>然而，要找到距离需要看看所有k的a[i，k]和a[k，j]</li>
+</ul>
+<h3 id="通信">通信</h3>
+<p>1.第 m 列中的每项任务都需要 a[k，m] 2.第 m 行中的每项任务都需要
+a[m，k] 3.让 k 控制算法的外循环：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs stylus"><span class="hljs-selector-tag">a</span><span class="hljs-selector-attr">[i,k]</span> = <span class="hljs-built_in">min</span>(<span class="hljs-selector-tag">a</span><span class="hljs-selector-attr">[i,k]</span>,<span class="hljs-selector-tag">a</span><span class="hljs-selector-attr">[i,k]</span>+<span class="hljs-selector-tag">a</span><span class="hljs-selector-attr">[k,k]</span>←<span class="hljs-number">0</span><br><span class="hljs-selector-tag">a</span><span class="hljs-selector-attr">[k,j]</span> = <span class="hljs-built_in">min</span>(<span class="hljs-selector-tag">a</span><span class="hljs-selector-attr">[k,j]</span>, <span class="hljs-selector-tag">a</span><span class="hljs-selector-attr">[k,k]</span>(←<span class="hljs-number">0</span>)+<span class="hljs-selector-tag">a</span><span class="hljs-selector-attr">[k,j]</span><br></code></pre></td></tr></table></figure>
+<p>4.对于特定值的k广播是可能的</p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/100.png" srcset="/img/loading.gif" lazyload
+alt="100" />
+<figcaption aria-hidden="true">100</figcaption>
+</figure>
+<h3 id="聚集和映射">聚集和映射</h3>
+<p>任务数：静态 任务之间的沟通：结构化 每个任务的计算时间：恒定
+策略：</p>
+<ul>
+<li>将任务聚集到最小化通信</li>
+<li>每个 MPI 过程创建一个任务</li>
+</ul>
+<h4 id="两种数据分区">两种数据分区：</h4>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/101.png" srcset="/img/loading.gif" lazyload alt="101" style="zoom:67%;" /></p>
+<h4 id="两种数据分区的比较">两种数据分区的比较：</h4>
+<p>列状分块：</p>
+<ul>
+<li>在已消除的列内广播</li>
+</ul>
+<p>行状分块</p>
+<ul>
+<li><p>消除行内广播</p></li>
+<li><p>从文件中更简单地读取矩阵，因为元素在 C/C++
+矩阵以行为主要顺序存储</p>
+<p>选择行状分块分解</p></li>
+</ul>
+<h4 id="如何输入一个邻接矩阵">如何输入一个邻接矩阵</h4>
+<p>假设矩阵在文件中一排排地存储。 方法1）
+每个进程都读取自己的行（或行）初始数据。该过程必须寻求正确的位置
+共享文件。 方法2） 主进程读取所有行并发送数据到适当的进程。</p>
+<blockquote>
+<p>为什么我们不一次性输入整个文件，然后将其内容分散到各个进程中，以允许并发消息传递?（采用MPI_ScatterMPI_Scatterv）</p>
+<p>MPI组通信和点到点通信的一个重要区别，就在于它需要一个特定组内的所有进程同时参加通信而不是像点到点通信那样只涉及到发送方和接收方两个进程。组通信在各个不同进程的调用形式完全相同，而不像点到点通信那样在形式上就有发送和接收的区别。</p>
+<p>组通信一般实现三个功能：通信、同步和计算。通信功能主要完成组内数据的传输，而同步功能实现组内所有进程在特定的地点在执行进度上取得一致，计算功能要对给定的数据完成一定的操作，例如加减等。所以MPI_Send会具有更好的效率</p>
+</blockquote>
+<p>方法
+2）最大限度地减少内存使用，因为只有一个进程需要读取和发送数据。消除了方法1中的寻求过程
+）。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/102.png" srcset="/img/loading.gif" lazyload alt="102" style="zoom:67%;" /></p>
+<h2 id="点对点通信">点对点通信</h2>
+<p>涉及一对进程：一个过程发送消息，另一个进程接收消息</p>
+<h3 id="不集体发送接受数据">不集体发送接受数据</h3>
+<p><img src="https://cdn.jsdelivr.net/gh/Yi-Ge-Dian/YiGeDian_image_hosting@master/20220110/kuangstudybf6ea2b5-8bf5-4922-9791-b8135fae11b8.2y5b06yx1xu0.webp" srcset="/img/loading.gif" lazyload alt="kuangstudybf6ea2b5-8bf5-4922-9791-b8135fae11b8" style="zoom:50%;" /></p>
+<h3 id="函数mpi_send">函数MPI_Send</h3>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">MPI_Send</span> <span class="hljs-params">(</span><br><span class="hljs-params">      <span class="hljs-type">void</span>         *message,</span><br><span class="hljs-params">      <span class="hljs-type">int</span>           count,</span><br><span class="hljs-params">      MPI_Datatype  datatype,</span><br><span class="hljs-params">      <span class="hljs-type">int</span>           dest,</span><br><span class="hljs-params">      <span class="hljs-type">int</span>           tag,</span><br><span class="hljs-params">      MPI_Comm      comm</span><br><span class="hljs-params">)</span><br></code></pre></td></tr></table></figure>
+<h3 id="函数mpi_receive">函数MPI_Receive</h3>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">MPI_Recv</span> <span class="hljs-params">(</span><br><span class="hljs-params">      <span class="hljs-type">void</span>         *message,</span><br><span class="hljs-params">      <span class="hljs-type">int</span>           count,</span><br><span class="hljs-params">      MPI_Datatype  datatype,</span><br><span class="hljs-params">      <span class="hljs-type">int</span>           source,</span><br><span class="hljs-params">      <span class="hljs-type">int</span>           tag,</span><br><span class="hljs-params">      MPI_Comm      comm,</span><br><span class="hljs-params">      MPI_Status   *status</span><br><span class="hljs-params">)</span><br><br></code></pre></td></tr></table></figure>
+<h4
+id="函数mpi_send和mpi_receive的内部">函数MPI_Send和MPI_Receive的内部</h4>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/103.png" srcset="/img/loading.gif" lazyload alt="103" style="zoom:67%;" /></p>
+<h3 id="mpi_send函数终止">MPI_Send函数终止</h3>
+<p>1.函数直到消息缓冲区空才终止 2.当以下情况时，消息缓冲区会空：</p>
+<ul>
+<li>消息被复制到了系统缓冲区</li>
+<li>消息被传输走了</li>
+</ul>
+<p>3.典型的场景：消息被复制到了系统缓冲区；消息与计算同时发生</p>
+<h3 id="mpi_receive函数终止">MPI_Receive函数终止</h3>
+<p>1.函数终止直到消息在缓冲区中存在
+2.如果消息始终未到达，函数不会终止</p>
+<h3 id="死锁">死锁</h3>
+<p>死锁：等待永远不会成为真的条件的过程 编写死锁的收/发代码很容易</p>
+<ul>
+<li>两个进程：都在发送前接收</li>
+<li>发送标签与接收标记不匹配</li>
+<li>进程向错误的目的地进程发送消息</li>
+</ul>
+<p>例1 :</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">if</span> (id == <span class="hljs-number">0</span>) &#123;<br>	MPI_Recv (&amp;b,...);<br>	MPI_Send (&amp;a,...);<br>   c = (a + b)/<span class="hljs-number">2.0</span>; <br>&#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (id == <span class="hljs-number">1</span>) &#123;<br>	MPI_Recv (&amp;a,...);<br>	MPI_Send (&amp;b,...);<br>   c = (a + b)/<span class="hljs-number">2.0</span>; &#125;<br></code></pre></td></tr></table></figure>
+<p>进程0等待1的消息而阻塞，进程1等待0的消息而阻塞，产生了死锁。</p>
+<p>例2：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">if</span> (id ==<span class="hljs-number">0</span>) &#123;<br>	MPI_Send(&amp;a, ... <span class="hljs-number">1</span>,MPI_COMM_WORLD);<br>	MPI_Recv(&amp;b, ... <span class="hljs-number">1</span>, MPI_COMM_WORLD,&amp;status);<br>	c = (a+b)/<span class="hljs-number">2.0</span>; <br>&#125;<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (id ==<span class="hljs-number">1</span>) &#123;<br>	MPI_Send(&amp;a, ... <span class="hljs-number">0</span>,MPI_COMM_WORLD);<br>	MPI_Recv(&amp;b, ... <span class="hljs-number">0</span>, MPI_COMM_WORLD,&amp;status);<br>	c = (a+b)/<span class="hljs-number">2.0</span>;&#125;<br></code></pre></td></tr></table></figure>
+<p>这两个进程在尝试接收之前都会发送，但仍然陷入死锁。 为什么？</p>
+<blockquote>
+<p>标签错了。进程0正在尝试接收1的标签，但进程1正在发送0的标签。</p>
+</blockquote>
+<h3 id="mpi程序的安全">MPI程序的安全</h3>
+<p>依赖 MPI 缓冲区的程序被认为是不安全。
+对于各种输入集，此类程序可能运行时没有问题，但可能会与其他设置一起挂起或崩溃。
+MPI 标准允许MPI_Send以两种不同的方式行事：</p>
+<ul>
+<li>它可以简单地将消息复制到MPI管理的缓冲区并返回，</li>
+<li>或者它可以阻塞，直到匹配调用MPI_Recv开始。（第二种情况可能导致先发后收的模式死锁。）</li>
+</ul>
+<p>MPI 的许多实现设置了系统从缓冲切换到阻塞的阈值。</p>
+<ul>
+<li>相对较小的消息将由MPI_Send缓冲。</li>
+<li>较大的消息，将导致它阻塞。</li>
+</ul>
+<p>例1：从进程0发送一个很大的消息到进程1，如果目的地存储空间不足，发送必须等待用户提供内存空间（通过接收），下列执行顺序会发生什么？</p>
+<table>
+<thead>
+<tr class="header">
+<th>Process 0</th>
+<th>Process 1</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Send（1）</td>
+<td>Send（0）</td>
+</tr>
+<tr class="even">
+<td>Recv（1）</td>
+<td>Recv（0）</td>
+</tr>
+</tbody>
+</table>
+<p>这是“不安全”的，因为它依赖于系统缓冲区的可用性，需要Process
+0暂时阻塞等待Process 1提供足够的内存。</p>
+<p>例2：生产者和消费者，如果进程 0 需要向处理 1
+发送大量消息，并且发送速度比接受速度快。</p>
+<table>
+<thead>
+<tr class="header">
+<th>Process 0</th>
+<th>Process 1</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Send（1）</td>
+<td>Recv（0）</td>
+</tr>
+</tbody>
+</table>
+<p>在一开始的时候，系统的缓冲区并未被填满，后来满了之后，需要Process
+0暂时阻塞等待Process 1提供足够的内存。</p>
+<h4 id="方法1mpi_ssend">方法1：MPI_Ssend</h4>
+<p>MPI
+标准定义的MPI_Send替代方法。额外的"s"表示同步，MPI_Ssend保证阻塞，直到匹配接收开始。</p>
+<p>考虑这样一种情况，一个生产者重复生产新值并把他们发送给一个使用者。假设生产者产生值比使用者使用的快。如果使用缓存发送，将导致一个缓存溢出。给这个程序加一个附加的同步以阻止这种情况发生。如果使用标准发送，那么生产者将被自动停止，就象当缓存空间得不到时，它的发送操作将阻止。
+　</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs objectivec"><span class="hljs-type">int</span> <span class="hljs-built_in">MPI_Ssend</span>()&#123;<br>	<span class="hljs-type">void</span> 			* msg_buf_p;<br>	<span class="hljs-type">int</span>  			msg_size;<br>	<span class="hljs-built_in">MPI_Datatype</span>	msg_type;<br>	<span class="hljs-type">int</span> 			dest;<br>	<span class="hljs-type">int</span> 			tag;<br>	<span class="hljs-built_in">MPI_Comm</span>		communicator;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h4 id="方法2调整通信">方法2调整通信：</h4>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs c">MPI_Send(msg,size,MPI_INT,(my_rank+<span class="hljs-number">1</span>)%comm_sz,<span class="hljs-number">0</span>,comm)<br>MPI_Recv(new_msg,size,MPI_INT,(my_rank+comm_sz<span class="hljs-number">-1</span>)%comm_sz,<span class="hljs-number">0</span>,comm,<br>MPI_STATUS_IGNORE)<br></code></pre></td></tr></table></figure>
+<p>改为：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">if</span>(my_rank%<span class="hljs-number">2</span>==<span class="hljs-number">0</span>)&#123;<br>    MPI_Send(msg,size,MPI_INT,(my_rank+<span class="hljs-number">1</span>)%comm_sz,<span class="hljs-number">0</span>,comm);<br>	MPI_Recv(new_msg,size,MPI_INT,(my_rank+comm_sz<span class="hljs-number">-1</span>)%comm_sz,<span class="hljs-number">0</span>,comm,<br>MPI_STATUS_IGNORE);<br>&#125;<span class="hljs-keyword">else</span>&#123;<br>    MPI_Recv(new_msg,size,MPI_INT,(my_rank+comm_sz<span class="hljs-number">-1</span>)%comm_sz,<span class="hljs-number">0</span>,comm,<br>MPI_STATUS_IGNORE);<br>    MPI_Send(msg,size,MPI_INT,(my_rank+<span class="hljs-number">1</span>)%comm_sz,<span class="hljs-number">0</span>,comm);<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>偶数个comm_sz是没有问题的，奇数个comm_sz可能是不安全的</p>
+<p>5个进程下的安全通信：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/104.png" srcset="/img/loading.gif" lazyload alt="104" style="zoom:67%;" /></p>
+<h4 id="方法3mpi_sendrecv">方法3：MPI_Sendrecv</h4>
+<p>1.自己安排通信的替代方法。 2.在单个调用中执行阻塞发送和接收。 3.dest
+和 source 可以相同也可以不同。 4.特别有用，因为 MPI
+安排通信以便程序不会挂起或崩溃。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">MPI_Sendrecv</span><span class="hljs-params">(</span><br><span class="hljs-params">	<span class="hljs-type">void</span>* 				send_buf_p;</span><br><span class="hljs-params">    <span class="hljs-type">int</span> 				send_buf_size;</span><br><span class="hljs-params">    MPI_Datatype		send_buf_type;</span><br><span class="hljs-params">    <span class="hljs-type">int</span> 				dest;</span><br><span class="hljs-params">    <span class="hljs-type">int</span> 				send_tag;</span><br><span class="hljs-params">    <span class="hljs-type">void</span>* 				recv_buf_p;</span><br><span class="hljs-params">    <span class="hljs-type">int</span> 				recv_buf_size;</span><br><span class="hljs-params">    MPI_Datatype		recv_buf_type;</span><br><span class="hljs-params">    <span class="hljs-type">int</span>					source;</span><br><span class="hljs-params">    <span class="hljs-type">int</span> 				recv_tag;</span><br><span class="hljs-params">    MPI_Comm			communicator;</span><br><span class="hljs-params">    MPI_Status*			status_p;		</span><br><span class="hljs-params">)</span>;<br></code></pre></td></tr></table></figure>
+<h3 id="集群通信和点到点通信">集群通信和点到点通信</h3>
+<p>1.在通讯子中全部进程必须调用相同的集合函数</p>
+<ul>
+<li>例如，如果一个程序试图将一个进程上对MPI
+Reduce的调用与另一个进程上对MPI
+Recv的调用相匹配，那么这个程序很可能会挂起或崩溃。</li>
+</ul>
+<p>每个进程传递给 MPI 集体通信的参数必须是“兼容的”。</p>
+<ul>
+<li>例如，如果一个进程传入 0 作为 目标进程 另一个传入 1，然后调用结果
+MPI_Reduce 是错误的，而且程序很可能会挂起或崩溃。</li>
+</ul>
+<p>2.out_data_p参数只会被被dest_process使用</p>
+<p>3.但是，所有的进程仍然需要传入一个对应的实参
+out_data_p，即使它只是空值.</p>
+<p>4.点对点通信在 标签和通信子的基础上被匹配。</p>
+<p>5.集群通信不需要使用标签</p>
+<p>6.集群通信不使用标签</p>
+<ul>
+<li>他们被匹配仅仅在通信子的基础和他们被调用的顺序</li>
+</ul>
+<h2 id="块行矩阵io并行代码">块行矩阵I/O并行代码</h2>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">main</span> <span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span> *argv[])</span>&#123;<br>    dtype**	a; 		<span class="hljs-comment">/*doubly-subscripted array*/</span><br>    dtype* 	storage; <span class="hljs-comment">/*Loacl portion of array elements*/</span><br>    <span class="hljs-type">int</span> i,j,k;<br>    <span class="hljs-type">int</span> id;<br>    <span class="hljs-type">int</span> m;<span class="hljs-comment">/*rows in maxtrix*/</span><br>    <span class="hljs-type">int</span> n;<span class="hljs-comment">/*columns in maxtrix*/</span><br>    <span class="hljs-type">int</span> p;<span class="hljs-comment">/*number of processes*/</span><br>    <span class="hljs-type">double</span> time,max_time;<br>    <span class="hljs-type">void</span> <span class="hljs-title function_">compute_shortest_paths</span><span class="hljs-params">(<span class="hljs-type">int</span>,<span class="hljs-type">int</span>,<span class="hljs-type">int</span>**,<span class="hljs-type">int</span>)</span>;<br>    MPI_Init (&amp;argc, &amp;argv);<br>    MPI_Comm_rank(MPI_COMM_WORLD,&amp;id);<br>    MPI_Comm_size(MPI_COMM_WORLD,&amp;p);<br>    read_row_striped_matrix(argv[<span class="hljs-number">1</span>],(<span class="hljs-type">void</span>*) &amp;a),(<span class="hljs-type">void</span>*) &amp;storage,MPI_TYPE,&amp;m,&amp;n,MPI_COMM_WORLD);<br>    <span class="hljs-keyword">if</span>(m!=n) <span class="hljs-built_in">terminate</span>(id,<span class="hljs-string">&quot;Matrix must be square\n&quot;</span>);<br>    pirnt_row_striped_matrix((<span class="hljs-type">void</span>**) a,MPI_TYPE,<span class="hljs-number">0</span>,MPI_COMM_WORLD);<br>    MPI_Barrier(MPI_COMMON_WORLD);<br>    time =-MPI_Wtime;<br>    compute_shortest_paths(id,p,(dtype**) a,n);<br>    time+=MPI_Wtime;<br>    MPI_Reduce(&amp;time,&amp;max_time,<span class="hljs-number">1</span>,MPI_DOUBLE,MPI_MAX,<span class="hljs-number">0</span>,MPI_COMM_WORLD);<br>    <span class="hljs-keyword">if</span>(!id) <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Floyd,matrix size %d,%d processes:%6.2f seconds\n&quot;</span>,n,p,max_time);<br>    pirnt_row_striped_matrix((<span class="hljs-type">void</span>**) a,MPI_TYPE,<span class="hljs-number">0</span>,MPI_COMM_WORLD);<br>    MPI_Finalize();<br>&#125;<br><span class="hljs-type">void</span> <span class="hljs-title function_">compute_shortest_paths</span><span class="hljs-params">(<span class="hljs-type">int</span> id,<span class="hljs-type">int</span> p,dtype** a,<span class="hljs-type">int</span> n)</span>&#123;<br>    <span class="hljs-type">int</span> i,j,k;<br>    <span class="hljs-type">int</span> offset;<span class="hljs-comment">//local index of broadcast row</span><br>    <span class="hljs-type">int</span> root;<span class="hljs-comment">//process controlling row to be cast;</span><br>    <span class="hljs-type">int</span> *tmp;<span class="hljs-comment">//holds the broadcast row;</span><br>    tmp=(dtype *)<span class="hljs-built_in">malloc</span> (n*<span class="hljs-keyword">sizeof</span>(dtype));<br>    <span class="hljs-keyword">for</span>(k=<span class="hljs-number">0</span>;k&lt;n;k++)&#123;<br>        root=BLOCK_OWNER(id,p,n);<br>        <span class="hljs-keyword">if</span>(root==id)&#123;<br>            offset=k-BLOCK_LOW(id,p,n);<br>            <span class="hljs-keyword">for</span>(j=<span class="hljs-number">0</span>;j&lt;n;j++)&#123;<br>                temp[j]=a[offset][l];<br>            &#125;<br>            MPI_Bcast(tmp,n,MPI_TYPE,root,MPI_COMM_WORLD);<br>            <span class="hljs-keyword">for</span>(i=<span class="hljs-number">0</span>;i&lt;BLOCK_SIZE(id,p,n);i++)&#123;<br>                <span class="hljs-keyword">for</span>(j=<span class="hljs-number">0</span>;j&lt;n;j++)&#123;<br>                    a[i][j]=MIN(a[i][j],a[i][k]+temp[j]);<br>                &#125;<br>            &#125;<br>        &#125;<br>        <span class="hljs-built_in">free</span> (tmp);<br>    &#125;<br>&#125;<br><br><br></code></pre></td></tr></table></figure>
+<h2 id="分析和基准测试程序">分析和基准测试程序</h2>
+<h3 id="计算复杂度">计算复杂度</h3>
+<p>1.最内层循环具有复杂性 Θ(n) 2.中间循环最多执行 ↑[n/p]次 3.外循环执行
+n 次 4.总体复杂度 Θ(n3/p)</p>
+<h3 id="空间复杂度">空间复杂度</h3>
+<p>1.内循环无通信 2.中间循环无通讯 3.外循环广播 — 复杂性是 Θ（nlogp）
+总体复杂度 (n^2logp)</p>
+<h3 id="执行时间表达式">6执行时间表达式</h3>
+<h4 id="表达式1">表达式1</h4>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/105.png" srcset="/img/loading.gif" lazyload alt="105" style="zoom: 50%;" /></p>
+<h4 id="计算通信重叠">计算/通信重叠</h4>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/106.png" srcset="/img/loading.gif" lazyload alt="106" style="zoom: 80%;" /></p>
+<h4 id="表达式2">表达式2</h4>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/107.png" srcset="/img/loading.gif" lazyload alt="107" style="zoom: 50%;" /></p>
+<h3 id="预测与实际的性能对比">预测与实际的性能对比</h3>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>Execution Time (sec)</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Processes</td>
+<td>Predicted</td>
+<td>Actual</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>25.54</td>
+<td>25.54</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>13.02</td>
+<td>13.89</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>9.01</td>
+<td>9.60</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>6.89</td>
+<td>7.29</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td>5.86</td>
+<td>5.99</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td>5.01</td>
+<td>5.16</td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td>4.40</td>
+<td>4.50</td>
+</tr>
+</tbody>
+</table>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/distributed-parallel-computing/" class="category-chain-item">distributed-parallel-computing</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">#分布式</a>
+      
+        <a href="/tags/MPI/">#MPI</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>第七章：Floyd算法</div>
+      <div>http://onepoint.link/2021/10/07/distributed-parallel-computing/7.Floyd算法/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>yi-ge-dian</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2021年10月7日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/10/08/distributed-parallel-computing/8.%E7%9F%A9%E9%98%B5%E5%90%91%E9%87%8F%E4%B9%98%E6%B3%95/" title="第八章：矩阵向量乘法">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">第八章：矩阵向量乘法</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/10/06/distributed-parallel-computing/6.%E5%9F%83%E6%8B%89%E6%89%98%E6%96%AF%E7%89%B9%E5%B0%BC%E7%AD%9B%E6%B3%95/" title="第六章：埃拉托斯特尼筛法">
+                        <span class="hidden-mobile">第六章：埃拉托斯特尼筛法</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="lv-container" data-id="city" data-uid="MTAyMC81NjY1My8zMzExNw">
+    <script type="text/javascript">
+      Fluid.utils.loadComments('#lv-container', function() {
+        Fluid.utils.createScript('https://cdn-city.livere.com/js/embed.dist.js');
+      });
+    </script>
+    <noscript>Please enable JavaScript to view the comments</noscript>
+  </div>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+    <!-- 备案信息 ICP for China -->
+    <div class="beian">
+  <span>
+    <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+      蜀ICP备2022013781号
+    </a>
+  </span>
+  
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

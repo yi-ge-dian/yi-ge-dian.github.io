@@ -1,0 +1,1052 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="yi-ge-dian">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="性能指标：执行时间；加速比；效率；可扩展性；便捷性；编程能力等； 本文公式的具体推导可看这篇文章：http:&#x2F;&#x2F;parallelcomp.github.io&#x2F;performancenotes.pdf 加速比和效率 \[ Sp&#x3D;Ts&#x2F;Tp \] Ts:串行算法的时间 Tp:使用 p 个处理器的并行算法的时间 例子 ：   （a）中，串行执行的时间100 （b）中，Sp&#x3D;100&#x2F;25&#x3D;4，完美的并行化">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第四章：性能评估">
+<meta property="og:url" content="http://onepoint.link/2021/10/04/distributed-parallel-computing/4.%E6%80%A7%E8%83%BD%E8%AF%84%E4%BC%B0/index.html">
+<meta property="og:site_name" content="onepoint">
+<meta property="og:description" content="性能指标：执行时间；加速比；效率；可扩展性；便捷性；编程能力等； 本文公式的具体推导可看这篇文章：http:&#x2F;&#x2F;parallelcomp.github.io&#x2F;performancenotes.pdf 加速比和效率 \[ Sp&#x3D;Ts&#x2F;Tp \] Ts:串行算法的时间 Tp:使用 p 个处理器的并行算法的时间 例子 ：   （a）中，串行执行的时间100 （b）中，Sp&#x3D;100&#x2F;25&#x3D;4，完美的并行化">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/parallel.jpeg">
+<meta property="article:published_time" content="2021-10-03T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-10-03T16:00:00.000Z">
+<meta property="article:author" content="yi-ge-dian">
+<meta property="article:tag" content="分布式">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/parallel.jpeg">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>第四章：性能评估 - onepoint</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"onepoint.link","root":"/","version":"1.9.2","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":"dd82cbda8f486148a18105c55a23ec08","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>OnePoint</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="第四章：性能评估"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2021-10-04 00:00" pubdate>
+          2021年10月4日 凌晨
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          4.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          35 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">第四章：性能评估</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>性能指标：执行时间；加速比；效率；可扩展性；便捷性；编程能力等；</p>
+<p>本文公式的具体推导可看这篇文章：http://parallelcomp.github.io/performancenotes.pdf</p>
+<h2 id="加速比和效率">加速比和效率</h2>
+<p><span class="math display">\[
+Sp=Ts/Tp
+\]</span></p>
+<p>Ts:串行算法的时间</p>
+<p>Tp:使用 p 个处理器的并行算法的时间</p>
+<p>例子 ：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/75.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/76.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p>
+<p>（a）中，串行执行的时间100</p>
+<p>（b）中，Sp=100/25=4，完美的并行化</p>
+<p>（c）中，Sp=100/35=2.85，完美的负载均衡。但是每个花销多了10（串行部分和开销）</p>
+<p>（d）中，Sp=100/40=2.5，没有花销，但是负载不均衡</p>
+<p>（e）中，Sp=100/50=2，负载不均衡，而且多了花销</p>
+<h3 id="什么是好的加速比">什么是好的加速比？</h3>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/77.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p>
+<ul>
+<li>线性加速：加速比接近P</li>
+<li>亚线性加速：加速比小于P</li>
+<li>超线性加速：加速比大于P
+<ul>
+<li>硬件特性：分层内存，缓存效果</li>
+<li>算法：深度，第一次树的遍历</li>
+</ul></li>
+</ul>
+<h3 id="执行时间组件">执行时间组件</h3>
+<ul>
+<li>固有计算顺序σ(n)</li>
+<li>可能的并行计算ψ(n)</li>
+<li>并行化开销κ(n,p)</li>
+<li>加速比表达式：</li>
+</ul>
+<p><span class="math display">\[
+\psi   (n,p)\le \frac{\sigma (n)+\varphi (n)}{\sigma (n)+\varphi
+(n)/p+\kappa (n,p)}
+\]</span></p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/78.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p>
+<ul>
+<li>加速比曲线图</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/79.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p>
+<h3 id="效率">效率</h3>
+<p><span class="math display">\[
+Ep=Sp/p
+\]</span></p>
+<ul>
+<li>实际使用的潜在处理能力占总潜在处理能力的分数。</li>
+<li>具有线性加速比的效率是100%</li>
+</ul>
+<h3 id="εnp1">0&lt;=ε(n,p)&lt;=1</h3>
+<p>我们将加速比公式的分母同时乘以p。</p>
+<p><span class="math display">\[
+\varepsilon(n,p)\le \frac{\sigma (n)+\varphi(n)}{p\sigma (n)+\varphi
+(n)+p\kappa (n,p)}
+\]</span></p>
+<p>我们很容易得到ε(n,p)其区间为[0，1]</p>
+<h2 id="amdahl定律">Amdahl定律</h2>
+<p><span class="math display">\[
+\psi(n,p)\le\frac{\sigma(n)+\varphi(n)}{\sigma(n)+\varphi(n)/p+\kappa
+(n,p)}\le\frac{\sigma (n)+\varphi (n)}{\sigma(n)+\varphi(n)/p)}
+\]</span></p>
+<p><span class="math display">\[
+Let f=\sigma(n)/(\sigma(n)+\varphi(n))
+\]</span></p>
+<p>设f为必须顺序执行（串行）所占运算的分数，其中0≤f≤1。由p个处理器执行计算的并行计算机所能达到的最大速度是：</p>
+<p><span class="math display">\[
+\psi(n,P)\le \frac{1}{f+(1-f)/p}
+\]</span></p>
+<p>除非几乎所有的串行程序都被并行化，否则可能的加速将非常有限——无论可用内核的数量如何。</p>
+<p><strong>例子1：</strong> 我们可以将 90%
+的串行程序并行。无论我们使用多少个内核，并行化都是"完美的"。Tserial=20seconds。</p>
+<p>解法1（代公式）：</p>
+<blockquote>
+<p>S&lt;=1/(0.1+0.9/p)&lt;=10</p>
+</blockquote>
+<p>解法2（定义）：</p>
+<blockquote>
+<p>并行部分：0.9 x Tserial / p = 18 / p 串行部分：0.1 x Tserial = 2
+采用并行策略的总时间：Tparallel = 0.9 x Tserial / p + 0.1 x Tserial = 18
+/ p + 2 加速比：S=Tserial/Tparallel=20/（18/p+2）&lt;=10</p>
+</blockquote>
+<p><strong>例子2：</strong> 95%
+的程序执行时间发生在可以并行执行的循环内。在 8 个 CPU
+上执行的程序的平行版本中，我们应该期望的最大速度是多大的？</p>
+<blockquote>
+<p>ψ&lt;=1/(0.05+(1-0.05)/8)=5.9259</p>
+</blockquote>
+<p><strong>例子3：</strong>
+如果并行程序中25%的运算必须依次执行，那么可实现的最大加速是多少?</p>
+<blockquote>
+<p>ψ=1/(0.25+(1-0.25)/p)， 若要ψ最大，p最大，当p趋于无穷大，ψ最大为4</p>
+</blockquote>
+<p><strong>例子4：</strong>
+假设我们实现了一个顺序程序的并行版本，时间复杂度为<code>Θ(n^2)</code>，其中n是数据集的大小。假设输入数据集和输出结果所需的时间为<code>(18000+n)μsec</code>。这构成了程序的顺序部分。程序的计算部分可以并行执行;它的执行时间为<code>(n^2/100)</code>
+μsec。这个并行程序对10000个大小的问题所能达到的最大加速是多少?</p>
+<blockquote>
+<p>ψ=(28000+1000000)/(28000+1000000/p)，
+若要ψ最大，p最大，当p趋于无穷大，ψ最大为3.67</p>
+</blockquote>
+<p>Amdahl定律预测的加速值(虚线)高于考虑了通信开销的加速值预测(实线)。ps:公式中的分母本应该还有通信开销的。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/80.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p>
+<h3 id="amdahl定律的局限性">Amdahl定律的局限性</h3>
+<ul>
+<li>忽略了κ(n,p)</li>
+<li>高估了可实现的加速</li>
+</ul>
+<h3 id="amdahl效应">Amdahl效应</h3>
+<ul>
+<li>通常条件下κ(n,p)比ψ(n)/p有更低的复杂度</li>
+<li>随着n的增加，ψ(n)/p支配κ(n,p)</li>
+<li>固定数量的处理器，随着n的增大，加速比也在增大</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/81.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p>
+<h3 id="amdahl定律回顾">Amdahl定律回顾</h3>
+<ul>
+<li>将问题大小视为常数</li>
+<li>显示执行时间如何随着处理器数量的增加而减少</li>
+</ul>
+<h3 id="另一个视角">另一个视角</h3>
+<ul>
+<li>我们经常使用更快的计算机来解决更大的问题实例</li>
+<li>让我们将时间视为常数，并允许问题规模随着处理器数量的增加而增加</li>
+</ul>
+<h3 id="gustafson-barsis定律">Gustafson-Barsis定律</h3>
+<p><span class="math display">\[
+\psi(n,p)\le\frac{\sigma (n)+\varphi (n)}{\sigma (n)+\varphi (n)/p}
+\]</span></p>
+<p><span class="math display">\[
+Let s=\sigma(n) /(\sigma(n)+\varphi (n)/p)
+\]</span></p>
+<p><span class="math display">\[
+\psi\le p+(1-p)s
+\]</span></p>
+<ul>
+<li>从并行执行时间开始</li>
+<li>估计顺序执行时间以解决相同的问题</li>
+<li>问题规模是一个关于p递增的函数</li>
+<li>预测扩大的加速比</li>
+</ul>
+<p>例1：在 10 个处理器上运行的应用程序将 3%
+的时间用于串行代码。应用程序的扩展加速比是怎样的？</p>
+<blockquote>
+<p>ψ&lt;=10+(1-10)x0.03=10-0.27=9.73</p>
+</blockquote>
+<p>例2：要实现 8 个处理器上的 7
+的加速比，则这个并行程序的串行部分代码的最大比例是？</p>
+<blockquote>
+<p>7=8+(1-8)s x=0.14</p>
+</blockquote>
+<h3 id="karp-flatt指标">Karp-Flatt指标</h3>
+<ul>
+<li>Amdahl 定律和 Gustafson-Barsis 定律忽略κ(n,p)</li>
+<li>他们可能高估了加速比或扩展了加速比</li>
+<li>Karp 和 Flatt
+提出了另一个指标:（并行计算中固有的串行部件+处理器通信和同步开销）/单处理器执行时间</li>
+</ul>
+<p><span class="math display">\[
+e=\frac{\sigma (n)+\kappa (n,p)}{\sigma (n)+\varphi
+(n)}=\frac{1/\psi-1/p}{1-1/p}
+\]</span></p>
+<ul>
+<li>考虑到了并行开销</li>
+<li>检测在加速模型中忽略的开销或效率低下的其他来源
+<ul>
+<li>进程启动时间</li>
+<li>进程同步时间</li>
+<li>不平衡的工作负载</li>
+<li>架构开销</li>
+</ul></li>
+</ul>
+<p>例1：在 8 个 CPU 上仅提速 4.7 的主要原因是什么？</p>
+<table>
+<thead>
+<tr class="header">
+<th>p</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ψ</td>
+<td>1.8</td>
+<td>2.5</td>
+<td>3.1</td>
+<td>3.6</td>
+<td>4.0</td>
+<td>4.4</td>
+<td>4.7</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>求出e的值为0.1，因为e为一个常数，所以大的串行分数是主要原因。</p>
+</blockquote>
+<p>例2：在 8 个 CPU 上仅提速 4.7 的主要原因是什么？</p>
+<table>
+<thead>
+<tr class="header">
+<th>p</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ψ</td>
+<td>1.9</td>
+<td>2.6</td>
+<td>3.2</td>
+<td>3.7</td>
+<td>4.1</td>
+<td>4.5</td>
+<td>4.7</td>
+</tr>
+</tbody>
+</table>
+<p>求出e的对应值如下：</p>
+<table style="width:100%;">
+
+<thead>
+<tr class="header">
+<th>e</th>
+<th>0.052632</th>
+<th>0.076923</th>
+<th>0.083333</th>
+<th>0.087838</th>
+<th>0.092683</th>
+<th>0.092593</th>
+<th>0.100304</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+<blockquote>
+<p>因为e正在稳步增加，开销是主要原因。</p>
+</blockquote>
+<p>例3：这个程序有可能在 12 个处理器上实现 10 的加速吗？</p>
+<table>
+<thead>
+<tr class="header">
+<th>p</th>
+<th>4</th>
+<th>8</th>
+<th>12</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ψ</td>
+<td>3.9</td>
+<td>6.5</td>
+<td>10?</td>
+</tr>
+</tbody>
+</table>
+<p>求出对应的e值如下：</p>
+<table>
+<thead>
+<tr class="header">
+<th>e</th>
+<th>0.008547</th>
+<th>0.032967</th>
+<th>0.018182</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+<blockquote>
+<p>由前两个值可以知道，随着p的增加，开销逐渐增大，但是按照可以达到10的加速比来算，e值变小了，所以是不能达到的。</p>
+</blockquote>
+<h3 id="等效率指标">等效率指标</h3>
+<ul>
+<li><p>并行系统：在并行计算机上执行的并行程序</p></li>
+<li><p>并行系统的可扩展性：衡量其随着处理器数量增加而提高性能的能力</p></li>
+<li><p>可扩展的系统在添加处理器时也会保持效率</p></li>
+<li><p>等效率: 衡量可扩展性的方法</p></li>
+<li><p>推导步骤：</p>
+<ul>
+<li>从加速比公式开始</li>
+<li>计算总开销</li>
+<li>假设效率保持不变</li>
+<li>确定顺序执行时间和开销之间的关系</li>
+</ul>
+<p>确定开销：</p>
+<p><span class="math display">\[
+T_{o}(n, p)=(p-1)\sigma(n)+p\kappa(n, p)
+\]</span></p>
+<p>把开销代入加速方程:</p>
+<p><span class="math display">\[
+\psi(n, p) \leq
+\frac{p(\sigma(n)+\varphi(n))}{\sigma(n)+\varphi(n)+T_{0}(n, p)}
+\]</span></p>
+<p>代替:</p>
+<p><span class="math display">\[
+T(n,1) =\sigma(n)+\varphi(n)
+\]</span></p>
+<p>假定<strong>效率</strong>(加速比除以p)<strong>是一个常量</strong>，得（<strong>等效率指标</strong>）:</p>
+<p><span class="math display">\[
+T(n, 1)\geq C T_{0}(n, p)
+\]</span></p>
+<p>其中C的值为：</p>
+<p><span class="math display">\[
+\frac{\varepsilon(n, p)}{1-\varepsilon(n, p)}
+\]</span></p></li>
+</ul>
+<h2 id="可扩展性">可扩展性</h2>
+<h3 id="可扩展性函数">可扩展性函数</h3>
+<ul>
+<li>所有算法都假设最大问题大小受可用主存数量的限制</li>
+<li>假设等效率关系是 <code>n≥f(p)</code>
+<ul>
+<li>设M(n)表示大小为n的问题所需的内存</li>
+<li><code>M^−1 (n)≥f(p)</code>的关系表明，使用的内存量必须作为p的函数而增加，以保持效率的恒定水平</li>
+<li>将关系改写为<code>n≥M(f(p))</code></li>
+<li>每个处理器的内存数量必须增加<code>M(f(p))/p</code>，以保持<strong>相同的效率水平</strong></li>
+<li><code>M(f(p))/p</code>就是可扩展性函数，越小，可扩展性就越好。</li>
+</ul></li>
+</ul>
+<h3 id="可扩展性函数的意义">可扩展性函数的意义</h3>
+<ul>
+<li>为了保持效率，在增加p时，我们必须增加n</li>
+<li>最大问题大小受可用内存的限制，内存在 p 中是线性的</li>
+<li>可扩展性功能显示每个处理器的内存使用必须如何增长以保持效率</li>
+<li>可扩展性功能恒定意味着并行系统是完全可扩展的</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/82.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p>
+<blockquote>
+<p>例1：规约(二叉树)</p>
+</blockquote>
+<ul>
+<li>顺序算法复杂度：<code>T(n,1) = Θ(n)</code></li>
+<li>并行计算时间：<code>Θ(n/p)</code>，并行通信时间：<code>Θ(logp)</code></li>
+<li>并行开销（只考虑并行那一部分的数值，串行无须考虑）：<code>T0(n,p) =Θ (plogp)</code>。</li>
+<li>等效率关系：<code>n≥Cplogp</code></li>
+<li>空间复杂度：<code>M(n)=n</code></li>
+<li><code>M(f(p))/p=M(Cplogp)/p=Cplogp/p=Clogp</code>，有较好的可扩展性。</li>
+</ul>
+<blockquote>
+<p>例2：Floyd算法</p>
+</blockquote>
+<ul>
+<li>串行时间复杂度：<code>Θ(n^3)</code></li>
+<li>并行计算时间：<code>Θ(n^3/p)</code>，并行通信时间：<code>Θ(n^2logp)</code></li>
+<li>并行开销：<code>T0(n,p) =Θ (pn^2logp)</code></li>
+<li>等效率关系：<code>n^3≥Cpn^2logp</code>=&gt;<code>n≥Cplogp</code></li>
+<li>空间复杂度：<code>M(n)=n^2</code></li>
+<li><code>M(f(p))/p=M(Cplogp)/p=C^2*p^2*(logp)^2/p=C^2p(logp)^2</code>，较差的扩展性</li>
+</ul>
+<blockquote>
+<p>例3：有限差分（Finite Difference）法</p>
+</blockquote>
+<ul>
+<li>串行时间复杂度：<code>Θ(n^2)</code></li>
+<li>并行通信时间：<code>Θ(n/√p)</code></li>
+<li>并行开销：<code>Θ(n√p)</code></li>
+<li>等效率关系：<code>n^2≥Cn√p</code>=&gt;<code>n≥C√p</code></li>
+<li>空间复杂度：<code>M(n)=n^2</code></li>
+<li><code>M(f(p))/p=M(C√p/p=C^2p/p=C^2</code>，完美的可扩展性。</li>
+</ul>
+<h2 id="总结">总结</h2>
+<ul>
+<li>性能指标：加速比，效率</li>
+<li>加速比的模块：串行部分，并行部分，通信部分</li>
+<li>什么阻止线性加速比：串行操作，通信操作，进程启动，不均衡的工作负载，架构限制</li>
+<li>分析并行性能：Amdahl定律，Gustafson-Barsis定律，Karp-Flatt指标，等效率指标</li>
+</ul>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/distributed-parallel-computing/" class="category-chain-item">distributed-parallel-computing</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">#分布式</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>第四章：性能评估</div>
+      <div>http://onepoint.link/2021/10/04/distributed-parallel-computing/4.性能评估/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>yi-ge-dian</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2021年10月4日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/10/05/distributed-parallel-computing/5.%E6%B6%88%E6%81%AF%E4%BC%A0%E9%80%92%E7%BC%96%E7%A8%8B/" title="第五章：消息传递编程">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">第五章：消息传递编程</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/10/03/distributed-parallel-computing/3.%E5%B9%B6%E8%A1%8C%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1/" title="第三章：并行程序设计">
+                        <span class="hidden-mobile">第三章：并行程序设计</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="lv-container" data-id="city" data-uid="MTAyMC81NjY1My8zMzExNw">
+    <script type="text/javascript">
+      Fluid.utils.loadComments('#lv-container', function() {
+        Fluid.utils.createScript('https://cdn-city.livere.com/js/embed.dist.js');
+      });
+    </script>
+    <noscript>Please enable JavaScript to view the comments</noscript>
+  </div>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+    <!-- 备案信息 ICP for China -->
+    <div class="beian">
+  <span>
+    <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+      蜀ICP备2022013781号
+    </a>
+  </span>
+  
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

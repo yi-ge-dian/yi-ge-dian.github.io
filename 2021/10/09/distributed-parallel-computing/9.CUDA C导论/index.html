@@ -1,0 +1,933 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="yi-ge-dian">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="异构并行计算导论 CPU和GPU的设计非常不同   127  CPU：面向延迟的设计   128  GPU：面向吞吐量的设计   129  获胜的程序同时使用CPU和GPU  GPU用于吞吐量胜出的并行部分：对于并行代码，GPU 可比 CPU 快 10 倍以上CPU 用于延迟重要的串行部分：对于顺序代码，CPU 可比 GPU 快 10 倍以上  CUDA C vs. CUDA Libs vs.Op">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第九章：CUDA C导论">
+<meta property="og:url" content="http://onepoint.link/2021/10/09/distributed-parallel-computing/9.CUDA%20C%E5%AF%BC%E8%AE%BA/index.html">
+<meta property="og:site_name" content="onepoint">
+<meta property="og:description" content="异构并行计算导论 CPU和GPU的设计非常不同   127  CPU：面向延迟的设计   128  GPU：面向吞吐量的设计   129  获胜的程序同时使用CPU和GPU  GPU用于吞吐量胜出的并行部分：对于并行代码，GPU 可比 CPU 快 10 倍以上CPU 用于延迟重要的串行部分：对于顺序代码，CPU 可比 GPU 快 10 倍以上  CUDA C vs. CUDA Libs vs.Op">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/parallel.jpeg">
+<meta property="article:published_time" content="2021-10-08T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-10-08T16:00:00.000Z">
+<meta property="article:author" content="yi-ge-dian">
+<meta property="article:tag" content="分布式">
+<meta property="article:tag" content="CUDA">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/parallel.jpeg">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>第九章：CUDA C导论 - onepoint</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"onepoint.link","root":"/","version":"1.9.2","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":"dd82cbda8f486148a18105c55a23ec08","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>OnePoint</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="第九章：CUDA C导论"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2021-10-09 00:00" pubdate>
+          2021年10月9日 凌晨
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          4.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          36 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">第九章：CUDA C导论</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="异构并行计算导论">异构并行计算导论</h2>
+<h3 id="cpu和gpu的设计非常不同">CPU和GPU的设计非常不同</h3>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/127.png" srcset="/img/loading.gif" lazyload
+alt="127" />
+<figcaption aria-hidden="true">127</figcaption>
+</figure>
+<p>CPU：面向延迟的设计</p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/128.png" srcset="/img/loading.gif" lazyload
+alt="128" />
+<figcaption aria-hidden="true">128</figcaption>
+</figure>
+<p>GPU：面向吞吐量的设计</p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/129.png" srcset="/img/loading.gif" lazyload
+alt="129" />
+<figcaption aria-hidden="true">129</figcaption>
+</figure>
+<p>获胜的程序同时使用CPU和GPU</p>
+<blockquote>
+<p>GPU用于吞吐量胜出的并行部分：对于并行代码，GPU 可比 CPU 快 10
+倍以上CPU 用于延迟重要的串行部分：对于顺序代码，CPU 可比 GPU 快 10
+倍以上</p>
+</blockquote>
+<h2 id="cuda-c-vs.-cuda-libs-vs.openacc">CUDA C vs. CUDA Libs
+vs.OpenACC</h2>
+<h3 id="加速应用程序的3种方法">加速应用程序的3种方法</h3>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/130.png" srcset="/img/loading.gif" lazyload
+alt="130" />
+<figcaption aria-hidden="true">130</figcaption>
+</figure>
+<h3 id="gpu加速库">GPU加速库</h3>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/131.png" srcset="/img/loading.gif" lazyload
+alt="131" />
+<figcaption aria-hidden="true">131</figcaption>
+</figure>
+<p>图形处理器加速库为您的应用程序提供“插入式”加速，有各种各样的计算库可用。</p>
+<ul>
+<li><p>您可能熟悉 FFTW 快速傅立叶变换库、各种 BLAS 线性代数库、</p></li>
+<li><p>Intel Math Kernel Library，或 Intel Performance Primitives
+库，仅举几例。有兼容的 GPU
+加速库可作为替代品对于我刚刚提到的所有库，以及更多。</p></li>
+<li><p>cuBLAS 是 NVIDIA 的 GPU 加速 BLAS
+线性代数库，其中包括非常快速的密集矩阵和向量计算。</p></li>
+<li><p>cuFFT 是 NVIDIA 的 GPU 加速快速傅立叶变换库。</p></li>
+<li><p>cuRAND 是 NVIDIA 的 GPU
+加速随机数生成库，可用于蒙特卡罗算法和金融应用程序等。</p></li>
+<li><p>cuSPARSE 是 NVIDIA
+的稀疏矩阵库，其中包括稀疏矩阵向量乘法、快速稀疏线性方程求解器和三对角求解器。</p></li>
+<li><p>NVIDIA Performance Primitives 包含数以千计的信号和图像处理功能。
+Thrust 是一个开源的 C++
+模板库，包含排序、归约、搜索和集合操作等并行算法。还有更多来自第三方开发人员和开源项目的库。</p></li>
+</ul>
+<blockquote>
+<p>GPU 加速库是将 GPU
+加速添加到应用程序的最直接方式，在许多情况下，它们的性能是无与伦比的。</p>
+</blockquote>
+<h3 id="推力中的向量加法">推力中的向量加法</h3>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c">thrust::device_vector&lt;<span class="hljs-type">float</span>&gt; <span class="hljs-title function_">deviceInput1</span><span class="hljs-params">(inputLength)</span>;<br>thrust::device_vector&lt;<span class="hljs-type">float</span>&gt; <span class="hljs-title function_">deviceInput2</span><span class="hljs-params">(inputLength)</span>;<br>thrust::device_vector&lt;<span class="hljs-type">float</span>&gt; <span class="hljs-title function_">deviceOutput</span><span class="hljs-params">(inputLength)</span>;<br><br>thrust::copy(hostInput1, hostInput1 + inputLength, deviceInput1.begin());<br>thrust::copy(hostInput2, hostInput2 + inputLength, deviceInput2.begin());<br><br>thrust::transform(deviceInput1.begin(), deviceInput1.end(), deviceInput2.begin(), deviceOutput.begin(), thrust::plus&lt;<span class="hljs-type">float</span>&gt;());<br></code></pre></td></tr></table></figure>
+<h3 id="opencacc">OPENCACC</h3>
+<p>C、C++ 和 FORTRAN 的编译器指令</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-meta">#<span class="hljs-keyword">pragma</span> acc parallel loop</span><br><br>copyin(input1[<span class="hljs-number">0</span>:inputLength],input2[<span class="hljs-number">0</span>:inputLength]), <br>copyout(output[<span class="hljs-number">0</span>:inputLength])<br><br>    <span class="hljs-keyword">for</span>(i = <span class="hljs-number">0</span>; i &lt; inputLength; ++i) &#123;<br>        output[i] = input1[i] + input2[i];<br>    &#125;<br></code></pre></td></tr></table></figure>
+<h3 id="gpu编程语言">GPU编程语言</h3>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/132.png" srcset="/img/loading.gif" lazyload
+alt="132" />
+<figcaption aria-hidden="true">132</figcaption>
+</figure>
+<blockquote>
+<p>在本章中，将讨论各种可用的 GPU 编程语言和接口。这些语言包括
+C、C++、C#、Fortran、Python 和数值分析包，例如 MATLAB、数学， 和
+LabVIEW.</p>
+</blockquote>
+<h2 id="cuda编程模型">CUDA编程模型</h2>
+<p>1.编程模型 <strong>是抽象</strong>的 <strong>底层计算机系统</strong>
+允许 <strong>算法</strong> 和 <strong>数据结构</strong>的表达.</p>
+<p>2.<strong>语言</strong> 和<strong>API</strong>
+提供这些抽象的实现，并允许将算法和数据结构付诸实践 ——
+编程模型的存在与编程语言和支持 API 的选择无关。</p>
+<blockquote>
+<p>编程模型弥合了底层硬件架构和应用程序可用的软件支持层之间的差距。
+编程模型不同于编程语言和应用程序编程接口 (API)。</p>
+</blockquote>
+<h3 id="一些设计目标">一些设计目标</h3>
+<ul>
+<li>扩展到100个内核，1000个并行线程</li>
+<li><strong>让程序员专注于并行算法</strong>
+，不是并行编程语言的机制。</li>
+<li><strong>启用异构系统（即 CPU+GPU）</strong>，CPU 和 GPU 是具有独立
+DRAM 的独立设备</li>
+</ul>
+<h3 id="关键的并行抽象">关键的并行抽象</h3>
+<ul>
+<li>并发线程的层次结构</li>
+<li>轻量级的同步原语</li>
+<li>用于协作线程的共享内存模型</li>
+</ul>
+<h3 id="线程层次结构">线程层次结构</h3>
+<p>thread（线程）：由 CUDA 运行时分发 （由<code>threadIdx</code>识别)
+warp（线程束）：线程的调度单元，一个warp包含32个并行thread，这些thread以不同数据资源执行相同的指令
+block（块）：用户定义的 1 到 512 个线程组。 (由<code>blockIdx</code>)
+grid(网格)：一或多个块组成，网格为每个CUDA核函数所创立。</p>
+<h3 id="cuda内存层次结构">CUDA内存层次结构</h3>
+<p>CUDA 平台具有三种主要内存类型：</p>
+<ul>
+<li>寄存器：每个<code>thread</code>内存用于自动变量和寄存器溢出。</li>
+<li>共享内存：每个<code>block</code>具有低延迟内存以允许块内数据共享和同步。线程可以通过这个内存安全地共享数据，并且可以通过_
+_syncthreads()函数执行障碍同步</li>
+<li>全局内存：<code>device level</code>可以在块或网格之间共享的内存</li>
+</ul>
+<h3 id="cuda硬件">CUDA硬件</h3>
+<p>Tesla 架构的主要组件是：</p>
+<ul>
+<li><p>流式多处理器（8800 有 16 个）</p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/133.png" srcset="/img/loading.gif" lazyload
+alt="133" />
+<figcaption aria-hidden="true">133</figcaption>
+</figure></li>
+<li><p>标量处理器</p></li>
+<li><p>内存层次结构</p></li>
+<li><p>互联网络</p></li>
+<li><p>主机接口</p></li>
+</ul>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/134.png" srcset="/img/loading.gif" lazyload
+alt="134" />
+<figcaption aria-hidden="true">134</figcaption>
+</figure>
+<h2 id="内存分配和数据移动api函数">内存分配和数据移动API函数</h2>
+<h3 id="数据并行---向量加法示例">数据并行 - 向量加法示例</h3>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/135.png" srcset="/img/loading.gif" lazyload
+alt="135" />
+<figcaption aria-hidden="true">135</figcaption>
+</figure>
+<p>向量加法，传统C代码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// Compute vector sum C = A + B</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">vecAdd</span><span class="hljs-params">(<span class="hljs-type">float</span> *h_A, <span class="hljs-type">float</span> *h_B, <span class="hljs-type">float</span> *h_C, <span class="hljs-type">int</span> n)</span><br>&#123;<br>    <span class="hljs-type">int</span> i;<br>    <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i&lt;n; i++) h_C[i] = h_A[i] + h_B[i];<br>&#125;<br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span><br>&#123;<br>    <span class="hljs-comment">// Memory allocation for h_A, h_B, and h_C</span><br>    <span class="hljs-comment">// I/O to read h_A and h_B, N elements</span><br>	 …<br>    vecAdd(h_A, h_B, h_C, N);<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>异构计算，向量主机代码：</p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/136.png" srcset="/img/loading.gif" lazyload
+alt="136" />
+<figcaption aria-hidden="true">136</figcaption>
+</figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;cuda.h&gt;</span></span><br><span class="hljs-type">void</span> <span class="hljs-title function_">vecAdd</span><span class="hljs-params">(<span class="hljs-type">float</span> *h_A, <span class="hljs-type">float</span> *h_B, <span class="hljs-type">float</span> *h_C, <span class="hljs-type">int</span> n)</span>‏<br>&#123;<br>   <span class="hljs-type">int</span> size = n* <span class="hljs-keyword">sizeof</span>(<span class="hljs-type">float</span>); <br>   <span class="hljs-type">float</span> *d_A, *d_B, *d_C;<br>   <span class="hljs-comment">// Part 1</span><br>   <span class="hljs-comment">// Allocate device memory for A, B, and C</span><br>   <span class="hljs-comment">// copy A and B to device memory </span><br>    <br>   <span class="hljs-comment">// Part 2</span><br>   <span class="hljs-comment">// Kernel launch code – the device performs the actual vector addition</span><br><br>   <span class="hljs-comment">// Part 3</span><br>   <span class="hljs-comment">// copy C from the device memory</span><br>   <span class="hljs-comment">// Free device vectors</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<p>CUDA内存部分概述：</p>
+<p>HOST代码可以：向/从每个网格全局内存传输数据
+Device代码可以：每线程读/写 寄存器，读/写全共享 全局内存</p>
+<blockquote>
+<p>全局、常量和结构内存空间在同一应用程序调用的内核之间是持久的。</p>
+</blockquote>
+<h3 id="cuda-设备内存管理-api-函数">CUDA 设备内存管理 API 函数</h3>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/137.png" srcset="/img/loading.gif" lazyload
+alt="137" />
+<figcaption aria-hidden="true">137</figcaption>
+</figure>
+<p><code>cudaMalloc()</code></p>
+<ul>
+<li>在设备全局内存中分配一个对象</li>
+<li>两个参数：指向被分配对象的指针的地址；已分配对象的大小(以字节为单位)</li>
+</ul>
+<p><code>cudaFree()</code></p>
+<ul>
+<li>从设备全局内存中释放对象</li>
+<li>一个参数：指向要释放对象的指针</li>
+</ul>
+<h3 id="host设备数据传输api函数">HOST设备数据传输API函数</h3>
+<p><code>cudaMemcpy()</code></p>
+<ul>
+<li>内存数据传输</li>
+<li>需要四个参数：指向目的地的指针
+；指向源的指针；复制的字节数；转移类型/方向</li>
+<li>传输到设备是异步的</li>
+</ul>
+<h3 id="向量加法host代码">向量加法HOST代码</h3>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">void</span> <span class="hljs-title function_">vecAdd</span><span class="hljs-params">(<span class="hljs-type">float</span> *h_A, <span class="hljs-type">float</span> *h_B, <span class="hljs-type">float</span> *h_C, <span class="hljs-type">int</span> n)</span>&#123;<br>    <span class="hljs-type">int</span> size = n * <span class="hljs-keyword">sizeof</span>(<span class="hljs-type">float</span>); <span class="hljs-type">float</span> *d_A, *d_B, *d_C;<br><br>    cudaMalloc((<span class="hljs-type">void</span> **) &amp;d_A, size);    <br>    cudaMemcpy(d_A, h_A, size, cudaMemcpyHostToDevice);<br>    cudaMalloc((<span class="hljs-type">void</span> **) &amp;d_B, size);<br>    cudaMemcpy(d_B, h_B, size, cudaMemcpyHostToDevice);<br>    cudaMalloc((<span class="hljs-type">void</span> **) &amp;d_C, size);<br><br>    <span class="hljs-comment">// Kernel invocation code – to be shown later</span><br><br>    cudaMemcpy(h_C, d_C, size, cudaMemcpyDeviceToHost);<br>    cudaFree(d_A); cudaFree(d_B); cudaFree (d_C);<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>在实行的时候，检查HOST代码中的 API 错误</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c">cudaError_t  err = cudaMalloc((<span class="hljs-type">void</span> **) &amp;d_A, size);<br><br><span class="hljs-keyword">if</span> (err != cudaSuccess)  &#123;<br>   <span class="hljs-built_in">printf</span>(“%s in %s at line %d\n”, cudaGetErrorString(err), __FILE__,__LINE__);<br>   <span class="hljs-built_in">exit</span>(EXIT_FAILURE);<br>&#125;<br></code></pre></td></tr></table></figure>
+<h2 id="数据并行和线程">数据并行和线程</h2>
+<p><strong>cuda执行模型</strong></p>
+<p>异构host（cpu）+device（gpu）应用c程序 串行部分：在host的c代码中
+并行部分：在设备SPMD内核函数</p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/138.png" srcset="/img/loading.gif" lazyload
+alt="138" />
+<figcaption aria-hidden="true">138</figcaption>
+</figure>
+<h3 id="isa级别的程序">ISA级别的程序</h3>
+<p>1.程序是存储在内存中的一组指令，可由硬件读取、解释和执行。</p>
+<ul>
+<li>CPU 和 GPU 都是基于（不同的）指令集设计的</li>
+</ul>
+<p>2.程序指令对存储在存储器和/或寄存器中的数据进行操作。</p>
+<h3 id="作为冯诺依曼处理器的线程">作为冯·诺依曼处理器的线程</h3>
+<p>线程是“虚拟化的”或“抽象的” 冯-诺依曼处理器。</p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/139.png" srcset="/img/loading.gif" lazyload
+alt="139" />
+<figcaption aria-hidden="true">139</figcaption>
+</figure>
+<h3 id="并行线程数组">并行线程数组</h3>
+<p>CUDA 内核由<strong>线程组成的网格（数组）</strong>执行</p>
+<ul>
+<li>网格中的所有线程运行相同的内核代码 (SPMD)，单程序多数据)‏</li>
+<li>每个线程都有用于计算内存地址和做出控制决策的索引</li>
+</ul>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/140.png" srcset="/img/loading.gif" lazyload
+alt="140" />
+<figcaption aria-hidden="true">140</figcaption>
+</figure>
+<h3 id="线程块可扩展的合作">线程块：可扩展的合作</h3>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/141.png" srcset="/img/loading.gif" lazyload
+alt="141" />
+<figcaption aria-hidden="true">141</figcaption>
+</figure>
+<p>将线程数组分成多个块：</p>
+<ul>
+<li>块内的线程通过 <strong>共享内存，原子操作</strong> 和
+<strong>屏障同步</strong>写作</li>
+<li>不同块中的线程不交互</li>
+</ul>
+<h3 id="blcokidx和threadidx">blcokIdx和threadIdx</h3>
+<p>每个线程使用索引来决定要处理的数据</p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/142.png" srcset="/img/loading.gif" lazyload
+alt="142" />
+<figcaption aria-hidden="true">142</figcaption>
+</figure>
+<p>简化处理多维数据时的内存寻址</p>
+<ul>
+<li>图像处理</li>
+<li>求解体积上的偏微分方程</li>
+</ul>
+<h3 id="nvcc编译器">NVCC编译器</h3>
+<p>1.NVIDIA 提供了一个 CUDA-C 编译器：nvcc 2.NVCC
+编译devcice代码，然后将代码转发到host编译器（例如 g++）
+3.可用于编译和链接仅host应用程序</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/distributed-parallel-computing/" class="category-chain-item">distributed-parallel-computing</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">#分布式</a>
+      
+        <a href="/tags/CUDA/">#CUDA</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>第九章：CUDA C导论</div>
+      <div>http://onepoint.link/2021/10/09/distributed-parallel-computing/9.CUDA C导论/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>yi-ge-dian</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2021年10月9日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/10/10/distributed-parallel-computing/10.CUDA%E5%B9%B6%E8%A1%8C%E6%A8%A1%E5%9E%8B/" title="第十章：CUDA并行模型">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">第十章：CUDA并行模型</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/10/08/distributed-parallel-computing/8.%E7%9F%A9%E9%98%B5%E5%90%91%E9%87%8F%E4%B9%98%E6%B3%95/" title="第八章：矩阵向量乘法">
+                        <span class="hidden-mobile">第八章：矩阵向量乘法</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="lv-container" data-id="city" data-uid="MTAyMC81NjY1My8zMzExNw">
+    <script type="text/javascript">
+      Fluid.utils.loadComments('#lv-container', function() {
+        Fluid.utils.createScript('https://cdn-city.livere.com/js/embed.dist.js');
+      });
+    </script>
+    <noscript>Please enable JavaScript to view the comments</noscript>
+  </div>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+    <!-- 备案信息 ICP for China -->
+    <div class="beian">
+  <span>
+    <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+      蜀ICP备2022013781号
+    </a>
+  </span>
+  
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

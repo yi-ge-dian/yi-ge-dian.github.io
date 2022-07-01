@@ -1,0 +1,1197 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="yi-ge-dian">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="顺序算法及其复杂度   108  存储向量 1.在进程之间划分向量元素 2.复制向量元素 3.向量复制是可以接受的，因为向量只有n个元素，而矩阵中只有n2个元素 串行代码 123456for(i&#x3D;0;i&lt;m;i++)&amp;#123;    y[i]&#x3D;0.0;    for(j&#x3D;0;j&lt;n;j++)&amp;#123;        y[i]+&#x3D;A[i][j]*x[j]    &amp;#125;&amp;#125">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第八章：矩阵向量乘法">
+<meta property="og:url" content="http://onepoint.link/2021/10/08/distributed-parallel-computing/8.%E7%9F%A9%E9%98%B5%E5%90%91%E9%87%8F%E4%B9%98%E6%B3%95/index.html">
+<meta property="og:site_name" content="onepoint">
+<meta property="og:description" content="顺序算法及其复杂度   108  存储向量 1.在进程之间划分向量元素 2.复制向量元素 3.向量复制是可以接受的，因为向量只有n个元素，而矩阵中只有n2个元素 串行代码 123456for(i&#x3D;0;i&lt;m;i++)&amp;#123;    y[i]&#x3D;0.0;    for(j&#x3D;0;j&lt;n;j++)&amp;#123;        y[i]+&#x3D;A[i][j]*x[j]    &amp;#125;&amp;#125">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/parallel.jpeg">
+<meta property="article:published_time" content="2021-10-07T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-10-07T16:00:00.000Z">
+<meta property="article:author" content="yi-ge-dian">
+<meta property="article:tag" content="分布式">
+<meta property="article:tag" content="MPI">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/parallel.jpeg">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>第八章：矩阵向量乘法 - onepoint</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"onepoint.link","root":"/","version":"1.9.2","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":"dd82cbda8f486148a18105c55a23ec08","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>OnePoint</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="第八章：矩阵向量乘法"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2021-10-08 00:00" pubdate>
+          2021年10月8日 凌晨
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          16k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          132 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">第八章：矩阵向量乘法</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="顺序算法及其复杂度">顺序算法及其复杂度</h2>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/108.png" srcset="/img/loading.gif" lazyload
+alt="108" />
+<figcaption aria-hidden="true">108</figcaption>
+</figure>
+<h3 id="存储向量">存储向量</h3>
+<p>1.在进程之间划分向量元素 2.复制向量元素
+3.向量复制是可以接受的，因为向量只有n个元素，而矩阵中只有n2个元素</p>
+<h3 id="串行代码">串行代码</h3>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">for</span>(i=<span class="hljs-number">0</span>;i&lt;m;i++)&#123;<br>    y[i]=<span class="hljs-number">0.0</span>;<br>    <span class="hljs-keyword">for</span>(j=<span class="hljs-number">0</span>;j&lt;n;j++)&#123;<br>        y[i]+=A[i][j]*x[j]<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="时间复杂度">时间复杂度</h3>
+<p>Θ（n^2）</p>
+<h2
+id="三个并行程序的设计分析和实现">三个并行程序的设计、分析和实现</h2>
+<h3 id="按行分块">按行分块</h3>
+<p>1.通过去分解进行分区 2.相关的原始任务</p>
+<ul>
+<li>矩阵行</li>
+<li>整个矢量</li>
+</ul>
+<p>3.并行阶段的阶段</p>
+<div style="text-align:center">
+<pre><code class="hljs">&lt;img src=&quot;https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/109.png&quot; style=&quot;zoom:67%;&quot;/&gt;</code></pre>
+</div>
+<p>4.gather：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/110.png" srcset="/img/loading.gif" lazyload  style="zoom:67%;" /></p>
+<p>5.all-gather</p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/111.png" srcset="/img/loading.gif" lazyload  style="zoom:67%;" /></p>
+<p>6.聚集和映射</p>
+<ul>
+<li>静态任务数</li>
+<li>定时通信模式（all-gather）</li>
+<li>每个任务的计算时间是恒定的</li>
+<li>策略：聚合行组；每个 MPI 进程创建一个任务</li>
+</ul>
+<h4 id="复杂度分析">复杂度分析</h4>
+<p>并行算法计算复杂度：<code>Θ（n^2/p）</code>
+all-gather的通信复杂度：<code>(Θlogp+n)</code></p>
+<blockquote>
+<p><code>∑（1-&gt;logp）(λ+2^(i-1)*n/βp)</code>=<code>λ log p + n(p − 1) /βp</code></p>
+</blockquote>
+<p>总体复杂度:<code>Θ（n^2/p+logp+n）</code></p>
+<h4 id="等效率分析">等效率分析</h4>
+<p>串行时间复杂度：<code>Θ（n^2）</code>
+并行开销只有all-gather部分，When n
+比较大的时候，all-gather操作的消息传递时间会远大于消息的延迟，因此并行通信时间简化为<code>Θ(n)</code>
+<code>T0(n,p)</code>=<code>Θ(np)</code>
+<code>n^2≥Cpn</code>=&gt;<code>n≥Cp</code>
+空间复杂度：<code>M(n)=n^2</code>
+<code>M(Cp)/p</code>=<code>C^2p^2/p</code>=<code>C^2p</code>
+系统不具有很好的可扩展性。</p>
+<h4 id="复制转换">复制转换</h4>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/112.png" srcset="/img/loading.gif" lazyload  style="zoom:67%;" /></p>
+<p><strong>MPI_Allgatherv</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/113.png" srcset="/img/loading.gif" lazyload  style="zoom:67%;" /></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">MPI_Allgatherv</span> <span class="hljs-params">(</span><br><span class="hljs-params">   <span class="hljs-type">void</span>         *send_buffer,</span><br><span class="hljs-params">   <span class="hljs-type">int</span>           send_cnt,</span><br><span class="hljs-params">   MPI_Datatype  send_type,</span><br><span class="hljs-params">   <span class="hljs-type">void</span>         *receive_buffer,</span><br><span class="hljs-params">   <span class="hljs-type">int</span>          *receive_cnt,</span><br><span class="hljs-params">   <span class="hljs-type">int</span>          *receive_disp,</span><br><span class="hljs-params">   MPI_Datatype  receive_type,</span><br><span class="hljs-params">   MPI_Comm      communicator)</span><br></code></pre></td></tr></table></figure>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/114.png" srcset="/img/loading.gif" lazyload  style="zoom:67%;" /></p>
+<h4
+id="函数create_mixed_xfer_arrays">函数<code>create_mixed_xfer_arrays</code></h4>
+<p>第一个数组：</p>
+<ul>
+<li>每个进程贡献了多少元素</li>
+<li>使用实用程序宏 BLOCK_SIZE</li>
+</ul>
+<p>第二个数组：</p>
+<ul>
+<li>每个进程块的起始位置</li>
+<li>假设块按进程排序</li>
+</ul>
+<p><strong>代码：</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">void</span> <span class="hljs-title function_">create_mixed_xfer_arrays</span> <span class="hljs-params">(</span><br><span class="hljs-params">   <span class="hljs-type">int</span> id,       <span class="hljs-comment">/* IN - Process rank */</span></span><br><span class="hljs-params">   <span class="hljs-type">int</span> p,        <span class="hljs-comment">/* IN - Number of processes */</span></span><br><span class="hljs-params">   <span class="hljs-type">int</span> n,        <span class="hljs-comment">/* IN - Total number of elements */</span></span><br><span class="hljs-params">   <span class="hljs-type">int</span> **count,  <span class="hljs-comment">/* OUT - Array of counts */</span></span><br><span class="hljs-params">   <span class="hljs-type">int</span> **disp)</span>   <span class="hljs-comment">/* OUT - Array of displacements */</span><br>&#123;<br><br>   <span class="hljs-type">int</span> i;<br><br>   *count = my_malloc (id, p * <span class="hljs-keyword">sizeof</span>(<span class="hljs-type">int</span>));<br>   *disp = my_malloc (id, p * <span class="hljs-keyword">sizeof</span>(<span class="hljs-type">int</span>));<br>   (*count)[<span class="hljs-number">0</span>] = BLOCK_SIZE(<span class="hljs-number">0</span>,p,n);<br>   (*disp)[<span class="hljs-number">0</span>] = <span class="hljs-number">0</span>;<br>   <span class="hljs-keyword">for</span> (i = <span class="hljs-number">1</span>; i &lt; p; i++) &#123;<br>      (*disp)[i] = (*disp)[i<span class="hljs-number">-1</span>] + (*count)[i<span class="hljs-number">-1</span>];<br>      (*count)[i] = BLOCK_SIZE(i,p,n);<br>   &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h4
+id="函数replicate_block_vector">函数<code>replicate_block_vector</code></h4>
+<p>1.为整个向量创建空间 2.创建“混合传输”阵列 3.调用MPI_Allgatherv</p>
+<p><strong>代码：</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">void</span> <span class="hljs-title function_">replicate_block_vector</span> <span class="hljs-params">(</span><br><span class="hljs-params">  <span class="hljs-type">void</span>  *ablock,  <span class="hljs-comment">/* IN - Block-distributed vector */</span></span><br><span class="hljs-params">   <span class="hljs-type">int</span>          n,       <span class="hljs-comment">/* IN - Elements in vector */</span></span><br><span class="hljs-params">   <span class="hljs-type">void</span>        *arep,    <span class="hljs-comment">/* OUT - Replicated vector */</span></span><br><span class="hljs-params">   MPI_Datatype dtype,   <span class="hljs-comment">/* IN - Element type */</span></span><br><span class="hljs-params">   MPI_Comm     comm)</span>    <span class="hljs-comment">/* IN - Communicator */</span><br>&#123;<br>   <span class="hljs-type">int</span> *cnt;  <span class="hljs-comment">/* Elements contributed by each process */</span><br>   <span class="hljs-type">int</span> *disp; <span class="hljs-comment">/* Displacement in concatenated array */</span><br>   <span class="hljs-type">int</span> id;    <span class="hljs-comment">/* Process id */</span><br>   <span class="hljs-type">int</span> p;     <span class="hljs-comment">/* Processes in communicator */</span><br><br>   MPI_Comm_size (comm, &amp;p);<br>   MPI_Comm_rank (comm, &amp;id);<br>   create_mixed_xfer_arrays (id, p, n, &amp;cnt, &amp;disp);<br>   MPI_Allgatherv (ablock, cnt[id], dtype, arep, cnt,<br>                   disp, dtype, comm);<br>   <span class="hljs-built_in">free</span> (cnt);<br>   <span class="hljs-built_in">free</span> (disp);<br>&#125;<br></code></pre></td></tr></table></figure>
+<h4
+id="函数read_replicated_vector">函数<code>read_replicated_vector</code></h4>
+<p>1.进程p-1：打开文件，读向量的长度 2.广播向量的长度（根进程为p-1）
+3.为向量分配空间 4.进程p-1读向量，关闭文件 5.广播向量</p>
+<p><strong>代码：</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">/*   Open a file containing a vector, read its contents,</span><br><span class="hljs-comment">     and replicate the vector among all processes in a</span><br><span class="hljs-comment">     communicator. */</span><br><br><span class="hljs-type">void</span> <span class="hljs-title function_">read_replicated_vector</span> <span class="hljs-params">(</span><br><span class="hljs-params"><span class="hljs-type">char</span>        *s,      <span class="hljs-comment">/* IN - File name */</span></span><br><span class="hljs-params"><span class="hljs-type">void</span>       **v,      <span class="hljs-comment">/* OUT - Vector */</span></span><br><span class="hljs-params">MPI_Datatype dtype,  <span class="hljs-comment">/* IN - Vector type */</span></span><br><span class="hljs-params"><span class="hljs-type">int</span>         *n,      <span class="hljs-comment">/* OUT - Vector length */</span></span><br><span class="hljs-params">MPI_Comm     comm  )</span> <span class="hljs-comment">/* IN - Communicator */</span><br>&#123;<br><span class="hljs-type">int</span>    datum_size; <span class="hljs-comment">/* Bytes per vector element */</span><br><span class="hljs-type">int</span>        i;<br><span class="hljs-type">int</span>        id;         <span class="hljs-comment">/* Process rank */</span><br>FILE   *infileptr;  <span class="hljs-comment">/* Input file pointer */</span><br><span class="hljs-type">int</span>        p;          <span class="hljs-comment">/* Number of processes */</span><br><br>MPI_Comm_rank (comm, &amp;id);<br>MPI_Comm_size (comm, &amp;p);<br>datum_size = get_size (dtype);<br><span class="hljs-keyword">if</span> (id == (p<span class="hljs-number">-1</span>)) &#123;<br>infileptr = fopen (s, “r”);<br><span class="hljs-keyword">if</span> (infileptr == <span class="hljs-literal">NULL</span>) *n = <span class="hljs-number">0</span>;<br>   <span class="hljs-keyword">else</span> fread (n, <span class="hljs-keyword">sizeof</span>(<span class="hljs-type">int</span>), <span class="hljs-number">1</span>, infileptr);<br>&#125;<br>MPI_Bcast (n, <span class="hljs-number">1</span>, MPI_INT, p<span class="hljs-number">-1</span>, MPI_COMM_WORLD);<br><span class="hljs-keyword">if</span> (! *n) <span class="hljs-built_in">terminate</span> (id, “Cannot open <span class="hljs-built_in">vector</span> file”);<br><br>*v = my_malloc (id, *n * datum_size);<br><br><span class="hljs-keyword">if</span> (id == (p<span class="hljs-number">-1</span>)) &#123;<br>      fread (*v, datum_size, *n, infileptr);<br>      fclose (infileptr);<br>&#125;<br><br>MPI_Bcast (*v, *n, dtype, p<span class="hljs-number">-1</span>, MPI_COMM_WORLD);<br>&#125;<br></code></pre></td></tr></table></figure>
+<h4
+id="函数print_replicated_vector">函数<code>print_replicated_vector</code></h4>
+<p>进程 0 打印向量 准确调用<code>printf</code>取决于参数值
+<code>datatype</code></p>
+<p><strong>main函数：</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;mpi.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;../MyMPI.h&quot;</span></span><br><br><span class="hljs-comment">/* Change these two definitions when the matrix and vector</span><br><span class="hljs-comment">   element types change */</span><br><br><span class="hljs-keyword">typedef</span> <span class="hljs-type">double</span> dtype;<br><span class="hljs-meta">#<span class="hljs-keyword">define</span> mpitype MPI_DOUBLE</span><br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span> <span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span> *argv[])</span> &#123;<br>   dtype **a;       <span class="hljs-comment">/* First factor, a matrix */</span><br>   dtype *b;        <span class="hljs-comment">/* Second factor, a vector */</span><br>   dtype *c_block;  <span class="hljs-comment">/* Partial product vector */</span><br>   dtype *c;        <span class="hljs-comment">/* Replicated product vector */</span><br>   <span class="hljs-type">double</span>    max_seconds;<br>   <span class="hljs-type">double</span>    seconds;    <span class="hljs-comment">/* Elapsed time for matrix-vector multiply */</span><br>   dtype *storage;  <span class="hljs-comment">/* Matrix elements stored here */</span><br>   <span class="hljs-type">int</span>    i, j;     <span class="hljs-comment">/* Loop indices */</span><br>   <span class="hljs-type">int</span>    id;       <span class="hljs-comment">/* Process ID number */</span><br>   <span class="hljs-type">int</span>    m;        <span class="hljs-comment">/* Rows in matrix */</span><br>   <span class="hljs-type">int</span>    n;        <span class="hljs-comment">/* Columns in matrix */</span><br>   <span class="hljs-type">int</span>    nprime;   <span class="hljs-comment">/* Elements in vector */</span><br>   <span class="hljs-type">int</span>    p;        <span class="hljs-comment">/* Number of processes */</span><br>   <span class="hljs-type">int</span>    rows;     <span class="hljs-comment">/* Number of rows on this process */</span><br>   <span class="hljs-type">int</span>    its;<br><br>   MPI_Init (&amp;argc, &amp;argv);<br>   MPI_Comm_rank (MPI_COMM_WORLD, &amp;id);<br>   MPI_Comm_size (MPI_COMM_WORLD, &amp;p);<br><br>   read_row_striped_matrix (argv[<span class="hljs-number">1</span>], (<span class="hljs-type">void</span> *) &amp;a,(<span class="hljs-type">void</span> *) &amp;storage, mpitype, &amp;m, &amp;n, MPI_COMM_WORLD);<br>   rows = BLOCK_SIZE(id,p,m);<br>   print_row_striped_matrix ((<span class="hljs-type">void</span> **) a, mpitype, m, n,MPI_COMM_WORLD);<br>   read_replicated_vector (argv[<span class="hljs-number">2</span>], (<span class="hljs-type">void</span> *) &amp;b, mpitype,&amp;nprime, MPI_COMM_WORLD);<br>   print_replicated_vector (b, mpitype, nprime,MPI_COMM_WORLD);<br>   c_block = (dtype *) <span class="hljs-built_in">malloc</span> (rows * <span class="hljs-keyword">sizeof</span>(dtype));<br>   c = (dtype *) <span class="hljs-built_in">malloc</span> (n * <span class="hljs-keyword">sizeof</span>(dtype));<br>   MPI_Barrier (MPI_COMM_WORLD);<br>   seconds = - MPI_Wtime();<br>   <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; rows; i++) &#123;<br>      c_block[i] = <span class="hljs-number">0.0</span>;<br>      <span class="hljs-keyword">for</span> (j = <span class="hljs-number">0</span>; j &lt; n; j++)<br>         c_block[i] += a[i][j] * b[j];<br>   &#125;<br><br>   replicate_block_vector (c_block, n, (<span class="hljs-type">void</span> *) c, mpitype,<br>MPI_COMM_WORLD);<br>   MPI_Barrier (MPI_COMM_WORLD);<br>   seconds += MPI_Wtime();<br>   print_replicated_vector (c, mpitype, n, MPI_COMM_WORLD);<br>   MPI_Allreduce (&amp;seconds, &amp;max_seconds, <span class="hljs-number">1</span>, mpitype, MPI_MAX,<br>      MPI_COMM_WORLD);<br>   <span class="hljs-keyword">if</span> (!id) &#123;<br>      <span class="hljs-built_in">printf</span> (<span class="hljs-string">&quot;MV1) N = %d, Processes = %d, Time = %12.6f sec,&quot;</span>,<br>         n, p, max_seconds);<br>      <span class="hljs-built_in">printf</span> (<span class="hljs-string">&quot;Mflop = %6.2f\n&quot;</span>, <span class="hljs-number">2</span>*n*n/(<span class="hljs-number">1000000.0</span>*max_seconds));<br>   &#125;<br>   MPI_Finalize();<br>   <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h4 id="运行时间表达式">运行时间表达式</h4>
+<p>x：内积循环迭代时间 计算时间：<code>xn↑[n/p]</code>
+all-gather的<code>↑[logp]</code>消息每一条需要λ延迟
+总共有<code>n(2^↑[logp]-1)/2^↑[logp]</code>个元素被传输 β：带宽
+总共执行时间：<code>xn↑[n/p]+↑[logp]λ+(n(2^↑[logp]-1))/(2^↑[logp]β)</code></p>
+<h4 id="基准程序结果">基准程序结果</h4>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th><em>Execution Time (msec)</em></th>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><em>p</em></td>
+<td><em>Predicted</em></td>
+<td><em>Actual</em></td>
+<td><em>Speedup</em></td>
+<td><em>Mflops</em></td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>63.4</td>
+<td>63.4</td>
+<td>1.00</td>
+<td>31.6</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>32.4</td>
+<td>32.7</td>
+<td>1.94</td>
+<td>61.2</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>22.3</td>
+<td>22.7</td>
+<td>2.79</td>
+<td>88.1</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>17.0</td>
+<td>17.8</td>
+<td>3.56</td>
+<td>112.4</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td>14.1</td>
+<td>15.2</td>
+<td>4.16</td>
+<td>131.6</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td>12.0</td>
+<td>13.3</td>
+<td>4.76</td>
+<td>150.4</td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td>10.5</td>
+<td>12.2</td>
+<td>5.19</td>
+<td>163.9</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td>9.4</td>
+<td>11.1</td>
+<td>5.70</td>
+<td>180.2</td>
+</tr>
+<tr class="even">
+<td>16</td>
+<td>5.7</td>
+<td>7.2</td>
+<td>8.79</td>
+<td>277.8</td>
+</tr>
+</tbody>
+</table>
+<h3 id="按列分块">按列分块</h3>
+<p>1.通过区域分解进行分区 2.相关的任务</p>
+<ul>
+<li>矩阵的列</li>
+<li>向量元素</li>
+</ul>
+<p>3.矩阵向量乘法：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/115.png" srcset="/img/loading.gif" lazyload  style="zoom:67%;" /></p>
+<p>4.all-to-all exchange（矩阵的转置）</p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/116.png" srcset="/img/loading.gif" lazyload  style="zoom:67%;" /></p>
+<p>5.并行算法的阶段:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/117.png" srcset="/img/loading.gif" lazyload  style="zoom:67%;" /></p>
+<p>6.集聚与映射</p>
+<ul>
+<li>静态任务数</li>
+<li>固定的通信模式（all-to-all）</li>
+<li>每个任务的计算时间是恒定的</li>
+<li>策略：聚合列组；每个 MPI 进程创建一个任务</li>
+</ul>
+<h4 id="复杂度分析-1">复杂度分析</h4>
+<p>并行算法计算复杂度：<code>Θ(n^2/p)</code>
+all-to-all通信复杂度：<code>Θ(p + n/p)</code> 或 <code>Θ(n+logp)</code>
+总体复杂度：<code>Θ(n^2/p+logp)</code></p>
+<h4 id="等效率分析-1">等效率分析</h4>
+<p>串行时间复杂度：<code>Θ(n^2)</code>
+并行开销只有all-to-all，当n足够大的时候，消息传输时间远大于消息延迟时间。所以并行通信时间可以被看作是<code>Θ(n)</code>
+<code>T0（n,p）=np</code> <code>n^2≥Cpn</code>=&gt;<code>n≥Cp</code>
+空间复杂度：<code>M(n)=n^2</code>
+<code>M(Cp)/p</code>=<code>C^2p^2/p</code>=<code>C^2p</code>
+可扩展性函数与按行分块算法是一样的。</p>
+<h4 id="读一个按列分块的矩阵">读一个按列分块的矩阵</h4>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/118.png" srcset="/img/loading.gif" lazyload  style="zoom:67%;" /></p>
+<h4 id="mpi_scatter">MPI_Scatter</h4>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/119.png" srcset="/img/loading.gif" lazyload  style="zoom:67%;" /></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">MPI_Scatterv</span> <span class="hljs-params">(</span><br><span class="hljs-params">   <span class="hljs-type">void</span>         *send_buffer,</span><br><span class="hljs-params">   <span class="hljs-type">int</span>          *send_cnt,</span><br><span class="hljs-params">   <span class="hljs-type">int</span>          *send_disp,</span><br><span class="hljs-params">   MPI_Datatype  send_type,</span><br><span class="hljs-params">   <span class="hljs-type">void</span>         *receive_buffer,</span><br><span class="hljs-params">   <span class="hljs-type">int</span>           receive_cnt,</span><br><span class="hljs-params">   MPI_Datatype  receive_type,</span><br><span class="hljs-params">   <span class="hljs-type">int</span>           root,</span><br><span class="hljs-params">   MPI_Comm      communicator)</span><br></code></pre></td></tr></table></figure>
+<h4 id="打印一个列块矩阵">打印一个列块矩阵</h4>
+<p>与我们在读取矩阵时所做的相反的数据移动 用“gather”代替“scatter”
+使用“v”变体，因为不同的进程贡献不同数量的元素</p>
+<p>读：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">void</span> <span class="hljs-title function_">read_col_striped_matrix</span> <span class="hljs-params">(</span><br><span class="hljs-params">      <span class="hljs-type">char</span>         *s,       <span class="hljs-comment">/* IN - File name */</span></span><br><span class="hljs-params">      <span class="hljs-type">void</span>      ***subs,     <span class="hljs-comment">/* OUT - 2-D array */</span></span><br><span class="hljs-params">      <span class="hljs-type">void</span>       **storage,  <span class="hljs-comment">/* OUT - Array elements */</span></span><br><span class="hljs-params">      MPI_Datatype dtype,    <span class="hljs-comment">/* IN - Element type */</span></span><br><span class="hljs-params">      <span class="hljs-type">int</span>         *m,        <span class="hljs-comment">/* OUT - Rows */</span></span><br><span class="hljs-params">      <span class="hljs-type">int</span>         *n,        <span class="hljs-comment">/* OUT - Cols */</span></span><br><span class="hljs-params">      MPI_Comm     comm)</span>     <span class="hljs-comment">/* IN - Communicator */</span><br>&#123;<br>   <span class="hljs-type">void</span>      *buffer;        <span class="hljs-comment">/* File buffer */</span><br>   <span class="hljs-type">int</span>        datum_size;    <span class="hljs-comment">/* Size of matrix element */</span><br>   <span class="hljs-type">int</span>        i, j;<br>   <span class="hljs-type">int</span>        id;            <span class="hljs-comment">/* Process rank */</span><br>   FILE      *infileptr;     <span class="hljs-comment">/* Input file ptr */</span><br>   <span class="hljs-type">int</span>        local_cols;    <span class="hljs-comment">/* Cols on this process */</span><br>   <span class="hljs-type">void</span>     **lptr;          <span class="hljs-comment">/* Pointer into &#x27;subs&#x27; */</span><br>   <span class="hljs-type">void</span>      *rptr;          <span class="hljs-comment">/* Pointer into &#x27;storage&#x27; */</span><br>   <span class="hljs-type">int</span>        p;             <span class="hljs-comment">/* Number of processes */</span><br>   <span class="hljs-type">int</span>       *send_count;    <span class="hljs-comment">/* Each proc&#x27;s count */</span><br>   <span class="hljs-type">int</span>       *send_disp;     <span class="hljs-comment">/* Each proc&#x27;s displacement */</span><br><br>   MPI_Comm_size (comm, &amp;p);<br>   MPI_Comm_rank (comm, &amp;id);<br>   datum_size = get_size (dtype);<br><br>   <span class="hljs-comment">/* Process p-1 opens file, gets number of rows and</span><br><span class="hljs-comment">      cols, and broadcasts this info to other procs. */</span><br><br>   <span class="hljs-keyword">if</span> (id == (p<span class="hljs-number">-1</span>)) &#123;<br>      infileptr = fopen (s, <span class="hljs-string">&quot;r&quot;</span>);<br>      <span class="hljs-keyword">if</span> (infileptr == <span class="hljs-literal">NULL</span>) *m = <span class="hljs-number">0</span>;<br>      <span class="hljs-keyword">else</span> &#123;<br>         fread (m, <span class="hljs-keyword">sizeof</span>(<span class="hljs-type">int</span>), <span class="hljs-number">1</span>, infileptr);<br>         fread (n, <span class="hljs-keyword">sizeof</span>(<span class="hljs-type">int</span>), <span class="hljs-number">1</span>, infileptr);<br>      &#125;<br>   &#125;<br>   MPI_Bcast (m, <span class="hljs-number">1</span>, MPI_INT, p<span class="hljs-number">-1</span>, comm);<br><br>   <span class="hljs-keyword">if</span> (!(*m)) MPI_Abort (comm, OPEN_FILE_ERROR);<br><br>   MPI_Bcast (n, <span class="hljs-number">1</span>, MPI_INT, p<span class="hljs-number">-1</span>, comm);<br><br>   local_cols = BLOCK_SIZE(id,p,*n);<br><br>   <span class="hljs-comment">/* Dynamically allocate two-dimensional matrix &#x27;subs&#x27; */</span><br><br>   *storage = my_malloc (id, *m * local_cols * datum_size);<br>   *subs = (<span class="hljs-type">void</span> **) my_malloc (id, *m * PTR_SIZE);<br>   lptr = (<span class="hljs-type">void</span> *) *subs;<br>   rptr = (<span class="hljs-type">void</span> *) *storage;<br>   <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; *m; i++) &#123;<br>      *(lptr++) = (<span class="hljs-type">void</span> *) rptr;<br>      rptr += local_cols * datum_size;<br>   &#125;<br><br>   <span class="hljs-comment">/* Process p-1 reads in the matrix one row at a time and</span><br><span class="hljs-comment">      distributes each row among the MPI processes. */</span><br><br>   <span class="hljs-keyword">if</span> (id == (p<span class="hljs-number">-1</span>))<br>      buffer = my_malloc (id, *n * datum_size);<br>   create_mixed_xfer_arrays (id,p,*n,&amp;send_count,&amp;send_disp);<br>   <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; *m; i++) &#123;<br>      <span class="hljs-keyword">if</span> (id == (p<span class="hljs-number">-1</span>))<br>      fread (buffer, datum_size, *n, infileptr);<br>      MPI_Scatterv (buffer, send_count, send_disp, dtype,<br>         (*storage)+i*local_cols*datum_size, local_cols,<br>         dtype, p<span class="hljs-number">-1</span>, comm);<br>   &#125;<br>   <span class="hljs-built_in">free</span> (send_count);<br>   <span class="hljs-built_in">free</span> (send_disp);<br>   <span class="hljs-keyword">if</span> (id == (p<span class="hljs-number">-1</span>)) <span class="hljs-built_in">free</span> (buffer);<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>打印:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">void</span> <span class="hljs-title function_">print_col_striped_matrix</span> <span class="hljs-params">(</span><br><span class="hljs-params">   <span class="hljs-type">void</span>       **a,       <span class="hljs-comment">/* IN - 2D array */</span></span><br><span class="hljs-params">   MPI_Datatype dtype,   <span class="hljs-comment">/* IN - Type of matrix elements */</span></span><br><span class="hljs-params">   <span class="hljs-type">int</span>          m,       <span class="hljs-comment">/* IN - Matrix rows */</span></span><br><span class="hljs-params">   <span class="hljs-type">int</span>          n,       <span class="hljs-comment">/* IN - Matrix cols */</span></span><br><span class="hljs-params">   MPI_Comm     comm)</span>    <span class="hljs-comment">/* IN - Communicator */</span><br>&#123;<br>   MPI_Status status;     <span class="hljs-comment">/* Result of receive */</span><br>   <span class="hljs-type">int</span>        datum_size; <span class="hljs-comment">/* Bytes per matrix element */</span><br>   <span class="hljs-type">void</span>      *buffer;     <span class="hljs-comment">/* Enough room to hold 1 row */</span><br>    <span class="hljs-type">int</span>        i, j;<br>    <span class="hljs-type">int</span>        id;         <span class="hljs-comment">/* Process rank */</span><br>    <span class="hljs-type">int</span>        p;          <span class="hljs-comment">/* Number of processes */</span><br>   <span class="hljs-type">int</span>*       rec_count;  <span class="hljs-comment">/* Elements received per proc */</span><br>   <span class="hljs-type">int</span>*       rec_disp;   <span class="hljs-comment">/* Offset of each proc&#x27;s block */</span><br><br>   MPI_Comm_rank (comm, &amp;id);<br>   MPI_Comm_size (comm, &amp;p);<br>   datum_size = get_size (dtype);<br>   create_mixed_xfer_arrays (id, p, n, &amp;rec_count,&amp;rec_disp);<br><br>   <span class="hljs-keyword">if</span> (!id)<br>      buffer = my_malloc (id, n*datum_size);<br><br>   <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; m; i++) &#123;<br>      MPI_Gatherv (a[i], BLOCK_SIZE(id,p,n), dtype, buffer,<br>         rec_count, rec_disp, dtype, <span class="hljs-number">0</span>, MPI_COMM_WORLD);<br>      <span class="hljs-keyword">if</span> (!id) &#123;<br>         print_subvector (buffer, dtype, n);<br>         <span class="hljs-built_in">putchar</span> (<span class="hljs-string">&#x27;\n&#x27;</span>);<br>      &#125;<br>   &#125;<br>   <span class="hljs-built_in">free</span> (rec_count);<br>   <span class="hljs-built_in">free</span> (rec_disp);<br>   <span class="hljs-keyword">if</span> (!id) &#123;<br>      <span class="hljs-built_in">free</span> (buffer);<br>      <span class="hljs-built_in">putchar</span> (<span class="hljs-string">&#x27;\n&#x27;</span>);<br>   &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h4 id="函数mpi_gatherv">函数MPI_Gatherv</h4>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/120.png" srcset="/img/loading.gif" lazyload  style="zoom:67%;" /></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">MPI_Gatherv</span> <span class="hljs-params">(</span><br><span class="hljs-params">   <span class="hljs-type">void</span>         *send_buffer,</span><br><span class="hljs-params">   <span class="hljs-type">int</span>           send_cnt,</span><br><span class="hljs-params">   MPI_Datatype  send_type,</span><br><span class="hljs-params">   <span class="hljs-type">void</span>         *receive_buffer,</span><br><span class="hljs-params">   <span class="hljs-type">int</span>          *receive_cnt,</span><br><span class="hljs-params">   <span class="hljs-type">int</span>          *receive_disp,</span><br><span class="hljs-params">   MPI_Datatype  receive_type,</span><br><span class="hljs-params">   <span class="hljs-type">int</span>           root,</span><br><span class="hljs-params">   MPI_Comm      communicator)</span><br></code></pre></td></tr></table></figure>
+<h4 id="函数mpi_alltoallv">函数<code>MPI_Alltoallv</code></h4>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/121.png" srcset="/img/loading.gif" lazyload
+alt="121" />
+<figcaption aria-hidden="true">121</figcaption>
+</figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">MPI_Alltoallv</span> <span class="hljs-params">(</span><br><span class="hljs-params">   <span class="hljs-type">void</span>         *send_buffer,</span><br><span class="hljs-params">   <span class="hljs-type">int</span>          *send_cnt,</span><br><span class="hljs-params">   <span class="hljs-type">int</span>          *send_disp,</span><br><span class="hljs-params">   MPI_Datatype  send_type,</span><br><span class="hljs-params">   <span class="hljs-type">void</span>         *receive_buffer,</span><br><span class="hljs-params">   <span class="hljs-type">int</span>          *receive_cnt,</span><br><span class="hljs-params">   <span class="hljs-type">int</span>          *receive_disp,</span><br><span class="hljs-params">   MPI_Datatype  receive_type,</span><br><span class="hljs-params">   MPI_Comm      communicator)</span><br></code></pre></td></tr></table></figure>
+<h4 id="main函数">main函数</h4>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;mpi.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;../MyMPI.h&quot;</span></span><br><br><span class="hljs-comment">/* Change these two definitions when the matrix and vector</span><br><span class="hljs-comment">   element types change */</span><br><br><span class="hljs-keyword">typedef</span> <span class="hljs-type">double</span> dtype;<br><span class="hljs-meta">#<span class="hljs-keyword">define</span> mpitype MPI_DOUBLE</span><br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span> <span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span> *argv[])</span> &#123;<br>   dtype **a;             <span class="hljs-comment">/* The first factor, a matrix */</span><br>   dtype  *b;             <span class="hljs-comment">/* The second factor, a vector */</span><br>   dtype  *c;             <span class="hljs-comment">/* The product, a vector */</span><br>   dtype  *c_part_out;    <span class="hljs-comment">/* Partial sums, sent */</span><br>   dtype  *c_part_in;     <span class="hljs-comment">/* Partial sums, received */</span><br>   <span class="hljs-type">int</span>    *cnt_out;       <span class="hljs-comment">/* Elements sent to each proc */</span><br>   <span class="hljs-type">int</span>    *cnt_in;        <span class="hljs-comment">/* Elements received per proc */</span><br>   <span class="hljs-type">int</span>    *disp_out;      <span class="hljs-comment">/* Indices of sent elements */</span><br>   <span class="hljs-type">int</span>    *disp_in;       <span class="hljs-comment">/* Indices of received elements */</span><br>   <span class="hljs-type">int</span>     i, j;          <span class="hljs-comment">/* Loop indices */</span><br>   <span class="hljs-type">int</span>     id;            <span class="hljs-comment">/* Process ID number */</span><br>   <span class="hljs-type">int</span>     local_els;     <span class="hljs-comment">/* Cols of &#x27;a&#x27; and elements of &#x27;b&#x27;</span><br><span class="hljs-comment">                             held by this process */</span><br>   <span class="hljs-type">int</span>     m;             <span class="hljs-comment">/* Rows in the matrix */</span><br>   <span class="hljs-type">int</span>     n;             <span class="hljs-comment">/* Columns in the matrix */</span><br>   <span class="hljs-type">int</span>     nprime;        <span class="hljs-comment">/* Size of the vector */</span><br>   <span class="hljs-type">int</span>     p;             <span class="hljs-comment">/* Number of processes */</span><br>   <span class="hljs-type">double</span>    max_seconds;<br>   <span class="hljs-type">double</span>    seconds;     <span class="hljs-comment">/* Elapsed time */</span><br>   dtype  *storage;       <span class="hljs-comment">/* This process&#x27;s portion of &#x27;a&#x27; */</span><br><br>   MPI_Init (&amp;argc, &amp;argv);<br>   MPI_Comm_rank (MPI_COMM_WORLD, &amp;id);<br>   MPI_Comm_size (MPI_COMM_WORLD, &amp;p);<br><br>   read_col_striped_matrix (argv[<span class="hljs-number">1</span>], (<span class="hljs-type">void</span> ***) &amp;a,<br>      (<span class="hljs-type">void</span> **) &amp;storage, mpitype, &amp;m, &amp;n, MPI_COMM_WORLD);<br>   print_col_striped_matrix ((<span class="hljs-type">void</span> **) a, mpitype, m, n, <br>      MPI_COMM_WORLD);<br>   read_block_vector (argv[<span class="hljs-number">2</span>], (<span class="hljs-type">void</span> **) &amp;b, mpitype,<br>      &amp;nprime, MPI_COMM_WORLD);<br>   print_block_vector ((<span class="hljs-type">void</span> *) b, mpitype, nprime,<br>      MPI_COMM_WORLD);<br><br>   <span class="hljs-comment">/* Each process multiplies its columns of &#x27;a&#x27; and vector</span><br><span class="hljs-comment">      &#x27;b&#x27;, resulting in a partial sum of product &#x27;c&#x27;. */</span><br><br>   c_part_out = (dtype *) my_malloc (id, n * <span class="hljs-keyword">sizeof</span>(dtype));<br>   local_els = BLOCK_SIZE(id,p,n);<br>   MPI_Barrier (MPI_COMM_WORLD);<br>   seconds = -MPI_Wtime();<br>   <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; n; i++) &#123;<br>      c_part_out[i] = <span class="hljs-number">0.0</span>;<br>      <span class="hljs-keyword">for</span> (j = <span class="hljs-number">0</span>; j &lt; local_els; j++)<br>         c_part_out[i] += a[i][j] * b[j];<br>   &#125;<br><br>   create_mixed_xfer_arrays (id, p, n, &amp;cnt_out, &amp;disp_out);<br>   create_uniform_xfer_arrays (id, p, n, &amp;cnt_in, &amp;disp_in);<br>   c_part_in =<br>      (dtype*) my_malloc (id, p*local_els*<span class="hljs-keyword">sizeof</span>(dtype));<br>   MPI_Alltoallv (c_part_out, cnt_out, disp_out, mpitype,<br>      c_part_in, cnt_in, disp_in, mpitype, MPI_COMM_WORLD);<br><br>   c = (dtype*) my_malloc (id, local_els * <span class="hljs-keyword">sizeof</span>(dtype));<br>   <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; local_els; i++) &#123;<br>      c[i] = <span class="hljs-number">0.0</span>;<br>      <span class="hljs-keyword">for</span> (j = <span class="hljs-number">0</span>; j &lt; p; j++)<br>         c[i] += c_part_in[i + j*local_els];<br>   &#125;<br>   MPI_Barrier (MPI_COMM_WORLD);<br>   seconds += MPI_Wtime();<br>   MPI_Allreduce (&amp;seconds, &amp;max_seconds, <span class="hljs-number">1</span>, mpitype, MPI_MAX,<br>      MPI_COMM_WORLD);<br>   <span class="hljs-keyword">if</span> (!id) &#123;<br>      <span class="hljs-built_in">printf</span> (<span class="hljs-string">&quot;MV3) N = %d, Processes = %d, Time = %12.6f sec,&quot;</span>,<br>         n, p, max_seconds);<br>      <span class="hljs-built_in">printf</span> (<span class="hljs-string">&quot;Mflop = %6.2f\n&quot;</span>, <span class="hljs-number">2</span>*n*n/(<span class="hljs-number">1000000.0</span>*max_seconds));<br>   &#125;<br>   print_block_vector ((<span class="hljs-type">void</span> *) c, mpitype, n, MPI_COMM_WORLD);<br>   MPI_Finalize();<br>   <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h4 id="计数位移数组">计数/位移数组</h4>
+<p>MPI_Alltoallv 需要两对计数/位移数组 发送值的第一对</p>
+<ul>
+<li>send_cnt：元素数</li>
+<li>send_disp：第一个元素的索引</li>
+</ul>
+<p>接收值的第二对</p>
+<ul>
+<li>recv_cnt：元素数量</li>
+<li>recv_disp：第一个元素的索引</li>
+</ul>
+<blockquote>
+<p>create_mixed_xfer_arrays会建立这些</p>
+</blockquote>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">void</span> <span class="hljs-title function_">create_mixed_xfer_arrays</span> <span class="hljs-params">(</span><br><span class="hljs-params">   <span class="hljs-type">int</span> id,       <span class="hljs-comment">/* IN - Process rank */</span></span><br><span class="hljs-params">   <span class="hljs-type">int</span> p,        <span class="hljs-comment">/* IN - Number of processes */</span></span><br><span class="hljs-params">   <span class="hljs-type">int</span> n,        <span class="hljs-comment">/* IN - Total number of elements */</span></span><br><span class="hljs-params">   <span class="hljs-type">int</span> **count,  <span class="hljs-comment">/* OUT - Array of counts */</span></span><br><span class="hljs-params">   <span class="hljs-type">int</span> **disp)</span>   <span class="hljs-comment">/* OUT - Array of displacements */</span><br>&#123;<br><br>   <span class="hljs-type">int</span> i;<br><br>   *count = my_malloc (id, p * <span class="hljs-keyword">sizeof</span>(<span class="hljs-type">int</span>));<br>   *disp = my_malloc (id, p * <span class="hljs-keyword">sizeof</span>(<span class="hljs-type">int</span>));<br>   (*count)[<span class="hljs-number">0</span>] = BLOCK_SIZE(<span class="hljs-number">0</span>,p,n);<br>   (*disp)[<span class="hljs-number">0</span>] = <span class="hljs-number">0</span>;<br>   <span class="hljs-keyword">for</span> (i = <span class="hljs-number">1</span>; i &lt; p; i++) &#123;<br>      (*disp)[i] = (*disp)[i<span class="hljs-number">-1</span>] + (*count)[i<span class="hljs-number">-1</span>];<br>      (*count)[i] = BLOCK_SIZE(i,p,n);<br>   &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>函数<code>create_uniform_xfer_arrays</code></p>
+<p>第一个数组</p>
+<ul>
+<li>从每个进程收到多少元素（总是相同的值）</li>
+<li>使用 ID 和实用程序宏 block_size</li>
+</ul>
+<p>第二个数组</p>
+<ul>
+<li>每个进程块的起始位置</li>
+<li>假设块按进程排序</li>
+</ul>
+<h4 id="运行表达式">运行表达式</h4>
+<p>x：内积循环迭代时间 计算时间：<code>xn↑[n/p]</code>
+all-gather需要<code>p-1</code> 条消息，每条消息的长度约为
+<code>n/p</code> 每个元素 8 个字节
+总执行时间：<code>x n↑[n/p] + (p-1)(λ + (8n/p)/β)</code>
+基准测试程序:</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th><em>Execution Time (msec)</em></th>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><em>p</em></td>
+<td><em>Predicted</em></td>
+<td><em>Actual</em></td>
+<td><em>Speedup</em></td>
+<td><em>Mflops</em></td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>63.4</td>
+<td>63.8</td>
+<td>1.00</td>
+<td>31.4</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>32.4</td>
+<td>32.9</td>
+<td>1.92</td>
+<td>60.8</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>22.2</td>
+<td>22.6</td>
+<td>2.80</td>
+<td>88.5</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>17.2</td>
+<td>17.5</td>
+<td>3.62</td>
+<td>114.3</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td>14.3</td>
+<td>14.5</td>
+<td>4.37</td>
+<td>137.9</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td>12.5</td>
+<td>12.6</td>
+<td>5.02</td>
+<td>158.7</td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td>11.3</td>
+<td>11.2</td>
+<td>5.65</td>
+<td>178.6</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td>10.4</td>
+<td>10.0</td>
+<td>6.33</td>
+<td>200.0</td>
+</tr>
+<tr class="even">
+<td>16</td>
+<td>8.5</td>
+<td>7.6</td>
+<td>8.33</td>
+<td>263.2</td>
+</tr>
+</tbody>
+</table>
+<h3 id="棋盘分块">棋盘分块</h3>
+<p>1.将原始任务与矩阵A的每个元素相关联 2.每个原始任务执行一次乘法
+3.将原始任务聚合成矩形块 4.进程形成一个二维网格
+5.向量b按块分布在网格第一列的进程之间</p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/122.png" srcset="/img/loading.gif" lazyload
+alt="122" />
+<figcaption aria-hidden="true">122</figcaption>
+</figure>
+<h4
+id="分配向量b也就是上图中的第一个箭头">分配向量b（也就是上图中的第一个箭头）</h4>
+<p>第1步：把b从在第一行的进程移动到在第一列的进程</p>
+<ul>
+<li>如果p是一个平方数，第一列/第一行的进程发送/接受b的部分</li>
+<li>如果不是一个平方数，在进程（0,0）上gather b</li>
+</ul>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/123.png" srcset="/img/loading.gif" lazyload
+alt="123" />
+<figcaption aria-hidden="true">123</figcaption>
+</figure>
+<p>第2步：第一行的进程在列内广播b</p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/124.png" srcset="/img/loading.gif" lazyload
+alt="124" />
+<figcaption aria-hidden="true">124</figcaption>
+</figure>
+<h4 id="复杂度分析-2">复杂度分析：</h4>
+<p>假定p是一个平分数</p>
+<ul>
+<li>假如网格是1*p，转变为柱状块条纹（按列分块）</li>
+<li>假如网格是p*1，转变为行状块条纹（按行分块）</li>
+</ul>
+<p>每一个进程自己的计算：<code>Θ(n^2/p)</code>
+分配向量b：<code>Θ(n/√p+logp(n/√p))</code>=<code>Θ(nlogp/√p))</code>
+总计并行复杂度：<code>Θ(n^3/p+nlogp/√p)</code></p>
+<h4 id="等效率分析-2">等效率分析</h4>
+<p>串行时间复杂度：<code>Θ(n^2)</code>
+并行通信开销：<code>Θ(nlogp/√p))</code> <code>T0(n,p)=nplogp/√p</code>
+<code>n^2≥Cnplogp/√p</code>=&gt;<code>n≥C√plogp</code>
+空间复杂度：<code>M(n)=n^2</code>
+<code>M(C√plogp)/p</code>=<code>C^2p(logp)^2/p</code>=<code>C^2(logp)^2</code>
+这个系统比前两种实现方法具有更好的扩展性。</p>
+<h4 id="创造通信子">创造通信子</h4>
+<ul>
+<li><p>希望进程位于虚拟的二维网格中</p></li>
+<li><p>为此创建自定义通信子</p></li>
+<li><p>集体通信涉及通信器中的所有过程</p></li>
+<li><p>我们需要在进程的子集中广播，规约，我们将为同一行或同一列的进程创建通信子</p></li>
+</ul>
+<h4 id="通信子中有什么">通信子中有什么？</h4>
+<ul>
+<li>进程组</li>
+<li>上下文</li>
+<li>属性：拓扑(让我们以另一种方式处理流程)，其他的我们将不再考虑</li>
+</ul>
+<h4
+id="创建进程的2维虚拟网格mpi_dims_create">创建进程的2维虚拟网格<code>MPI_Dims_create</code></h4>
+<p>输入参数：</p>
+<ul>
+<li>所需网格中的进程总数</li>
+<li>网格维度数</li>
+</ul>
+<p>返回每个维度中的进程数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">MPI_Dims_create</span> <span class="hljs-params">(</span><br><span class="hljs-params">   <span class="hljs-type">int</span> nodes,</span><br><span class="hljs-params">       <span class="hljs-comment">/* Input - Procs in grid */</span></span><br><span class="hljs-params"> </span><br><span class="hljs-params">   <span class="hljs-type">int</span> dims,</span><br><span class="hljs-params">       <span class="hljs-comment">/* Input - Number of dims */</span></span><br><span class="hljs-params"></span><br><span class="hljs-params">   <span class="hljs-type">int</span> *size)</span><br>       <span class="hljs-comment">/* Input/Output - Size of</span><br><span class="hljs-comment">          each grid dimension */</span><br></code></pre></td></tr></table></figure>
+<p><code>MPI_Cart_create</code></p>
+<p>创建笛卡尔拓扑的通信子</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">MPI_Cart_create</span> <span class="hljs-params">(</span><br><span class="hljs-params">   MPI_Comm old_comm, <span class="hljs-comment">/* Input - old communicator */</span></span><br><span class="hljs-params"></span><br><span class="hljs-params">   <span class="hljs-type">int</span> dims, <span class="hljs-comment">/* Input - grid dimensions */</span></span><br><span class="hljs-params"></span><br><span class="hljs-params">   <span class="hljs-type">int</span> *size, <span class="hljs-comment">/* Input - # procs in each dim */</span></span><br><span class="hljs-params"></span><br><span class="hljs-params">   <span class="hljs-type">int</span> *periodic,</span><br><span class="hljs-params">       <span class="hljs-comment">/* Input - periodic[j] is 1 if dimension j</span></span><br><span class="hljs-comment"><span class="hljs-params">          wraps around; 0 otherwise */</span></span><br><span class="hljs-params"></span><br><span class="hljs-params">   <span class="hljs-type">int</span> reorder,</span><br><span class="hljs-params">       <span class="hljs-comment">/* 1 if process ranks can be reordered */</span></span><br><span class="hljs-params"></span><br><span class="hljs-params">   MPI_Comm *cart_comm)</span><br>       <span class="hljs-comment">/* Output - new communicator */</span><br></code></pre></td></tr></table></figure>
+<p>使用<code>MPI_Dims_create</code>和<code>MPI_Cart_create</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c">MPI_Comm cart_comm;<br><span class="hljs-type">int</span> p;<br><span class="hljs-type">int</span> periodic[<span class="hljs-number">2</span>];<br><span class="hljs-type">int</span> size[<span class="hljs-number">2</span>];<br>...<br>size[<span class="hljs-number">0</span>] = size[<span class="hljs-number">1</span>] = <span class="hljs-number">0</span>;<br>MPI_Dims_create (p, <span class="hljs-number">2</span>, size);<br>periodic[<span class="hljs-number">0</span>] = periodic[<span class="hljs-number">1</span>] = <span class="hljs-number">0</span>;<br>MPI_Cart_create (MPI_COMM_WORLD, <span class="hljs-number">2</span>, size,<br>                 <span class="hljs-number">1</span>, &amp;cart_comm);<br></code></pre></td></tr></table></figure>
+<p>有用的Grid相关的函数</p>
+<p><code>MPI_Cart_rank</code>:给定进程在笛卡儿通信器中的坐标，返回进程的秩</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">MPI_Cart_rank</span> <span class="hljs-params">(</span><br><span class="hljs-params">   MPI_Comm comm,</span><br><span class="hljs-params">      <span class="hljs-comment">/* In - Communicator */</span></span><br><span class="hljs-params">   <span class="hljs-type">int</span> *coords,</span><br><span class="hljs-params">      <span class="hljs-comment">/* In - Array containing process’</span></span><br><span class="hljs-comment"><span class="hljs-params">              grid location */</span></span><br><span class="hljs-params">   <span class="hljs-type">int</span> *rank)</span><br>      <span class="hljs-comment">/* Out - Rank of process at</span><br><span class="hljs-comment">         specified coords */</span><br></code></pre></td></tr></table></figure>
+<p><code>nMPI_Cart_coords</code>:给定进程在笛卡儿通信器中的秩，返回进程的坐标</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">MPI_Cart_coords</span> <span class="hljs-params">(</span><br><span class="hljs-params">   MPI_Comm comm,</span><br><span class="hljs-params">      <span class="hljs-comment">/* In - Communicator */</span></span><br><span class="hljs-params">   <span class="hljs-type">int</span> rank,</span><br><span class="hljs-params">      <span class="hljs-comment">/* In - Rank of process */</span></span><br><span class="hljs-params">   <span class="hljs-type">int</span> dims,</span><br><span class="hljs-params">      <span class="hljs-comment">/* In - Dimensions in virtual grid */</span></span><br><span class="hljs-params">   <span class="hljs-type">int</span> *coords)</span><br>      <span class="hljs-comment">/* Out - Coordinates of specified</span><br><span class="hljs-comment">         process in virtual grid */</span><br></code></pre></td></tr></table></figure>
+<p><code>MPI_Comm_split</code></p>
+<ul>
+<li>将通信器的进程划分为一个或多个子组</li>
+<li>为每个子组构造一个通信器</li>
+<li>允许每个子组中的进程执行它们自己的集体通信</li>
+<li>需要按列分散和按行减少</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">MPI_Comm_split</span> <span class="hljs-params">(</span><br><span class="hljs-params">   MPI_Comm old_comm,</span><br><span class="hljs-params">      <span class="hljs-comment">/* In - Existing communicator */</span></span><br><span class="hljs-params"></span><br><span class="hljs-params">   <span class="hljs-type">int</span> partition, <span class="hljs-comment">/* In - Partition number */</span></span><br><span class="hljs-params"></span><br><span class="hljs-params">   <span class="hljs-type">int</span> new_rank,</span><br><span class="hljs-params">      <span class="hljs-comment">/* In - Ranking order of processes</span></span><br><span class="hljs-comment"><span class="hljs-params">         in new communicator */</span></span><br><span class="hljs-params"></span><br><span class="hljs-params">   MPI_Comm *new_comm)</span><br>      <span class="hljs-comment">/* Out - New communicator shared by</span><br><span class="hljs-comment">         processes in same partition */</span><br></code></pre></td></tr></table></figure>
+<h4 id="示例">示例</h4>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c">MPI_Comm grid_comm; <span class="hljs-comment">/* 2-D process grid */</span><br><br>MPI_Comm grid_coords[<span class="hljs-number">2</span>];<br>         <span class="hljs-comment">/* Location of process in grid */</span><br><br>MPI_Comm row_comm;<br>               <span class="hljs-comment">/* Processes in same row */</span><br><br>MPI_Comm_split (grid_comm, grid_coords[<span class="hljs-number">0</span>],<br>   grid_coords[<span class="hljs-number">1</span>], &amp;row_comm);<br></code></pre></td></tr></table></figure>
+<h4 id="运行表达式-1">运行表达式</h4>
+<p>计算时间：<code>x↑[n/√p]↑[n/√p]</code></p>
+<p>假设p是一个平方数：</p>
+<p>分配b：</p>
+<ul>
+<li>发送/接受：<code>λ+8↑[n/√p]/β</code></li>
+<li>广播：<code>log√p(λ+8↑[n/√p]/β)</code></li>
+</ul>
+<p>规约局部结果：<code>log√p(λ+8↑[n/√p]/β)</code></p>
+<h4 id="基准测试程序">基准测试程序</h4>
+<table>
+<thead>
+<tr class="header">
+<th>Procs</th>
+<th>Predicted(msec)</th>
+<th>Actual (msec)</th>
+<th>Speedup</th>
+<th>Megaflops</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>63.4</td>
+<td>63.4</td>
+<td>1.00</td>
+<td>31.6</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>17.8</td>
+<td>17.4</td>
+<td>3.64</td>
+<td>114.9</td>
+</tr>
+<tr class="odd">
+<td>9</td>
+<td>9.7</td>
+<td>9.7</td>
+<td>6.53</td>
+<td>206.2</td>
+</tr>
+<tr class="even">
+<td>16</td>
+<td>6.2</td>
+<td>6.2</td>
+<td>10.21</td>
+<td>322.6</td>
+</tr>
+</tbody>
+</table>
+<h4 id="三种算法的比较">三种算法的比较</h4>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/125.png" srcset="/img/loading.gif" lazyload
+alt="125" />
+<figcaption aria-hidden="true">125</figcaption>
+</figure>
+<h2 id="总结">3.总结</h2>
+<p>1.矩阵分解=&gt;需要通信</p>
+<ul>
+<li>按行分块：all-gather</li>
+<li>按列分块：all-to-all exchange</li>
+<li>棋盘分块：gather，scatter，broadcast</li>
+</ul>
+<p>2.所有这三种算法：几乎都是相同数量的消息</p>
+<p>3.每个进程传输的元素不同：</p>
+<ul>
+<li>前两个：每个进程<code>Θ(n)</code>个元素</li>
+<li>棋盘算法：<code>Θ(n/√p)</code></li>
+</ul>
+<p>4.棋盘算法有更好的扩展性</p>
+<p>5.采用笛卡尔拓扑的通信子</p>
+<ul>
+<li>建立</li>
+<li>按照序号或者坐标识别</li>
+</ul>
+<p>6.分割通信子</p>
+<ul>
+<li>允许子进程进行集群操作</li>
+</ul>
+<p>7.并行程序和支持函数比 C 对应长得多
+8.专门用于阅读、分发、打印矩阵和向量的额外代码
+9.开发和调试这些功能是乏味和困难的
+10.将功能推广并放入库中以供重复使用是有意义的 11.MPI程序开发:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/126.png" srcset="/img/loading.gif" lazyload  style="zoom:67%;" /></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/distributed-parallel-computing/" class="category-chain-item">distributed-parallel-computing</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">#分布式</a>
+      
+        <a href="/tags/MPI/">#MPI</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>第八章：矩阵向量乘法</div>
+      <div>http://onepoint.link/2021/10/08/distributed-parallel-computing/8.矩阵向量乘法/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>yi-ge-dian</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2021年10月8日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/10/09/distributed-parallel-computing/9.CUDA%20C%E5%AF%BC%E8%AE%BA/" title="第九章：CUDA C导论">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">第九章：CUDA C导论</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/10/07/distributed-parallel-computing/7.Floyd%E7%AE%97%E6%B3%95/" title="第七章：Floyd算法">
+                        <span class="hidden-mobile">第七章：Floyd算法</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="lv-container" data-id="city" data-uid="MTAyMC81NjY1My8zMzExNw">
+    <script type="text/javascript">
+      Fluid.utils.loadComments('#lv-container', function() {
+        Fluid.utils.createScript('https://cdn-city.livere.com/js/embed.dist.js');
+      });
+    </script>
+    <noscript>Please enable JavaScript to view the comments</noscript>
+  </div>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+    <!-- 备案信息 ICP for China -->
+    <div class="beian">
+  <span>
+    <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+      蜀ICP备2022013781号
+    </a>
+  </span>
+  
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

@@ -1,0 +1,1113 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="yi-ge-dian">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Warps和SIMD 执行过程：  warps：   168  一个线程块由 32 个线程组成warps（线程束） warps是在多处理器上以物理方式并行(SIMD)执行的 warps作为调度单位   169  每个块被分成32-线程的warps  一种实现技术，不是 CUDA 编程模型的一部分 Warps 是 SM 中的调度单元 Warp 中的线程以单指令多数据 (SIMD) 方式执行 warp">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第十二章：性能优化">
+<meta property="og:url" content="http://onepoint.link/2021/10/12/distributed-parallel-computing/12.%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/index.html">
+<meta property="og:site_name" content="onepoint">
+<meta property="og:description" content="Warps和SIMD 执行过程：  warps：   168  一个线程块由 32 个线程组成warps（线程束） warps是在多处理器上以物理方式并行(SIMD)执行的 warps作为调度单位   169  每个块被分成32-线程的warps  一种实现技术，不是 CUDA 编程模型的一部分 Warps 是 SM 中的调度单元 Warp 中的线程以单指令多数据 (SIMD) 方式执行 warp">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/parallel.jpeg">
+<meta property="article:published_time" content="2021-10-11T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-10-11T16:00:00.000Z">
+<meta property="article:author" content="yi-ge-dian">
+<meta property="article:tag" content="分布式">
+<meta property="article:tag" content="CUDA">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/parallel.jpeg">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>第十二章：性能优化 - onepoint</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"onepoint.link","root":"/","version":"1.9.2","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":"dd82cbda8f486148a18105c55a23ec08","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>OnePoint</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="第十二章：性能优化"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2021-10-12 00:00" pubdate>
+          2021年10月12日 凌晨
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          5.9k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          50 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">第十二章：性能优化</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="warps和simd">Warps和SIMD</h2>
+<p>执行过程：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/167.png" srcset="/img/loading.gif" lazyload alt="167" style="zoom: 67%;" /></p>
+<p>warps：</p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/168.png" srcset="/img/loading.gif" lazyload
+alt="168" />
+<figcaption aria-hidden="true">168</figcaption>
+</figure>
+<p>一个线程块由 32 个线程组成warps（线程束）
+warps是在多处理器上以物理方式并行(SIMD)执行的</p>
+<h3 id="warps作为调度单位">warps作为调度单位</h3>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/169.png" srcset="/img/loading.gif" lazyload
+alt="169" />
+<figcaption aria-hidden="true">169</figcaption>
+</figure>
+<p>每个块被分成32-线程的warps</p>
+<ul>
+<li>一种实现技术，不是 CUDA 编程模型的一部分</li>
+<li>Warps 是 SM 中的调度单元</li>
+<li>Warp 中的线程以单指令多数据 (SIMD) 方式执行</li>
+<li>warps中的线程数在未来几代可能会有所不同</li>
+</ul>
+<h3 id="多维线程块中的warps">多维线程块中的warps</h3>
+<p>线程块首先按行主要顺序线性化为一维，首先是 x 维度，然后是 y
+维度，最后是 z 维度。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/170.png" srcset="/img/loading.gif" lazyload alt="170" style="zoom:67%;" /></p>
+<h3 id="线性化后对块进行分区">线性化后对块进行分区</h3>
+<p>线性化线程块被分区</p>
+<ul>
+<li>warps内的线程索引是连续的并且不断增加</li>
+<li>Warp 0 从线程 0 开始</li>
+</ul>
+<p>跨设备分区方案一致</p>
+<ul>
+<li>因此，您可以在控制流中使用这些知识</li>
+<li>但是，warps的确切大小可能会代代相传</li>
+</ul>
+<p>不要依赖warps内或warps之间的任何排序</p>
+<ul>
+<li>如果线程之间存在任何依赖关系，则必须__syncthreads()
+以获得正确的结果（稍后会详细介绍）。</li>
+</ul>
+<h3 id="sm-是-simd-处理器">SM 是 SIMD 处理器</h3>
+<p>指令获取、解码和控制的控制单元在多个处理单元之间共享，控制开</p>
+<h3 id="控制分支">控制分支</h3>
+<p>warps中的线程遇到控制分支时，通过做出不同的控制决策，采取不同的控制流路径</p>
+<ul>
+<li>一些采用 then 路径，另一些采用 if 语句的 else 路径</li>
+<li>一些线程与其他线程采用不同数量的循环迭代</li>
+</ul>
+<p>在当前的 GPU 中，采取不同路径的线程的执行是被序列化的（串行的）。</p>
+<ul>
+<li>一个warps中的线程所采用的控制路径一次遍历一个，直到不再存在。</li>
+<li>考虑嵌套控制流语句时，不同路径的数量可能很大</li>
+</ul>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/171.png" srcset="/img/loading.gif" lazyload
+alt="171" />
+<figcaption aria-hidden="true">171</figcaption>
+</figure>
+<h3 id="控制分支示例">控制分支示例</h3>
+<p>当分支或循环条件是线程索引的函数时，可能会出现分支
+具有分支的内核语句示例： <code>if (threadIdx.x &gt; 2) &#123; &#125;</code></p>
+<ul>
+<li><p>这为块中的线程创建了两个不同的控制路径</p></li>
+<li><p>决策粒度 &lt; warps大小；在第一个warp中，线程 0、1 和 2
+遵循与其余线程不同的路径</p></li>
+</ul>
+<p>没有发散的例子： <code>If (blockIdx.x &gt; 2) &#123; &#125;</code></p>
+<ul>
+<li>决策粒度是块大小的倍数；任何给定warps中的所有线程都遵循相同的路径</li>
+</ul>
+<h3 id="例子向量加法内核">例子：向量加法内核</h3>
+<p>设备代码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// Compute vector sum C = A + B</span><br><span class="hljs-comment">// Each thread performs one pair-wise addition</span><br><br>__global__<br><span class="hljs-type">void</span> <span class="hljs-title function_">vecAddKernel</span><span class="hljs-params">(<span class="hljs-type">float</span>* A, <span class="hljs-type">float</span>* B, <span class="hljs-type">float</span>* C, <span class="hljs-type">int</span> n)</span><br>&#123;<br>  <span class="hljs-type">int</span> i = threadIdx.x + blockDim.x * blockIdx.x;<br>    <span class="hljs-keyword">if</span>(i&lt;n) C[i] = A[i] + B[i];<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>分析向量大小有1000个元素： 假设块大小为 256 个线程，每个块中有 8
+个warp</p>
+<ol type="1">
+<li>Block0、1 和 2 中的所有线程都在有效范围内。 i 值从 0 到
+767，这三个Block有24个经线，没有一个会有控制分支。</li>
+<li>Block 3 中的大多数warp不会产生控制分支。 warps
+0-6中的线程都在有效范围内，因此没有控制分支。</li>
+<li>Block 3 中的一个warp将具有控制分支。 i 值为 992-999
+的线程都在有效范围内。 i 值为 1000-1023 的线程将超出有效范围。</li>
+<li>序列化对控制发散的影响会很小。 32 个warps中有 1 个具有控制分支。
+对性能的影响可能小于 3%。</li>
+</ol>
+<h2 id="控制分支的性能影响">控制分支的性能影响</h2>
+<p>边界条件检查对于并行代码的完整功能和健壮性至关重要</p>
+<ul>
+<li>平铺矩阵乘法内核有很多边界条件检查</li>
+<li>令人担忧的是，这些检查可能会导致显着的性能下降</li>
+<li>例如，请参阅下面的 平铺加载代码：</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">if</span>(Row &lt; Width &amp;&amp; p * TILE_WIDTH+tx &lt; Width) &#123;<span class="hljs-comment">//分支</span><br> ds_M[ty][tx] = M[Row * Width + p * TILE_WIDTH + tx];<br>&#125; <span class="hljs-keyword">else</span> &#123;<br> ds_M[ty][tx] = <span class="hljs-number">0.0</span>;<br> &#125;<br><span class="hljs-keyword">if</span> (p*TILE_WIDTH+ty &lt; Width &amp;&amp; Col &lt; Width) &#123;<span class="hljs-comment">//分支</span><br>    ds_N[ty][tx] = N[(p*TILE_WIDTH + ty) * Width + Col];<br>&#125; <span class="hljs-keyword">else</span> &#123;<br>    ds_N[ty][tx] = <span class="hljs-number">0.0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="加载m-tiles的两种块">加载M tiles的两种块</h3>
+<p>类型1：直到最后一个阶段，其瓷砖都在有效范围内的块。</p>
+<p>类型2：方块部分一直在有效范围之外</p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/172.png" srcset="/img/loading.gif" lazyload
+alt="172" />
+<figcaption aria-hidden="true">172</figcaption>
+</figure>
+<h3 id="控制分支影响的分析">控制分支影响的分析</h3>
+<p>假设 16x16 tiles和线程块，每个线程块有 8 个warps (256/32) 假设
+100x100 的方阵，每个warp将经历 7 个阶段（上限为 100/16） 有 49
+个线程块（每个维度 7 个）</p>
+<p>实际上：</p>
+<p>有42（6x7）个类型1块，总共有336（8x42）条warp 它们都有 7
+个阶段，因此有 <code>2,352 (336*7)</code> 个warp-phases
+warps只有在最后阶段才有控制分支，336 个wrap-phases有控制分支</p>
+<p>类型2块：分配加载底部瓦片的7个块，共56（8x7）个warp 它们都有 7
+个阶段，所以有 392 (56x7) 个warp-phase 每个类型 2 块中的前 2
+个warp（16x4/32）将保持在有效范围内，直到最后一个阶段。 剩余的 6
+个warp不在有效范围内 所以，只有 <code>14 (2*7)</code>
+个warp-phasse有控制分支</p>
+<p><strong>控制分支的总体影响</strong></p>
+<p>类型 1 块：2,352 个warp-phase中的 336 个具有控制分支 类型 2 块：392
+个warp-phase中有 14 个具有控制分支 性能影响预计小于 12% (350/2,744 或
+(336+14)/(2352+392))</p>
+<h3 id="额外的注释">额外的注释</h3>
+<p>加载 N 个tiles时控制分支的影响计算有些不同，留作练习
+估计的性能影响取决于数据。</p>
+<ul>
+<li>对于较大的矩阵，影响将显着较小</li>
+</ul>
+<p>一般来说，控制发散对大型输入数据集的边界条件检查的影响应该是
+微不足道</p>
+<ul>
+<li>应该毫不犹豫地使用边界检查来确保完整的功能</li>
+</ul>
+<p>内核中充满控制流结构的事实并不意味着会出现严重的控制发散</p>
+<p>我们将在 Parallel Algorithm Patterns
+模块中介绍一些自然会导致控制发散（例如并行规约）的算法模式</p>
+<h2 id="并行规约">并行规约</h2>
+<h3 id="规约和总结">规约和总结</h3>
+<p>处理大型输入数据集的常用策略</p>
+<ul>
+<li><p>数据集中的处理元素没有必需的顺序（关联和交换）</p></li>
+<li><p>将数据集分成更小的块</p></li>
+<li><p>让每个线程处理一个块</p></li>
+<li><p>使用归约树将每个块的结果汇总为最终答案</p></li>
+</ul>
+<p>EG、谷歌和Hadoop 地图规约 框架采用这一战略
+我们现在将专注于规约树步骤</p>
+<h3 id="什么是规约计算">什么是规约计算</h3>
+<p>总结 使用“归约操作”将一组输入值转换为一个值 最大，最小，和，乘积
+常与用户定义的归约操作函数一起使用，只要操作是。。。</p>
+<ul>
+<li>是结合的和可交换的</li>
+<li>具有明确定义的标识值（例如，总和为 0）</li>
+<li>例如，用户可以为 3D
+坐标数据集提供自定义的“max”函数，其中每个坐标数据元组的大小是距原点的距离。</li>
+</ul>
+<h3 id="一个有效的串行规约">一个有效的串行规约</h3>
+<p>将结果初始化为归约操作的标识值
+最小值的用最大归约，最大值的用最小规约，0 用总和规约1 用积减少
+遍历输入并执行结果值和当前输入值之间的归约操作</p>
+<ul>
+<li>每个 对 N 个输入值执行的归约操作</li>
+<li>O(N) 算法</li>
+<li>这是一种计算效率高的算法。</li>
+</ul>
+<h3 id="并行归约树算法以-logn-步执行-n-1-次操作">并行归约树算法以 log(N)
+步执行 N-1 次操作</h3>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/173.png" srcset="/img/loading.gif" lazyload
+alt="173" />
+<figcaption aria-hidden="true">173</figcaption>
+</figure>
+<h3 id="快速分析">快速分析</h3>
+<ol type="1">
+<li><p>对于 N 个输入值，归约树执行 (1/2)N + (1/4)N + (1/8)N + … (1/N)N =
+(1- (1/N))N = N-1 个操作 在 Log (N) 步长中 – 1,000,000 个输入值需要 20
+步 假设我们有足够的执行资源 平均并行度 (N-1)/Log(N)) 对于 N =
+1,000,000，平均并行度为 50,000 但是，峰值资源需求为 500,000
+这不是资源有效的</p></li>
+<li><p>这是一个高效的并行算法 所做的工作量与高效的顺序算法相当
+许多并行算法工作效率不高</p></li>
+<li><p>我们称一个算法为高效算法(或者仅仅是高效算法)，如果它执行相同数量的工作，在一个常数因子内，作为已知的最快的顺序算法。</p></li>
+<li><p>Resource
+efficieny(Efficiency)=Sp/p=<code>1,000,000/(20*500,000)</code>=0.19(p=input/2)</p>
+<p>Work=1,000,000</p></li>
+</ol>
+<h3 id="如何用cuda实现">如何用CUDA实现</h3>
+<p>并行求和规约</p>
+<ul>
+<li>并行实现
+<ul>
+<li>每个线程添加 每个步骤中的两个值</li>
+<li>递归地将线程数减半</li>
+<li>对 n 个元素执行 log(n) 步，需要 n/2 个线程</li>
+</ul></li>
+<li>假设使用共享内存进行就地规约
+<ul>
+<li>原始向量在设备全局内存中</li>
+<li>共享内存用于保存部分和向量</li>
+<li>最初，部分和向量只是原始向量</li>
+<li>每一步都使部分和向量更接近总和</li>
+<li>最终和将在部分和向量的元素 0 中</li>
+<li>由于读取和写入部分总和值，减少全局内存传输</li>
+<li>线程块大小限制 n 小于或等于 2,048</li>
+</ul></li>
+</ul>
+<blockquote>
+<p>在计算机科学中，就地算法是一种不使用辅助数据结构转换输入的算法。</p>
+</blockquote>
+<h3 id="并行和规约实例">并行和规约实例</h3>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/174.png" srcset="/img/loading.gif" lazyload
+alt="174" />
+<figcaption aria-hidden="true">174</figcaption>
+</figure>
+<h3 id="一个简单的线程到数据映射">一个简单的线程到数据映射</h3>
+<p>每个线程负责部分和向量的偶数索引位置（责任位置）
+每一步后，不再需要一半的线程，输入之一总是来自责任位置，在每一步中，其中一个输入来自越来越远的距离</p>
+<p>每个线程块占用 2*BlockDim.x 输入元素 每个线程将 2
+个元素加载到共享内存中</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs c">__shared__ <span class="hljs-type">float</span> partialSum[<span class="hljs-number">2</span>*BLOCK_SIZE];<br><br><span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> t = threadIdx.x;<br><span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> start = <span class="hljs-number">2</span>*blockIdx.x*blockDim.x;<br>partialSum[t] = input[start + t];<br>partialSum[blockDim.x+t] = input[start + blockDim.x+t];<br><br><span class="hljs-keyword">for</span> (<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> stride = <span class="hljs-number">1</span>; stride &lt;= blockDim.x;  stride *= <span class="hljs-number">2</span>) <br>&#123;<br>  __syncthreads();<br>  <span class="hljs-keyword">if</span> (t % stride == <span class="hljs-number">0</span>)<br>    partialSum[<span class="hljs-number">2</span>*t]+= partialSum[<span class="hljs-number">2</span>*t+stride];<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>我们为什么需要__syncthreads()?</p>
+<blockquote>
+<p>在进行下一步之前，需要使用Syncthreads()来确保每个版本的部分和的所有元素都已经生成</p>
+</blockquote>
+<p>返回到全局图片</p>
+<ul>
+<li>在内核的末尾，每个块中的线程 0 将线程块的总和写入 partialSum[0]
+到一个向量由索引blockIdx.x索引</li>
+<li>如果原始向量非常大，可能会有大量这样的和
+<ul>
+<li>主机代码可能会迭代并启动另一个内核</li>
+</ul></li>
+<li>如果只有少量和，主机可以简单地将数据传回并加在一起</li>
+<li>或者，每个块的线程 0 可以使用原子操作累加到全局 sum 变量中。</li>
+</ul>
+<h3
+id="关于简单的归约核函数的一些观察">关于简单的归约核函数的一些观察</h3>
+<p>在每次迭代中，每个warp都会依次遍历两条控制流路径</p>
+<ul>
+<li><p>执行加法的线程和不执行加法的线程</p></li>
+<li><p>不执行加法的线程仍然消耗执行资源</p></li>
+</ul>
+<p>第一步后将执行一半或更少的线程</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">if</span> (t % stride == <span class="hljs-number">0</span>)<br>    partialSum[<span class="hljs-number">2</span>*t]+= partialSum[<span class="hljs-number">2</span>*t+stride];<br></code></pre></td></tr></table></figure>
+<ul>
+<li>第一步后禁用所有奇数索引线程</li>
+<li>在第 5 步之后，
+如果测试每个块中的整个warps都将失败，资源利用率低但无发散</li>
+<li>这可以持续一段时间，最多 6 个步骤（步幅 =
+32、64、128、256、512、1024），其中每个活动warp只有一个生产线程，直到块中的所有warps退休</li>
+</ul>
+<p><strong>线程索引使用事项</strong>：</p>
+<p>在一些算法中，可以改变索引的使用来改善发散行为</p>
+<ul>
+<li>交换和结合运算符</li>
+</ul>
+<p>始终将部分和压缩到partialSum[]数组前面的位置 保持活动线程连续</p>
+<p><strong>4个线程的例子：</strong></p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/175.png" srcset="/img/loading.gif" lazyload
+alt="175" />
+<figcaption aria-hidden="true">175</figcaption>
+</figure>
+<h3 id="一个更好的规约内核">一个更好的规约内核：</h3>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">for</span> (<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> stride = blockDim.x; <br>	  stride &gt; <span class="hljs-number">0</span>;  stride /= <span class="hljs-number">2</span>) <br>&#123;<br>  __syncthreads();<br>  <span class="hljs-keyword">if</span> (t &lt; stride)<br>	  partialSum[t] += partialSum[t+stride];<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>快速分析：</p>
+<p>对于 1024 个线程块 前 5 步没有分支</p>
+<ul>
+<li>1024, 512, 256, 128, 64, 32 个连续线程在每一步都处于活动状态</li>
+<li>每个经线中的所有线程都处于活动状态或全部处于非活动状态</li>
+</ul>
+<p>最后5步还是会有分支</p>
+<h2 id="内存并行化">内存并行化</h2>
+<p>全局内存（DRAM）带宽</p>
+<p>DRAM 核心阵列组织：</p>
+<ul>
+<li>每个 DRAM 核心阵列大约有 16M 位</li>
+</ul>
+<blockquote>
+<p>4K*4K个存储位元组成。每个位元由一个晶体管和一个电容组成</p>
+<p>Row 译码器；传感放大器；列锁存器；MUX 数据选择器</p>
+</blockquote>
+<ul>
+<li>每个位都存储在一个由一个晶体管制成的微型电容器中（1T1C）</li>
+</ul>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/176.png" srcset="/img/loading.gif" lazyload
+alt="176" />
+<figcaption aria-hidden="true">176</figcaption>
+</figure>
+<p><strong>一个非常小的（8x2 位）DRAM 核心阵列</strong></p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/177.png" srcset="/img/loading.gif" lazyload
+alt="177" />
+<figcaption aria-hidden="true">177</figcaption>
+</figure>
+<p><strong>DRAM 核心阵列很慢</strong></p>
+<p>从核心阵列中的单元读取是一个非常缓慢的过程 DDR：核心速度 = ½ 接口速度
+DDR2/GDDR3：核心速度 = ¼ 接口速度 DDR3/GDDR4：核心速度=⅛接口速度
+……未来可能会更糟</p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/178.png" srcset="/img/loading.gif" lazyload
+alt="178" />
+<figcaption aria-hidden="true">178</figcaption>
+</figure>
+<p><strong>DRAM 突发</strong></p>
+<p>对于时钟频率为接口速度 1/N 的 DDR{2,3} SDRAM 内核：</p>
+<ul>
+<li>从同一行一次加载（N × 接口宽度）DRAM
+位到内部缓冲区，然后以接口速度分 N 步传输</li>
+<li>DDR3/GDDR4：缓冲区宽度 = 8X 接口宽度</li>
+</ul>
+<p><strong>DRAM 突发时序示例</strong></p>
+<p>现代 DRAM 系统设计为始终以突发模式访问。
+突发字节被传输到处理器，但当访问不是对连续位置时被丢弃。</p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/179.png" srcset="/img/loading.gif" lazyload
+alt="179" />
+<figcaption aria-hidden="true">179</figcaption>
+</figure>
+<p><strong>多个DRAM-BANK</strong></p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/180.png" srcset="/img/loading.gif" lazyload
+alt="180" />
+<figcaption aria-hidden="true">180</figcaption>
+</figure>
+<p><strong>带有BANK的DRAM突发</strong></p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/181.png" srcset="/img/loading.gif" lazyload
+alt="181" />
+<figcaption aria-hidden="true">181</figcaption>
+</figure>
+<p><strong>GPU （off-chip）内存子系统</strong></p>
+<p>英伟达 GTX280 GPU：</p>
+<ul>
+<li>峰值全局内存带宽 = 141.7GB/s</li>
+</ul>
+<p>全局内存 (GDDR3) 接口 @ 1.1GHz</p>
+<ul>
+<li>(核心速度@276Mhz)</li>
+<li>对于典型的 64 位接口，我们只能维持大约 17.6 GB/s（召回 DDR -
+每个时钟 2 次传输）</li>
+<li>我们需要更多带宽（141.7 GB/s）——因此需要 8 个内存通道</li>
+</ul>
+<p><strong>DRAM突发-一个系统观点</strong></p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/182.png" srcset="/img/loading.gif" lazyload
+alt="182" />
+<figcaption aria-hidden="true">182</figcaption>
+</figure>
+<p>每个地址空间被划分为突发部分</p>
+<ul>
+<li>每当访问一个位置时，同一部分中的所有其他位置也被传送到处理器</li>
+</ul>
+<p>基本示例：16 字节地址空间，4 字节突发部分</p>
+<ul>
+<li>实际上，我们至少有 4GB 的地址空间，128 字节或更多的突发段大小</li>
+</ul>
+<p><strong>内存合并</strong></p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/183.png" srcset="/img/loading.gif" lazyload
+alt="183" />
+<figcaption aria-hidden="true">183</figcaption>
+</figure>
+<p>当一个warp的所有线程都执行一条加载指令时，如果所有访问的位置都落入同一个突发部分，那么只会发出一个DRAM请求并且访问完全合并。</p>
+<p><strong>未合并的访问</strong></p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/184.png" srcset="/img/loading.gif" lazyload
+alt="184" />
+<figcaption aria-hidden="true">184</figcaption>
+</figure>
+<p>当访问的位置跨越突发部分边界时：</p>
+<ul>
+<li>合并失败，发出多个 DRAM 请求，访问未完全合并。</li>
+</ul>
+<p>线程不使用某些访问和传输的字节</p>
+<p><strong>如何判断一个一次访问是否合并？</strong></p>
+<p>如果数组访问中的索引采用以下形式，则warp中的访问是对连续位置的访问</p>
+<blockquote>
+<p>[(表达式的项独立于 blockIdx.x) + blockIdx.x];</p>
+</blockquote>
+<p><strong>线性存储空间中的二维 C 数组</strong></p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/185.png" srcset="/img/loading.gif" lazyload
+alt="185" />
+<figcaption aria-hidden="true">185</figcaption>
+</figure>
+<p><strong>基本矩阵乘法的两种访问模式</strong></p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/186.png" srcset="/img/loading.gif" lazyload
+alt="186" />
+<figcaption aria-hidden="true">186</figcaption>
+</figure>
+<p>i是内核代码内积循环中的循环计数器，A 是 <code>m × n</code>, B
+是<code>n × k</code>，Col =
+<code>blockIdx.x*blockDim.x + threadIdx.x</code></p>
+<p>B 访问合并</p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/187.png" srcset="/img/loading.gif" lazyload
+alt="187" />
+<figcaption aria-hidden="true">187</figcaption>
+</figure>
+<p>A 访问未合并</p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/188.png" srcset="/img/loading.gif" lazyload
+alt="188" />
+<figcaption aria-hidden="true">188</figcaption>
+</figure>
+<p>加载一个输入块，让每个线程加载一个 A 元素 和一个 B 元素在同一个相关
+位置作为其 C 元素。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> tx = threadIdx.x<br><span class="hljs-type">int</span> ty = threadIdx.y<br>Accessing tile <span class="hljs-number">0</span> <span class="hljs-number">2</span>D indexing:A[Row][tx],B[ty][Col]<br></code></pre></td></tr></table></figure>
+<p><strong>转置</strong></p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/189.png" srcset="/img/loading.gif" lazyload
+alt="189" />
+<figcaption aria-hidden="true">189</figcaption>
+</figure>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/distributed-parallel-computing/" class="category-chain-item">distributed-parallel-computing</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">#分布式</a>
+      
+        <a href="/tags/CUDA/">#CUDA</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>第十二章：性能优化</div>
+      <div>http://onepoint.link/2021/10/12/distributed-parallel-computing/12.性能优化/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>yi-ge-dian</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2021年10月12日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/10/13/distributed-parallel-computing/13.%E5%B9%B6%E8%A1%8C%E8%AE%A1%E7%AE%97%E6%A8%A1%E5%BC%8F%EF%BC%9A%E7%9B%B4%E6%96%B9%E5%9B%BE/" title="第十三章：并行计算模式：直方图">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">第十三章：并行计算模式：直方图</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/10/11/distributed-parallel-computing/11.%E5%86%85%E5%AD%98%E5%92%8C%E6%95%B0%E6%8D%AE%E7%9A%84%E5%B1%80%E9%83%A8%E6%80%A7/" title="第十一章：内存和数据的局部性">
+                        <span class="hidden-mobile">第十一章：内存和数据的局部性</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="lv-container" data-id="city" data-uid="MTAyMC81NjY1My8zMzExNw">
+    <script type="text/javascript">
+      Fluid.utils.loadComments('#lv-container', function() {
+        Fluid.utils.createScript('https://cdn-city.livere.com/js/embed.dist.js');
+      });
+    </script>
+    <noscript>Please enable JavaScript to view the comments</noscript>
+  </div>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+    <!-- 备案信息 ICP for China -->
+    <div class="beian">
+  <span>
+    <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+      蜀ICP备2022013781号
+    </a>
+  </span>
+  
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

@@ -1,0 +1,1552 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="yi-ge-dian">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="冯·诺依曼模型的修改 冯·诺依曼模型：  冯诺依曼的核心是：存储程序，顺序执行。 计算机处理的数据和指令一律用二进制数表示； 指令和数据不加区别混合存储在同一个存储器中； 顺序执行程序的每一条指令； 计算机硬件由运算器、控制器、存储器、输入设备和输出设备五大部分组成。   冯·诺依曼瓶颈：内存和CPU的分离通常称为冯·诺伊曼（von Neumann）瓶颈。 冯·诺依曼模型的修改  缓存 虚拟内存">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第二章：架构">
+<meta property="og:url" content="http://onepoint.link/2021/10/02/distributed-parallel-computing/2.%E6%9E%B6%E6%9E%84/index.html">
+<meta property="og:site_name" content="onepoint">
+<meta property="og:description" content="冯·诺依曼模型的修改 冯·诺依曼模型：  冯诺依曼的核心是：存储程序，顺序执行。 计算机处理的数据和指令一律用二进制数表示； 指令和数据不加区别混合存储在同一个存储器中； 顺序执行程序的每一条指令； 计算机硬件由运算器、控制器、存储器、输入设备和输出设备五大部分组成。   冯·诺依曼瓶颈：内存和CPU的分离通常称为冯·诺伊曼（von Neumann）瓶颈。 冯·诺依曼模型的修改  缓存 虚拟内存">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/parallel.jpeg">
+<meta property="article:published_time" content="2021-10-01T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-10-01T16:00:00.000Z">
+<meta property="article:author" content="yi-ge-dian">
+<meta property="article:tag" content="分布式">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/parallel.jpeg">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>第二章：架构 - onepoint</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"onepoint.link","root":"/","version":"1.9.2","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":"dd82cbda8f486148a18105c55a23ec08","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>OnePoint</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="第二章：架构"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2021-10-02 00:00" pubdate>
+          2021年10月2日 凌晨
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          13k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          112 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">第二章：架构</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="冯诺依曼模型的修改">冯·诺依曼模型的修改</h2>
+<p>冯·诺依曼模型：</p>
+<ol type="1">
+<li>冯诺依曼的核心是：<strong>存储程序，顺序执行。</strong></li>
+<li>计算机处理的数据和指令一律用二进制数表示；</li>
+<li>指令和数据不加区别混合存储在同一个存储器中；</li>
+<li>顺序执行程序的每一条指令；</li>
+<li>计算机硬件由运算器、控制器、存储器、输入设备和输出设备五大部分组成。</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/2.png" srcset="/img/loading.gif" lazyload alt="2" style="zoom:80%;" /></p>
+<p>冯·诺依曼瓶颈：内存和CPU的分离通常称为冯·诺伊曼（von
+Neumann）瓶颈。</p>
+<p>冯·诺依曼模型的修改</p>
+<ul>
+<li>缓存</li>
+<li>虚拟内存</li>
+<li>低级并行</li>
+</ul>
+<h3 id="缓存基础">缓存基础</h3>
+<ul>
+<li><p>缓存：可以比其他一些内存位置用更少的时间访问的内存位置的集合。</p></li>
+<li><p>CPU高速缓存：CPU可以比其访问主内存更快地访问的内存位置的集合。CPU高速缓存可以与CPU位于同一芯片上，也可以位于与普通存储芯片相比访问速度更快的单独芯片上。</p></li>
+<li><p>关于缓存的想法</p>
+<ul>
+<li>使用更广泛的互连，并在单个内存访问中传输更多数据或更多指令。</li>
+<li>将数据块和指令块存储在实际上更靠近CPU寄存器的特殊内存中。</li>
+</ul></li>
+</ul>
+<p><strong>哪些数据和指令应该存储在缓存中</strong>？</p>
+<p>程序倾向于使用以下数据和指令：<strong>物理上接近</strong>至<strong>最近使用</strong>的数据和指令。</p>
+<p><strong>1.地方性原则</strong></p>
+<ul>
+<li>地点----访问一个位置之后访问附近的位置，访问一个内存位置后，程序将在里面不远的将来（时间局部性）访问一个附近地点（空间局部性）。</li>
+<li>为了利用局部性原理，系统使用了有效的更宽的互连以访问数据和指令。（Cache
+Block或者Cache Line）</li>
+</ul>
+<p>最常见的形式，数组：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">float</span> z[<span class="hljs-number">1000</span>]<br>    ....<br>sum =<span class="hljs-number">0.0</span><br>    <span class="hljs-keyword">for</span>(i=<span class="hljs-number">0</span>;i&lt;<span class="hljs-number">1000</span>;i++)&#123;<br>        sum+=z[i];<br>    &#125;<br></code></pre></td></tr></table></figure>
+<p><strong>2.缓存级别</strong></p>
+<p>目前大多数的计算机都有三级缓存。</p>
+<p>L1的容量最小，但是最快。L2次之。L3的容量最大，但是最慢。</p>
+<p><strong>3.缓存命中与缺失</strong></p>
+<p>缓存命中：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/3.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p>
+<p>此时需要使用x，在缓存中可以找到x。</p>
+<p>缓存缺失：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/4.png" srcset="/img/loading.gif" lazyload style="zoom: 67%;"/></p>
+<p>此时需要使用x，在缓存中无法找到x，只好去内存中寻找。</p>
+<p><strong>4.缓存的写策略</strong></p>
+<p>当CPU将数据写入高速缓存时，高速缓存中的值可能与主存储器中的值不一致。</p>
+<ul>
+<li><p>写直达：在将数据写入缓存的同时，将数据写入主内存</p></li>
+<li><p>写回：当写发生时，新的数据只会被写入缓存块；只有当该数据替换时，才会写入下一级的缓存块</p></li>
+</ul>
+<p><strong>5.缓存的映射</strong></p>
+<ul>
+<li><p>全相连映射：可以在缓存中的任何位置放置新行</p></li>
+<li><p>直接映射：每个高速缓存行在高速缓存中都有一个唯一的位置，它将被分配给该位置</p></li>
+<li><p>n路组相连：每个高速缓存行可以放置在缓存中其中n路的不同位置。</p></li>
+</ul>
+<p>一些问题：</p>
+<blockquote>
+<p>1.当内存中的多行可以映射到缓存中的多个不同位置时，我们还需要能够决定哪一行应该被替代。</p>
+<p>2.最常用的方案称为最近最少使用
+。顾名思义，缓存中记录了使用块的相对顺序。</p>
+</blockquote>
+<p><strong>6.缓存和编程</strong></p>
+<p>了解空间和时间局部性的原理可以使我们对缓存进行一些间接控制。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">double</span> A[max][max],x[max].y[max]<br>    ...<br><span class="hljs-comment">/*Initialize A and x,assign y=0*/</span><br>    ...<br><span class="hljs-comment">/*first pair of loop*/</span><br> <span class="hljs-keyword">for</span>(i=<span class="hljs-number">0</span>;i&lt;max;i++)&#123;<br>     <span class="hljs-keyword">for</span>(j=<span class="hljs-number">0</span>;j&lt;max;j++)&#123;<br>         y[i]+=A[i][j]*x[j];<br>     &#125;<br>&#125;<br><span class="hljs-comment">/*assign y=0*/</span><br><span class="hljs-comment">/*second pair of loop*/</span>     <br> <span class="hljs-keyword">for</span>(j=<span class="hljs-number">0</span>;j&lt;max;j++)&#123;<br>     <span class="hljs-keyword">for</span>(i=<span class="hljs-number">0</span>;i&lt;max;i++)&#123;<br>         y[i]+=A[i][j]*x[j];<br>     &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>假设max=4。 假设A的元素都不在高速缓存中时 循环开始执行。
+假设缓存行由A的四个元素组成，A [0] [0]是第一个缓存行的元素。
+假设缓存为直接映射 而且只能存储A的八个元素或两条缓存行。</p>
+<p>缓存加载时直接加载A数组的四个元素，访问<code>A[0][0]</code>时，缓存已经把紧随其后的
+3 个元素也载入了。</p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/5.png" srcset="/img/loading.gif" lazyload
+alt="5" />
+<figcaption aria-hidden="true">5</figcaption>
+</figure>
+<p>第一次循环导致4次未命中，第二次循环导致16次未命中。</p>
+<h3 id="虚拟内存">虚拟内存</h3>
+<ul>
+<li>如果我们运行一个非常大的程序或访问一个非常大的数据集的程序，则所有指令和数据可能无法放入主存储器中。</li>
+<li>虚拟内存的开发使主存的功能成为二级存储的缓存。</li>
+<li>它利用了时空局部性的原理
+，仅将正在运行的程序的活动部分保留在主内存中</li>
+</ul>
+<h3 id="指令级并行">指令级并行</h3>
+<ul>
+<li>指令级并行或ILP尝试通过以下方法来提高处理器性能：
+多个处理器组件或者功能单元同时地执行指令。
+<ul>
+<li>流水线----功能单元是分阶段安排的。</li>
+<li>多级发射问题----可以同时启动多个指令。</li>
+</ul></li>
+</ul>
+<h4 id="流水线">流水线</h4>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/6.png" srcset="/img/loading.gif" lazyload alt="6" style="zoom:80%;" /></p>
+<p>浮点数加法部件9.87×10^4 and 6.54×10^3</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">float</span> x[<span class="hljs-number">1000</span>],y[<span class="hljs-number">1000</span>],z[<span class="hljs-number">1000</span>]<br>    ..<br><span class="hljs-keyword">for</span>(i=<span class="hljs-number">0</span>;i&lt;<span class="hljs-number">1000</span>;i++)&#123;<br>    z[i]=x[i]+y[i];<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>假设每个操作花费一纳秒（10^-9 秒），该for循环大约需要7000纳秒。</p>
+<p>另一种方案：</p>
+<ol type="1">
+<li>将浮点加法器分为7个单独的硬件或功能单元。</li>
+<li>第一个单元获取两个操作数，第二个单元比较指数，依此类推。</li>
+<li>一个功能单元的输出输入到下一个功能单元。</li>
+<li>可以在7种不同的添加方式中同时执行7个不同的阶段。</li>
+</ol>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/7.png" srcset="/img/loading.gif" lazyload
+alt="流水线加法，表中的数字是操作数/结果的下标" />
+<figcaption
+aria-hidden="true">流水线加法，表中的数字是操作数/结果的下标</figcaption>
+</figure>
+<ul>
+<li>一个浮点加法仍然需要7纳秒。</li>
+<li>但是现在1000个浮点数加法指令需要1006纳秒！</li>
+<li>通常，具有k个阶段的流水线不会获得k倍的性能提升。
+<ul>
+<li>各个功能单元所需的时间不同。</li>
+<li>延迟可能导致管道停顿。</li>
+</ul></li>
+</ul>
+<h4 id="多级发射问题">多级发射问题</h4>
+<p>多极处理器复制功能单元，并试图在一个时钟周期中发射多条指令</p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/8.png" srcset="/img/loading.gif" lazyload
+alt="8" />
+<figcaption aria-hidden="true">8</figcaption>
+</figure>
+<p>静态多级发射：功能单元是在编译时安排的</p>
+<p>动态多级发射：功能单元在运行时进行调度。</p>
+<h4 id="推测">推测</h4>
+<p>为了利用多级发射，系统必须找到可以同时执行的指令。</p>
+<p>在推测中，编译器或处理器对一条指令进行猜测，然后根据该猜测执行该指令。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c">z = x + y ;<br>i <span class="hljs-title function_">f</span> <span class="hljs-params">( z &gt; <span class="hljs-number">0</span>)</span><br>     w = x ;<br>e l s e<br>     w = y ;<br></code></pre></td></tr></table></figure>
+<p>z将大于0嘛?如果系统推测不正确，则必须返回并重新计算w = y。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs c">z = x + y;<br>w = *a_p; <br><span class="hljs-comment">/*  a_p is a pointer  */</span><br></code></pre></td></tr></table></figure>
+<p>a_p不是指z吗？如果系统推测不正确，则必须返回并重新执行分配w = *
+a_p。</p>
+<p>推测执行必须考虑到预测行为不正确的可能性</p>
+<h4 id="硬件多线程">硬件多线程</h4>
+<ul>
+<li><p>并非总是有同时执行指令的好机会。</p></li>
+<li><p><strong>线程级并行</strong>
+尝试通过同时执行不同的线程来提供并行性。 它提供了一 比ILP
+<strong>粗粒度</strong> 并行性。</p></li>
+<li><p><strong>硬件多线程</strong>
+提供了一种方法，使系统在当前正在执行的任务停止时继续进行有用的工作。</p>
+<blockquote>
+<p>例如，当前任务必须等待从内存加载数据。</p>
+</blockquote></li>
+</ul>
+<p><strong>细粒度</strong>：处理器在每条指令后在线程之间切换，跳过停滞的线程。
+优点：避免因停顿而浪费机器时间的潜力。
+缺点：准备好执行长指令序列的线程可能必须等待执行每条指令。</p>
+<p><strong>粗粒度</strong> ：仅切换停滞的线程以等待耗时的操作完成。
+优点：切换线程几乎不需要即时。
+缺点：处理器可以在较短的停顿时间内空闲，并且线程切换也将导致延迟。</p>
+<p><strong>同时多线程 （SMT</strong>）-
+<strong>细颗粒的</strong>多线程的变体 。 
+允许多个线程利用多个功能单元来利用超标量处理器。</p>
+<h2 id="并行硬件">并行硬件</h2>
+<h3 id="flynn分类法">Flynn分类法</h3>
+<ul>
+<li>SISD:单指令单数据流</li>
+<li>SIMD:单指令多数据流</li>
+<li>MISD:多指令单数据流</li>
+<li>MIMD:多指令多数据流</li>
+</ul>
+<p><strong>1.SISD单指令单数据流</strong></p>
+<ul>
+<li>一次执行一条指令，一次获取或存储一项数据</li>
+<li>冯·诺依曼系列机器的型号</li>
+<li>逻辑上，单控制处理器</li>
+</ul>
+<p><strong>2.MISD多指令单数据流</strong></p>
+<ul>
+<li>多指令单数据</li>
+<li>该术语未使用（讨论Flynn分类法时除外）</li>
+<li>也许适用于流水线计算</li>
+</ul>
+<p><strong>3.SIMD单指令多数据流</strong></p>
+<ul>
+<li>将同一条指令应用于多个数据项。</li>
+<li>单个控制单元和多个ALU</li>
+<li>多个处理器以锁步的方式执行相同的程序。</li>
+</ul>
+<blockquote>
+<p>在“经典” SIMD系统中， 每个ALU 在继续之前必须等待下一条指令的广播。
+所有ALU执行相同的指令或处于空闲状态。</p>
+</blockquote>
+<ul>
+<li>通过在处理器之间划分数据来实现并行性。每个处理器看到的数据可能会有所不同。</li>
+</ul>
+<p>例1：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/9.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p>
+<p>如果我们没有数据项那么多的ALU怎么办？</p>
+<blockquote>
+<p>重复划分工作和流程，直至可以划分成功。</p>
+</blockquote>
+<p>例2：m = 4个ALU 和 n = 15个数据项。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/10.png" srcset="/img/loading.gif" lazyload alt="10" style="zoom:67%;" /></p>
+<p>所有ALU执行相同的指令或处于空闲状态。它会降低SIMD系统的整体性能。</p>
+<p>对于大型数据并行问题有效，但对其他类型的更复杂的并行问题则无效。
+示例：矢量处理器</p>
+<p>例3：在SIMD架构上执行</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">if</span>(B==<span class="hljs-number">0</span>)&#123;<br>    C=A;<br>&#125;<span class="hljs-keyword">else</span>&#123;<br>    C=A/B;<br>&#125;<span class="hljs-comment">//a）有条件的陈述；（b）分两步执行该语句。</span><br></code></pre></td></tr></table></figure>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/11.png" srcset="/img/loading.gif" lazyload style="zoom: 67%;"/></p>
+<p><strong>向量处理器</strong></p>
+<p>1.操作数组或数据向量，而传统CPU操作单个数据元素或标量。</p>
+<p>2.最近的典型系统具有 具有以下特点：</p>
+<p>1）向量寄存器。 能够存储操作数的向量并同时对其内容进行操作。</p>
+<p>2）向量化和流水线功能单元。
+将相同的操作应用于向量中的每个元素（或元素对）。</p>
+<p>3）矢量指令。 根据向量而不是标量进行操作。</p>
+<p>4）交错的内村</p>
+<ul>
+<li>多个 ”银行” 内存，可以或多或少地独立访问。</li>
+<li>在访问一个银行之后，在重新访问它之前会有一个延迟，但是访问另一个银行可以快得多。</li>
+<li>如果将一个向量的元素分布到多个行，可以减少或消除加载/存储连续元素的延迟。</li>
+</ul>
+<p>5）交叉记忆访问和硬件分散/聚集</p>
+<ul>
+<li>该程序访问以固定间隔定位的向量的元素。</li>
+<li>分散/收集(在这种情况下)是在不规则的间隔中写入(分散)或读取(收集)向量的元素。</li>
+</ul>
+<p>3.优点</p>
+<ul>
+<li>快速，易用。</li>
+<li>向量化编译器擅长识别可以向量化的代码。</li>
+<li>编译器还可以提供有关无法向量化的循环的信息并提供原因。帮助用户重新评估代码。</li>
+<li>高内存带宽。</li>
+<li>每个加载的数据项是 用过的。</li>
+</ul>
+<p>4.缺点</p>
+<ul>
+<li>它们不处理不规则数据结构以及其他并行体系结构。</li>
+<li>他们处理更大问题的能力受到非常有限的限制。（可扩展性）</li>
+</ul>
+<p><strong>4.MIMD多数据多指令流</strong></p>
+<ul>
+<li>支持多指令流同时执行在多数据流。</li>
+<li>通常由一组完全独立的处理单元或核组成，每个处理单元或核都有自己的控制单元和自己的ALU。</li>
+<li>MIMD系统通常是异步的</li>
+<li>许多MIMD系统都有独立的时钟，示例：共享内存和分布式内存机器</li>
+</ul>
+<p><strong>MIMD物理组织</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/12.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/13.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/14.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p>
+<h3
+id="共享内存系统和分布式内存系统mimd">共享内存系统和分布式内存系统（MIMD）</h3>
+<p>关于细节方面，可以查看这篇博客：https://blog.csdn.net/ibless/article/details/80114009</p>
+<p><strong>1.共享内存系统（UMA也叫SMP和NUMA）</strong></p>
+<ul>
+<li>自治处理器的集合通过互连网络连接到存储系统。</li>
+<li>处理器可以直接访问系统中的所有数据。</li>
+<li>处理器通常通过访问共享数据结构进行隐式通信。</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/15.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p>
+<p>多核处理器在一个芯片上有多个cpu或核心。</p>
+<p>内核具有私有的一级缓存，而其他缓存可能在内核之间共享，也可能不共享。</p>
+<p>在与多个多核处理器共享内存系统,直接互连可以连接所有处理器内存(UMA)或每个处理器可以直接连接到一块内存,处理器可以访问对方的主存块通过特殊硬件内置处理器(NUMA)。</p>
+<p><strong>2.统一内存访问（UMA）</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/16.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p>
+<p>所有内核访问所有内存位置的时间将相同。</p>
+<p><strong>3.非统一内存访问</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/17.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p>
+<p>我觉得博客中给的这个图片会更加直观：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/18.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p>
+<blockquote>
+<p>在每个节点内部都有自己的内存，称之为本地内存。与本地内存相对的是远端内存，对于Node0来说，Node1、Node2、Node3中的内存都是远端内存。在节点中，CPU与内存之间通过片内总线进行连接。各个节点之间通过互联模块（Crossbar
+Switch）进行连接。需要注意的是，NUMA节点中CPU对节点内部内存与节点外部内存的访问是有差异的。依旧是一个CPU对本地内存和远端内存的访问时间是不同的，一般来说，CPU对本地内存的时间要比远端内存的访问速度快1.3--5倍。这也就是称为NUMA（非统一内存访问）的原因。NUMA既然属于共享内存架构，也就是每个CPU都可以访问系统中所有的内存，只不过访问这些内存的速度或方式是有差异的。一般来说，NUMA节点之间是相互连接的，这个有一个Node
+Distance的概念，也就是节点与节点之间的距离是不同的。</p>
+</blockquote>
+<p><strong>4.分布式内存系统</strong></p>
+<ul>
+<li><p>每个处理器都有自己的专用内存</p></li>
+<li><p>处理器通过显式消息传递来共享数据或者特别的职能。</p></li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/19.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p>
+<h3 id="互联网络">互联网络</h3>
+<p>影响分布式和共享内存的性能</p>
+<p>两类：共享内存的互联网络，分布式内存的互联网络</p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/20.png" srcset="/img/loading.gif" lazyload
+alt="20" />
+<figcaption aria-hidden="true">20</figcaption>
+</figure>
+<h4 id="共享内存互连网络">共享内存互连网络</h4>
+<p>BUS interconnet（总线互联）</p>
+<ul>
+<li>一组并行通信线以及一些控制总线访问的硬件。</li>
+<li>通信线由与其连接的设备共享。</li>
+<li>低成本和灵活性</li>
+<li>随着连接到总线的设备数量的增加，使用总线的争用增加，性能降低。</li>
+</ul>
+<p>Switched interconnect（交换互联）</p>
+<ul>
+<li><p>使用交换机控制连接设备之间的数据路由。</p></li>
+<li><p>交叉</p>
+<ul>
+<li>允许不同设备之间同时通信。</li>
+<li>比总线（BUS）快。</li>
+<li>但是交换机和链接的成本相对较高。</li>
+</ul></li>
+</ul>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/21.png" srcset="/img/loading.gif" lazyload
+alt="21" />
+<figcaption aria-hidden="true">21</figcaption>
+</figure>
+<p>（a）一个交叉开关连接4个处理器(Pi)和4个内存模块(Mj)</p>
+<p>（b）内部交换机的配置</p>
+<p>（c）处理器同时访问内存</p>
+<h4 id="分布式内存互联网络">分布式内存互联网络</h4>
+<p>两组</p>
+<ul>
+<li>直接互连（静态网络）
+每个交换机都直接连接到处理器-内存对，并且交换机彼此连接。
+它由处理节点之间的点对点通信链接组成。</li>
+<li>间接互连 （动态网络） 交换机可能未直接连接到处理器。
+它是使用交换机和通信链接构建的。</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/22.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p>
+<h5 id="直接互联">直接互联：</h5>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/23.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p>
+<p>​ （a）环 （b）二维环面网格</p>
+<p>如果有p个处理器，在环面网格链路的数目是3p，但在环中只是2p。</p>
+<p><strong>指标定义：</strong></p>
+<ul>
+<li><p>等分宽度</p>
+<ul>
+<li><p>一种测量“同时通信的链路数目”或者“连接性”的方法</p></li>
+<li><p>并行系统分成两部分，每部分有一半的分水岭处理器或者节点，同时发生通信的次数</p></li>
+<li><p>等分宽度应该给出一个“最坏情况”的估计。</p></li>
+<li><p>计算平分宽度的另一种方法是去掉最少的链路数从而将节点分成两等分，删除的链接的数量是平分宽度。</p></li>
+</ul></li>
+</ul>
+<p>如下图1，等分宽度为2，图2的等分宽度为4，但等分宽度应该为最坏的一种情况，所以是2而不是4。</p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/24.png" srcset="/img/loading.gif" lazyload
+alt="24" />
+<figcaption aria-hidden="true">24</figcaption>
+</figure>
+<p>如果有一个正方形的二维环面网格，有p=q^2（q为偶数）个节点，等分宽度为2√p。</p>
+<ul>
+<li><p>带宽</p>
+<ul>
+<li><p>链路可以传输数据的速率。</p></li>
+<li><p>通常以每秒兆位或兆字节为单位。</p></li>
+</ul></li>
+<li><p>等分带宽</p>
+<ul>
+<li>衡量网络的质量</li>
+<li>不是计算两个等分之间的链路数，而是计算链路的带宽，在环中，如果链路的带宽为10亿位每秒，那么环的等分带宽就是20亿位每秒。</li>
+</ul></li>
+<li><p>延迟和带宽</p>
+<ul>
+<li><p>消息传输时间 t=l+n/b</p></li>
+<li><p>l：latency（延迟），从源开始发送数据到目标开始接收第一个字节之间经过的时间</p></li>
+<li><p>n:消息的长度（bytes）</p></li>
+<li><p>带宽：目标开始接收第一个字节后接收数据的速率（每秒钟）</p></li>
+</ul></li>
+</ul>
+<p><strong>全相连网络</strong>：等分宽度为<code>p^2/4</code>，总共需要<code>p^2/2+p/2</code>条链路，切每个交换机都需要p条链路（不切实际的）</p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/25.png" srcset="/img/loading.gif" lazyload alt="25" style="zoom:67%;" /></p>
+<ul>
+<li>每个交换机都直接与其他每个交换机相连。</li>
+<li>这是“理论上可能的最佳”互连， 但不切实际</li>
+</ul>
+<p><strong>线性网络</strong>：</p>
+<ul>
+<li><p>一维数组</p>
+<ul>
+<li>交换机排列成一维网格</li>
+<li>对应于二维网格的一行或一列</li>
+</ul></li>
+<li><p>环形</p>
+<ul>
+<li>允许在末端的交换机之间进行包络连接的变体。</li>
+<li>本质上支持双向管道</li>
+</ul></li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/26.png" srcset="/img/loading.gif" lazyload alt="26" style="zoom:67%;" /></p>
+<p><strong>多维网格网络</strong>：</p>
+<ul>
+<li><p>网：</p>
+<ul>
+<li><p>将线性阵列推广到2D或3D</p></li>
+<li><p>仅允许相邻交换机之间的通信</p></li>
+</ul></li>
+<li><p>圆环面：</p>
+<ul>
+<li>包括网格边缘上的开关之间的环绕连接的变体（带有环绕的网格）</li>
+</ul></li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/27.png" srcset="/img/loading.gif" lazyload alt="27" style="zoom:67%;" /></p>
+<p><strong>超立方体：</strong></p>
+<ul>
+<li><p>超立方体是一个多维网格，每个维度上恰好有两个处理器。</p></li>
+<li><p>维度为d的超立方体具有p = 2^d 节点。</p></li>
+<li><p>递归的建立</p>
+<ul>
+<li>一维超立方体是由两个处理器的全互联系统</li>
+<li>二维超立方体是由两个一维超立方体组成，并通过“相应”的交换器互联</li>
+<li>三维超立方体是有两个二维超立方体组成，并通过“相应”的交换器互联</li>
+<li>d维超立方体是有两个（d-1）维超立方体组成，并通过“相应”的交换器互联，每个处理器都与d个处理器进行互联。</li>
+<li>等分宽度为d/2，所以它比环或者环面网格连接线更高，但需要更大的交换器，每个交换器必须支持1+d=1+log2（p）连线</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/28.png" srcset="/img/loading.gif" lazyload alt="28" style="zoom:67%;" /></p></li>
+</ul>
+<p><strong>编号方案：</strong></p>
+<p>一个简单的编号方案可以从超立方体的构造推导出来。</p>
+<ul>
+<li>如果有p/2节点的两个子立方体的编号，通过在其中一个子立方体的标签<strong>前</strong>加上“0”，推导出p节点的立方体的编号方案;另一个子立方体的标签为“1”。</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/29.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/30.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p>
+<ul>
+<li>这种编号方案有一个有用的特性，即两个节点之间的最小距离由两个标签中不同的位数给出。
+<ul>
+<li>例如，标记为0110和0101的节点相隔两个链接，因为它们在两个位位置不同。</li>
+<li>这个特性对于推导超立方体体系结构的许多并行算法是有用的。</li>
+</ul></li>
+</ul>
+<h5 id="间接互联">间接互联：</h5>
+<ul>
+<li><p>间接网络的简单示例：</p>
+<ul>
+<li>交叉开关矩阵</li>
+<li>胖树</li>
+<li>........</li>
+</ul></li>
+<li><p>通常显示为具有单向链接和处理器集合，每个处理器都有一个输出链接和一个输入链接，以及一个交换网络。</p></li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/31.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p>
+<ul>
+<li>分布式内存的交叉开关互连（使用p^2个交换器）</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/32.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p>
+<p><strong>Butterfly Network(蝴蝶网)：</strong></p>
+<ul>
+<li>间接拓扑：</li>
+<li>n=2^d的处理器节点，由n(logn+1）交换节点链接</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/33.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/34.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p>
+<p><strong>Omega网络：</strong></p>
+<ul>
+<li><p>交换器是一个2x2的交叉开关矩阵。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/35.png" srcset="/img/loading.gif" lazyload style="zoom: 50%;"/></p></li>
+<li><p>注意与交叉开关不同的是，有一些通信无法进行，例如处理器0给处理器6发送一个消息，这是处理器1就不能同时给处理器7发送消息。</p></li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/36.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p>
+<ul>
+<li><p>omega网络比交叉开关矩阵便宜，omgega网络使用了1/2plog2（p）个交换器，每个交换器是一个2x2的交叉开关矩阵交换器，所以总共使用了2plog2（p）个交换器。</p></li>
+<li><p>一个pxp大小的交叉开关矩阵的等分宽度是p，而一个omega网络的等分宽度是p/2。</p></li>
+</ul>
+<p><strong>Tree Network（树状网络）：</strong></p>
+<ul>
+<li><p>树状网络是指任意一对节点之间只有一条路径的网络。</p></li>
+<li><p>静态树型网络在树的每个节点上都有一个处理元素。</p></li>
+<li><p>在一个 动态树网络，中间级别的节点是交换节点，叶节点是
+处理元素。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/37.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p>
+<p>​ （a）静态树网络 （b）动态树网络</p></li>
+<li><p>如何在树中路由？</p>
+<ul>
+<li>源节点向上发送消息，直到到达同时包含源节点和目标节点的最小子树的根节点。</li>
+<li>然后将消息沿着树路由到目标节点。</li>
+</ul></li>
+<li><p>树状网络在树的更高层次上遭受通信瓶颈。（对根节点的依赖性大：如果根节点发生故障，则整个网络都不能正常工作）</p></li>
+</ul>
+<p><strong>Fat Tree Network(胖树网络)</strong>：</p>
+<p>更多细节可以参考这篇博客https://blog.csdn.net/u012925450/article/details/108493968</p>
+<ul>
+<li><p>间接拓扑</p></li>
+<li><p>在树的更高级别上使用更宽的链接</p></li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/38.png" srcset="/img/loading.gif" lazyload alt="38" style="zoom:67%;" /></p>
+<h3 id="内存层次结构和缓存一致性">内存层次结构和缓存一致性</h3>
+<h4 id="内存层次结构">内存层次结构</h4>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/39.png" srcset="/img/loading.gif" lazyload alt="39" style="zoom:67%;" /></p>
+<ul>
+<li><p>多级内存层次</p></li>
+<li><p>越靠近CPU的级别访问速度更大</p></li>
+<li><p>如果数据访问之间存在空间和时间局部性，则高速缓存存储器会很好地工作</p></li>
+<li><p>内存延迟</p></li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/40.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p>
+<h4 id="缓存一致性">缓存一致性：</h4>
+<ul>
+<li>共享内存的一个重要问题</li>
+<li>处理器可能会缓存相同的位置</li>
+<li>如果一个处理器写入该位置，所有其他处理器最终都必须看到该次写入</li>
+</ul>
+<p>假设内存中有x变量的值1。 P1从内存加载x到自己的cache。
+P2从内存加载x到自己的cache。
+P1把自己的cache2的x修改为2，此时就产生了cache不一致的情况。
+内存中的x就会被修改为2，P2的cache也被修改为2。来确保所有的处理器最终看到相同的x值</p>
+<p>例子：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/41.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p>
+<p>我们假设，y0这个变量被core 0私有。y1和z1被core1所私有。</p>
+<p>x=2为共享变量。</p>
+<p>接下来按照指定时序执行下面的语句:</p>
+<table>
+<thead>
+<tr class="header">
+<th>time</th>
+<th>core 0</th>
+<th>core 1</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>y0=x</td>
+<td>y1=3x</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>x=7</td>
+<td>没有包含x的语句</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>没有包含x的语句</td>
+<td>z1的4x</td>
+</tr>
+</tbody>
+</table>
+<p>y0的最终值为2，y1的最终值为6。</p>
+<p>但是z1的值是什么？</p>
+<p>第一感觉可能是z=28，但是在时间0时，x=2已经在core
+1的cache中了。除非出于某些特殊原因，x清除core
+0的cache，然后重新加载到core
+1的cache中；若没有上述情况，通常还是会使用原来的值为x=2，所以z=8。</p>
+<p>这种不可预测的行为与写直达还是写回策略无关。如果采用写直达，内存中的x会因赋值而更新，但是这与core1的cache值无关。如果采用写回，那么更新z1的时候，x在core
+0的cache中的新值对于core1还是不可用的。</p>
+<blockquote>
+<p>程序员无法控制缓存以及何时更新缓存。</p>
+</blockquote>
+<p><strong>与共享数据有关的问题：</strong></p>
+<p>缓存一致性问题：</p>
+<ul>
+<li>跨多个缓存复制数据可减少处理器之间对共享数据值的争用。</li>
+<li>但是，我们如何确保不同的处理器对于相同的地址有相同的值呢?</li>
+<li>缓存一致性问题是当一个过时的值仍然存储在处理器的缓存中。</li>
+<li>cache一致性保证的是在CPU<strong>访问</strong>到某个cache
+line时，其中的数据是和内存的对应位置，以及和其他CPU对应的cache
+line是一致的。</li>
+</ul>
+<p>缓存一致性机制：</p>
+<ul>
+<li>更新vs无效</li>
+<li>基于监听的vs基于目录的（协议）</li>
+</ul>
+<p>缓存一致性协议：</p>
+<ul>
+<li>更改变量的值时：
+使所有副本<strong>无效</strong>还是<strong>更新</strong>呢？</li>
+<li>这两个协议都会产生伪共享（后面会有讲解）。</li>
+</ul>
+<p>内存一致性（回忆一下）：</p>
+<ul>
+<li>写直达：当该行被写入缓存的同时，它被写入主存。</li>
+<li>数据不会立即写入。缓存中的更新数据被标记为旧值，当缓存线被内存中的新缓存线替换时，旧值被写入内存。</li>
+</ul>
+<p>比较：</p>
+<ul>
+<li><p>写无效：当处理器写入本地缓存时，其他缓存的副本必须失效</p>
+<ul>
+<li>写直达：它还会更新内存中的副本</li>
+<li>写回：它使内存中的副本无效。</li>
+</ul></li>
+<li><p>写更新：当处理器写入本地缓存时，其他缓存的副本必须更新</p>
+<ul>
+<li>写直达：它还会更新内存中的副本</li>
+<li>写回：数据不会立即写入。缓存中的更新数据被标记为旧值，当缓存线被内存中的新缓存线替换时，旧值被写入内存。</li>
+</ul></li>
+<li><p>问题：成本效益权衡取决于流量模式</p>
+<ul>
+<li><p>什么时候invalidate更坏一点？</p>
+<p>一个生产者生产数据，多个消费者消费数据</p></li>
+<li><p>什么时候update更坏一点？</p>
+<p>1.在另一个CPU读取数据之前一个CPU进行多次写操作。</p>
+<p>2.缓存被不再读取的数据填满</p></li>
+</ul></li>
+</ul>
+<p>使用写无效协议：</p>
+<ul>
+<li><p>现代计算机使用无效协议作为默认协议 （为什么？）</p>
+<p>具体实现细节可以查看这篇博客，https://zhuanlan.zhihu.com/p/95435168
+，原因部分放在下面：</p>
+<blockquote>
+<p>当某个CPU更改了自己的cache
+line中的共享变量的值时，其他也拥有这个共享变量的cache
+line拷贝的CPU会做什么？比如P2往cache
+line中的变量写入了13，那么P1会立刻更新自己cache
+line中该变量的值，将其也变成13么？</p>
+<p>假设过一会儿P2又将这个变量的值改为了18，照此逻辑，P1也应该立刻更新变量的值为18，但如果在此期间，P1根本就没有访问这个变量，那它的值是13还是18，根本就没有关系，更新岂不是做了无用功。</p>
+<p>在其他CPU对共享变量有写操作之后立刻更新的做法，被称为Write
+Update，这种方法逻辑简单，但效率不高，更好的做法是在其他CPU(P2)对cache
+line有写操作之后，(P1)仅仅是把自己的cache中对应的cache
+line标记为Invalid的状态，这种做法被称为Write Invalidate。</p>
+</blockquote></li>
+<li><p>数据项的每个副本都与一个状态相关联</p></li>
+<li><p>状态示例集:共享、无效或修改(MSI协议)</p>
+<ul>
+<li>Shared：数据项的多个有效副本（写需要变为Modified，并且产生invalid）</li>
+<li>Modified：仅存在一个副本（写不改变状态）</li>
+<li>Invalid：数据副本无效的（读产生数据请求并且更新状态为shared）</li>
+<li>下图为其状态转换表（实线表示处理器动作，虚线表示一致性动作(总线监听动作)）</li>
+</ul></li>
+</ul>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/42.png" srcset="/img/loading.gif" lazyload
+alt="42" />
+<figcaption aria-hidden="true">42</figcaption>
+</figure>
+<p>提示：这组状态和转换并不是唯一的。也可以定义其他状态和相关的转换。(如:MESI)，其中E为exclusive（独占的）</p>
+<h5 id="监听cache一致性协议">监听Cache一致性协议</h5>
+<ul>
+<li><p>核心共享一个总线(不是必需的，但支持广播)。</p></li>
+<li><p>总线上传输的任何信号都可以被连接到总线上的所有核心“看到”</p></li>
+<li><p>当核心0更新存储在其缓存中的x副本时，它也会在总线上广播该信息。</p></li>
+<li><p>如果核心1正在“监听”总线，它将看到x已经被更新，它可以将x的副本标记为无效。</p></li>
+<li><p>如何将无效文件发送到正确的处理器?</p>
+<ul>
+<li>广播所有无效和读请求</li>
+<li>监听Cache监听并且在本地做出适当的一致性操作</li>
+</ul></li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/43.png" srcset="/img/loading.gif" lazyload alt="43" style="zoom:67%;" /></p>
+<ul>
+<li><p>监听Cache的操作</p>
+<ul>
+<li>一旦数据被标记为dirty(modified)，所有后续操作都可以在本地缓存中执行，无需外部传输</li>
+<li>如果一个数据项被多个处理器读取，在所有缓存中转换到共享状态，所有随后的读操作都变成本地操作</li>
+<li>但是，如果多个处理器读取和更新相同的数据，就会出现一个基本的瓶颈问题，在总线上生成一致性请求，总线受带宽限制，每秒更新次数受到限制</li>
+<li>如果是写直达Cache，不需要额外的互联网络，因为每个核都能检测写；如果是写回Cache，需要额外的通信，因为对Cache的更新不会立即发送给内存。</li>
+</ul></li>
+<li><p>一致性的花费</p>
+<ul>
+<li>监听Cache：每个一致性的操作都要被发送给所有的处理器。</li>
+<li>为什么不将一致性请求只发送给那些需要被通知的处理器呢?（于是产生了基于目录的Cache一致性监听协议）</li>
+</ul></li>
+</ul>
+<h5 id="基于目录的cache一致性协议">基于目录的Cache一致性协议</h5>
+<ul>
+<li><p>基于目录：共享状态保存在目录中</p></li>
+<li><p>存在位：表示缓存块和缓存它们的处理器的位图。</p></li>
+</ul>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/44.png" srcset="/img/loading.gif" lazyload
+alt="44" />
+<figcaption aria-hidden="true">44</figcaption>
+</figure>
+<p>例子：</p>
+<p>x=1；</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>P0</th>
+<th>P1</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Time 0</td>
+<td>load x</td>
+<td>load x</td>
+</tr>
+<tr class="even">
+<td>Time 1</td>
+<td>write #3</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>1.当处理器P0和P1访问与变量x对应的块时，会发生什么？</p>
+<p>当处理器 P0 和 P1 访问与变量 x
+相对应的块时，块的状态更改为共享，并更新了存在位以指示处理器 P0 和 P1
+共享块。</p>
+<p>2.当P0写入变量时，会发生什么？</p>
+<p>当 P0 在变量上执行存储时，目录中的状态更改为脏，P1
+的存在位被重置。在处理器 P0
+上执行的此变量的所有后续操作都可以在本地进行。</p>
+<p>3.如果另一个处理器读取该值，将会发生什么？</p>
+<p>如果其他处理器读取了该值，目录会注意到脏标签，并使用存在位将请求直接指向相应的处理器。处理器
+P0
+更新内存中的块，并将其发送到请求处理器。存在位将进行修改以反映此情况，状态更新为共享。</p>
+<ul>
+<li><p>基于目录方案的性能</p>
+<ul>
+<li>开销:状态更新的传播(通信开销);从目录生成状态信息(争用)</li>
+<li>如果一个并行程序需要大量的一致性操作(大量的读写共享数据块)，目录最终会限制它的并行性能</li>
+<li>存储目录的位可能会增加很大的开销-考虑扩展到许多处理器</li>
+<li>目录成为一个争论点--分布式目录方案是必要的</li>
+</ul></li>
+<li><p>分布式目录</p>
+<ul>
+<li>分布式目录方案的性能：比监听系统或集中式目录系统更具可扩展性</li>
+<li>允许O（p）处理器同时进行一致性运算</li>
+<li>底层网络必须承载所有一致性请求</li>
+<li>网络的延迟和带宽成为根本的性能瓶颈</li>
+</ul></li>
+</ul>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/45.png" srcset="/img/loading.gif" lazyload
+alt="45" />
+<figcaption aria-hidden="true">45</figcaption>
+</figure>
+<h5 id="伪共享">伪共享</h5>
+<p>伪共享指的是不同处理器更新同一缓存线的不同部分的情况。
+CPU缓存在缓存行而不是单个变量上运行。</p>
+<p>具体细节可以参考这篇<a
+target="_blank" rel="noopener" href="https://www.cnblogs.com/cyfonly/p/5800758.html">博客</a></p>
+<p>串行版本：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> i,j,m,n;<br><span class="hljs-type">double</span> y[m];<br><span class="hljs-comment">/*Assign y=0*/</span><br>...<br><span class="hljs-keyword">for</span>(i=<span class="hljs-number">0</span>;i&lt;m;i++)&#123;<br>	<span class="hljs-keyword">for</span>(j=<span class="hljs-number">0</span>;j&lt;n;j++)&#123;<br>        y[i]=f(i,j)<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>并行版本：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">/*private varibles*/</span><br><span class="hljs-type">int</span> i,j,iter_count;<br><span class="hljs-comment">/*shared varibles initialzed by one core*/</span><br><span class="hljs-type">int</span> m,n,core_count;<br><span class="hljs-type">double</span> y[m];<br>iter_count=m/core_count;<br><span class="hljs-comment">/*Core 0 does this*/</span><br><span class="hljs-keyword">for</span>(i=<span class="hljs-number">0</span>;i&lt;iter_count;i++)&#123;<br>    <span class="hljs-keyword">for</span>(j=<span class="hljs-number">0</span>;j&lt;n;j++)&#123;<br>        y[i]=f(i,j);<br>    &#125;<br>&#125;<br><span class="hljs-comment">/*Core 1 does this*/</span><br><span class="hljs-keyword">for</span>(i=iter_count;i&lt;<span class="hljs-number">2</span>*iter_count;i++)&#123;<br>    <span class="hljs-keyword">for</span>(j=<span class="hljs-number">0</span>;j&lt;n;j++)&#123;<br>        y[i]=f(i,j);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>假设共享内存系统有2个核，m = 8，y
+[0]存储在高速缓存行的开头，并且高速缓存行可以存储8个双精度数，而y占用一个完整的高速缓存行。</p>
+<p>当核心0和核心1同时执行其代码时会发生什么？</p>
+<p>因为y的所有值都存储在单个告诉缓冲行中，所有每次一个核执行语句y[i]=f(i,j),高速缓存行就会失效，当另一个核尝试执行该语句的时候由于自己的状态为invalid，就必须从内存中将更新过的高速缓存行取出。尽管核0和核1不会访问对方的元素，但大量的赋值操作会访问主存，这就是伪共享。</p>
+<ul>
+<li>伪的共享不会导致错误的结果。</li>
+<li>他能引起过多不必要的访存，降低程序的性能。</li>
+</ul>
+<h2 id="并行软件">并行软件</h2>
+<p>硬件和编译器可以跟上所需的步伐</p>
+<p>软件上的负担：</p>
+<ul>
+<li>在共享内存程序中
+<ul>
+<li>开始一个进程并分支线程数。</li>
+<li>线程执行任务。</li>
+</ul></li>
+<li>在分布式内存程序中
+<ul>
+<li>开始多个进程</li>
+<li>进程执行任务</li>
+</ul></li>
+</ul>
+<h3 id="spmd单程序多数据流">SPMD单程序多数据流</h3>
+<p>SPMD程序不是在每个核上运行不同的程序，由一个可执行文件组成，通过实验分支指令在执行的时候表现的像是在不同处理器上执行不同的程序。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">if</span>(I<span class="hljs-number">&#x27;</span>m thread/process <span class="hljs-number">0</span>) <br>   <span class="hljs-keyword">do</span> this;<br><span class="hljs-keyword">else</span><br>   <span class="hljs-keyword">do</span> that;<br></code></pre></td></tr></table></figure>
+<p>SPMD可以实现数据并行</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">if</span>(I<span class="hljs-number">&#x27;</span>m thread/process <span class="hljs-number">0</span>) <br>   operate on the first half of the <span class="hljs-built_in">array</span>;<br><span class="hljs-keyword">else</span><br>   opearte on the second half of the <span class="hljs-built_in">array</span>;<br></code></pre></td></tr></table></figure>
+<p><strong>编写并行程序</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">double</span> x[n], y[n];<br>…<br><span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; n; i++)<br>     x[i] += y[i];<br></code></pre></td></tr></table></figure>
+<p>假如有p个进程，可以让进程0负责0,......，n/p-1的相加，进程1负责n/p....2n/p-1的相加，以此类推。</p>
+<p>1.将工作划分为多个进程/线程</p>
+<figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs diff"><span class="hljs-deletion">-每个进程/线程获得的工作量大致相同</span><br><br><span class="hljs-deletion">-沟通被最小化</span><br></code></pre></td></tr></table></figure>
+<p>2.安排进程/线程进行同步</p>
+<p>3.安排进程/线程之间的通信。</p>
+<h3 id="共享内存">共享内存</h3>
+<ul>
+<li><p>动态线程</p>
+<ul>
+<li>主线程等待工作，派生新线程，并在线程完成后终止。</li>
+<li>有效利用资源，但是创建和终止线程非常耗时。</li>
+</ul></li>
+<li><p>静态线程</p>
+<ul>
+<li>创建并分配工作的线程池，但是直到清理后才终止。</li>
+<li>更好的性能，但可能浪费系统资源。</li>
+</ul></li>
+<li><p>不确定性</p>
+<ul>
+<li>如果给定的输入可以导致不同的输出，则计算是不确定的。</li>
+</ul></li>
+</ul>
+<p>例如下面的一段程序：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs c">。。。<br><span class="hljs-built_in">printf</span>（“线程％d&gt; my_val =％d \ n”， my_rank，my_x）;<br>。。。<br></code></pre></td></tr></table></figure>
+<p>假设线程1中的值为19，线程0的值为7</p>
+<p>最后的输出有两种情况。</p>
+<p>情况1：</p>
+<p>线程1&gt; my_val = 19 线程0&gt; my_val = 7</p>
+<p>情况2：</p>
+<p>线程0&gt; my_val = 7 线程1&gt; my_val = 19</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs c">my_val = Compute_val（my_rank）;<br>x + = my_val;<br></code></pre></td></tr></table></figure>
+<p>假设x为共享内存中的值初始化为0，那么调用之后我们所期望的结果为19+7+0=28。
+但是我们如果按照下述顺序进行执行：</p>
+<table>
+<thead>
+<tr class="header">
+<th>time</th>
+<th>core 0</th>
+<th>core 1</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>完成对my_value的赋值</td>
+<td>调用compute_val</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>把x=0加载到寄存器</td>
+<td>完成对my_value的赋值</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>把my_value=7加载到寄存器</td>
+<td>把x=0加载到寄存器</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>my_value与x相加</td>
+<td>把my_value=19加载到寄存器</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>存储x=7</td>
+<td>my_vlaue与x相加</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td>开始其他工作</td>
+<td>存储x=19</td>
+</tr>
+</tbody>
+</table>
+<p>按照如此顺序，x最后的值为19，不同的执行顺序，可能导致不同的结果。</p>
+<ul>
+<li>竞争条件</li>
+<li>临界区</li>
+<li>互斥</li>
+<li>互斥锁定</li>
+</ul>
+<p>我们可以更改上面的代码如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c">my_val = Compute_val（my_rank）;<br>Lock（＆add_my_val_lock）;<br>x + = my_val;<br>Unlock（＆add_my_val_lock）;<br></code></pre></td></tr></table></figure>
+<p>使用互斥量增加了串行性。可以有代替互斥量的方法：</p>
+<p>在忙等待时：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c">ok_for_1=<span class="hljs-literal">false</span>;<br><br>my_val = Compute_val ( my_rank ) ;<br><span class="hljs-keyword">if</span> ( my_rank == <span class="hljs-number">1</span>)<br>     <span class="hljs-keyword">while</span> ( ! ok_for_1 ) ;  <span class="hljs-comment">/* Busy−wait loop */</span><br>x += my_val ;  <span class="hljs-comment">/* Critical section */</span><br><span class="hljs-keyword">if</span> ( my_rank == <span class="hljs-number">0</span>)<br>     ok_for_1 = <span class="hljs-literal">true</span> ;  <span class="hljs-comment">/* Let thread 1 update x */</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li>分布式内存</li>
+</ul>
+<p>消息传递的方式：API至少提供一个发送函数和一个接受函数。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">char</span> message [ <span class="hljs-number">1</span> <span class="hljs-number">0</span> <span class="hljs-number">0</span> ] ;<br>. . .<br>my_rank = Get_rank ( ) ;<br><span class="hljs-keyword">if</span> ( my_rank == <span class="hljs-number">1</span>) &#123;<br>     <span class="hljs-built_in">sprintf</span> ( message , <span class="hljs-string">&quot;Greetings from process 1&quot;</span> ) ;<br>     Send ( message , MSG_CHAR , <span class="hljs-number">100</span> , <span class="hljs-number">0</span> ) ;<br>&#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> ( my_rank == <span class="hljs-number">0</span>) &#123;<br>     Receive ( message , MSG_CHAR , <span class="hljs-number">100</span> , <span class="hljs-number">1</span> ) ;<br>     <span class="hljs-built_in">printf</span> ( <span class="hljs-string">&quot;Process 0 &gt; Received: %s\n&quot;</span> , message ) ;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>程序段为SPMD。 变量消息引用不同进程上的不同内存块。</p>
+<ul>
+<li><p>单向通信</p>
+<ul>
+<li>在单向通信或远程内存访问中，单个进程将调用一个函数。</li>
+<li>这样可以简化沟通。 它可以大大降低通信成本。</li>
+<li>这些优点中的某些优点在实践中可能难以实现。</li>
+</ul></li>
+<li><p>划分全局地址空间的语言</p>
+<ul>
+<li><p>允许用户使用某些共享内存技术对分布式内存硬件进行编程。</p></li>
+<li><p>考虑下面的共享内存向量加法的伪代码</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs c">shared <span class="hljs-type">int</span> n = . . . ;<br>shared <span class="hljs-type">double</span> x [ n ] , y [ n ] ;<br>private <span class="hljs-type">int</span> i , my_first_element , my_last_element ;<br>my_first_element = . . . ;<br>my_last_element = . . . ;<br>/ * Initialize x and y  */<br>. . .<br><span class="hljs-keyword">for</span> ( i = my_first_element ; i &lt;= my_last_element ; i++)<br>     x [ i ] += y [ i ] ;<br></code></pre></td></tr></table></figure>
+<p>首先定义两个共享数组，x和y。如果分配的核同时拥有x和y的元素，那么执行速度是很快的，但是如果核分配的全为x或者y，那么程序的性能非常糟糕，因为每次都要访问自己远端的内存。</p></li>
+<li><p>私有变量被分配到执行进程的核心的局部内存中，<strong>共享数据结构</strong>中的数据分布由程序员控制。</p></li>
+</ul></li>
+</ul>
+<h2 id="输入和输出">输入和输出</h2>
+<p>当我们的并行程序需要执行I / O时，请进行以下假设并遵循以下规则：</p>
+<ul>
+<li>在分布式内存程序中，只有进程0会访问stdin。在共享内存程序中，只有主线程或线程0将访问stdin。</li>
+<li>在分布式内存和共享内存程序中，所有进程/线程都可以访问stdout和stderr。</li>
+<li>但是，由于输出到stdout的顺序不确定，在大多数情况下，除了调试输出之外，所有输出到stdout的只有一个进程/线程。</li>
+<li>调试输出应该始终包括生成输出的进程/线程的级别或id。</li>
+<li>只有单个进程/线程将尝试访问除stdin、stdout或stderr之外的任何单个文件。例如，每个进程/线程可以打开自己的私有文件进行读写，但没有两个进程/线程会打开相同的文件。</li>
+</ul>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/distributed-parallel-computing/" class="category-chain-item">distributed-parallel-computing</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">#分布式</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>第二章：架构</div>
+      <div>http://onepoint.link/2021/10/02/distributed-parallel-computing/2.架构/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>yi-ge-dian</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2021年10月2日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/10/03/distributed-parallel-computing/3.%E5%B9%B6%E8%A1%8C%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1/" title="第三章：并行程序设计">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">第三章：并行程序设计</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/10/01/distributed-parallel-computing/1.%E4%BB%8B%E7%BB%8D/" title="第一章：介绍">
+                        <span class="hidden-mobile">第一章：介绍</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="lv-container" data-id="city" data-uid="MTAyMC81NjY1My8zMzExNw">
+    <script type="text/javascript">
+      Fluid.utils.loadComments('#lv-container', function() {
+        Fluid.utils.createScript('https://cdn-city.livere.com/js/embed.dist.js');
+      });
+    </script>
+    <noscript>Please enable JavaScript to view the comments</noscript>
+  </div>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+    <!-- 备案信息 ICP for China -->
+    <div class="beian">
+  <span>
+    <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+      蜀ICP备2022013781号
+    </a>
+  </span>
+  
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

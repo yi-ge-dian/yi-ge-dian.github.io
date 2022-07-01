@@ -1,0 +1,1242 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="yi-ge-dian">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="算法设计方法 Foster设计方法： 并行算法设计的四个阶段 ：  Partitioning（分区） Communication（通信） Agglomeration（聚集） Mapping（映射）  分区和通信:处理机器独立的问题，影响并发性和可伸缩性 聚集和映射:处理与机器相关的问题，影响局部性和其他性能问题  Partitioning（分区）  阶段 1. 分区：将要执行的计算和计算操作的数据">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第三章：并行程序设计">
+<meta property="og:url" content="http://onepoint.link/2021/10/03/distributed-parallel-computing/3.%E5%B9%B6%E8%A1%8C%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1/index.html">
+<meta property="og:site_name" content="onepoint">
+<meta property="og:description" content="算法设计方法 Foster设计方法： 并行算法设计的四个阶段 ：  Partitioning（分区） Communication（通信） Agglomeration（聚集） Mapping（映射）  分区和通信:处理机器独立的问题，影响并发性和可伸缩性 聚集和映射:处理与机器相关的问题，影响局部性和其他性能问题  Partitioning（分区）  阶段 1. 分区：将要执行的计算和计算操作的数据">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/parallel.jpeg">
+<meta property="article:published_time" content="2021-10-02T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-10-02T16:00:00.000Z">
+<meta property="article:author" content="yi-ge-dian">
+<meta property="article:tag" content="分布式">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/parallel.jpeg">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>第三章：并行程序设计 - onepoint</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"onepoint.link","root":"/","version":"1.9.2","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":"dd82cbda8f486148a18105c55a23ec08","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>OnePoint</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="第三章：并行程序设计"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2021-10-03 00:00" pubdate>
+          2021年10月3日 凌晨
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          7.3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          62 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">第三章：并行程序设计</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="算法设计方法">算法设计方法</h2>
+<h3 id="foster设计方法">Foster设计方法：</h3>
+<p>并行算法设计的四个阶段 ：</p>
+<ul>
+<li>Partitioning（分区）</li>
+<li>Communication（通信）</li>
+<li>Agglomeration（聚集）</li>
+<li>Mapping（映射）</li>
+</ul>
+<p>分区和通信:处理机器独立的问题，影响并发性和可伸缩性
+聚集和映射:处理与机器相关的问题，影响局部性和其他性能问题</p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/46.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p>
+<h4 id="partitioning分区">Partitioning（分区）</h4>
+<ul>
+<li><p>阶段 1. 分区：将要执行的计算和计算操作的数据分成小任务。</p></li>
+<li><p>尽可能多地确定可以并行执行的任务。</p></li>
+<li><p>两种方法：</p>
+<ul>
+<li>区域分解：①将数据分成几部分②确定如何将计算与数据相关联</li>
+<li>功能分解：①将计算分成几部分②确定如何将数据与计算相关联</li>
+</ul></li>
+</ul>
+<h5 id="区域分解">区域分解</h5>
+<ul>
+<li><p>如果可能， 把数据分切成大小相同的小块。</p></li>
+<li><p>生成多个任务，每个任务都有一些数据和数据操作集。</p></li>
+<li><p>好的经验法则是首先关注最大的数据结构或最常访问的数据结构。</p></li>
+</ul>
+<p>例子：大气模型的 3 维模型的 1 维、2 维或 3 维分解。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/47.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p>
+<h5 id="功能分解">功能分解</h5>
+<ul>
+<li><p>最初的重点是要执行的计算，而不是数据。</p></li>
+<li><p>功能分解是区域分解的补充策略。</p></li>
+<li><p>这些任务的数据需求可能是脱节的，或者它们可能会有很大的重叠。</p></li>
+<li><p>通常，函数分解产生的任务集合通过流水线实现并发。</p></li>
+</ul>
+<p>例子：一种支持交互式图像引导手术的系统</p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/48.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p>
+<ul>
+<li>功能分解作为程序结构化技术也发挥着重要作用。</li>
+</ul>
+<p>这种情况经常出现在复杂系统的计算机模型中，这些模型可能是通过接口连接的简单模型的集合。</p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/49.png" srcset="/img/loading.gif" lazyload
+alt="49" />
+<figcaption aria-hidden="true">49</figcaption>
+</figure>
+<h5 id="区域分解vs功能分解">区域分解vs功能分解</h5>
+<p>每个组件可以使用区域分解技术自然地并行化，如果系统首先使用功能分解技术进行分解，那么作为一个整体，并行算法会更简单。</p>
+<h5 id="分区检查清单">分区检查清单</h5>
+<ul>
+<li><p>您的分区定义的任务是否至少比目标并行计算机中的处理器多一个数量级？（如果该条件不能满足的话，则后面的设计将受到很大限制）</p></li>
+<li><p>您的分区是否避免了冗余计算和存储需求？（如果该条件不能满足的话，则该设计
+在问题规模增加的时候可能效果不佳）</p></li>
+<li><p>任务的大小是否大致相同？（如果该条件不能满足的话，则难以平衡处理器之间的工作）</p></li>
+<li><p>任务数量是问题规模的增函数吗？（如果该条件不能满足的话，则也许不能使用更多的处理器去求解更大规模的问题）</p></li>
+<li><p>您是否确定了几个可选分区？（如果该条件不能满足的话，则也许不需要使用该分区方法）</p></li>
+</ul>
+<p><strong>为什么我们的目标是识别尽可能多的原始任务？</strong></p>
+<blockquote>
+<p>因为它迫使我们考虑广泛的并行执行机会。</p>
+</blockquote>
+<h4 id="communication通信">Communication（通信）</h4>
+<ul>
+<li><p>阶段2.通信：确定在前一步确定的任务中需要进行什么沟通。</p>
+<ul>
+<li>由上述分区生成的任务，目的是并发执行，而不是独立执行。</li>
+<li>在一个任务中执行的计算需要来自另一个任务的数据。</li>
+<li>信息流是在通信阶段指定的。</li>
+<li>我们可以将两个任务之间的通信需求概念化为连接任务的通道(消息传递)。</li>
+</ul></li>
+<li><p>以上对于功能分解是容易的，对于区域分解则不容易。（WHY？）</p>
+<blockquote>
+<p>在区域分解问题中，通信需求可能很难确定。回想一下，该策略通过首先将数据结构划分为不相交的子集，然后将仅在该数据上操作的操作与每个数据关联来生成任务。这部分设计通常很简单。但是，一些需要来自多个任务的数据的操作通常仍然存在。然后需要通信来管理执行这些任务所需的数据传输。以一种有效的方式组织这种交流是很有挑战性的。即使是简单的分解也可能有复杂的通信结构。相比之下，通过功能分解获得的并行算法中的通信需求通常是直接的：它们对应于任务之间的数据流。例如，在按功能分解为大气模型、海洋模型等的气候模型中，通信需求将对应于组件子模型之间的接口：大气模型将生成海洋模型使用的值，依此类推。</p>
+</blockquote></li>
+</ul>
+<h5 id="通信模式1">通信模式1</h5>
+<ul>
+<li><p>本地通讯</p>
+<ul>
+<li>任务需要来自少量相邻任务的值</li>
+<li>创建说明数据流的通道</li>
+</ul>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/50.png" srcset="/img/loading.gif" lazyload
+alt="50" />
+<figcaption aria-hidden="true">50</figcaption>
+</figure></li>
+<li><p>全局通讯</p>
+<ul>
+<li>大量相邻任务和远程任务都提供数据来执行计算</li>
+<li>通常，不要在设计早期为它们创建通道</li>
+<li>可能会导致<strong>过多的通信</strong>或可能<strong>限制并发执行</strong>的机会</li>
+<li>一种集中求和算法，使用一个中央管理器任务(S)对分布在N个任务中的N个数字求和。N
+= 8</li>
+</ul>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/51.png" srcset="/img/loading.gif" lazyload
+alt="51" />
+<figcaption aria-hidden="true">51</figcaption>
+</figure></li>
+<li><p>在基于纯本地通信视图的算法中，有两个普遍问题会阻碍高效的并行执行：</p>
+<p>1.算法是集中的:它不分配计算和通信。每个操作都必须有一个单独的任务参与。</p>
+<p>2.算法是顺序的:它不允许多个计算和通信操作并发进行。</p>
+<p>常用方法：</p>
+<ul>
+<li>分布式通信计算</li>
+<li>揭示并发:分而治之</li>
+</ul></li>
+<li><p>分布式通信计算</p>
+<p>通过使每个任务 i 分配 N
+个数字的总和，计算总和<code>Si=Xi+Si-1</code></p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/52.png" srcset="/img/loading.gif" lazyload
+alt="52" />
+<figcaption aria-hidden="true">52</figcaption>
+</figure>
+<ul>
+<li>一种求和算法，将数组中的N个任务连接起来，以便对分布在这些任务中的N个数字求和。</li>
+<li>每个通道都标有使用该通道的步骤号和在其上通信的值。</li>
+<li>单个求和仍然需要N-1步，但是只有当多个求和操作要执行时，才允许并发执行。</li>
+</ul></li>
+<li><p>分而治之</p>
+<ul>
+<li>为了解决一个复杂的问题，要把它划分成两个或更多大小大致相同的较简单的问题。这个过程被递归地应用来产生一组不能被进一步细分的子问题。</li>
+<li>当问题划分产生的子问题能够并行解决时，分治法在并行计算中是有效的。</li>
+</ul>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/53.png" srcset="/img/loading.gif" lazyload
+alt="53" />
+<figcaption aria-hidden="true">53</figcaption>
+</figure></li>
+</ul>
+<p>完整的和在<strong>logN</strong>步骤之后的树的根处可以求到。
+其结果是一个常规的通信结构，其中每个任务与一小组邻居通信。</p>
+<h5 id="通信模式2">通信模式2</h5>
+<ul>
+<li>结构化通信
+<ul>
+<li>一个任务和它的邻居形成一个规则的结构，例如：树或网格</li>
+</ul></li>
+<li>非结构化通信
+<ul>
+<li>网络可能是任意的图形</li>
+<li>非结构化通信使聚集和映射任务复杂化。</li>
+<li>如果通信需求是动态的，那么必须在程序执行期间频繁地应用负载平衡算法，并且必须权衡这些算法的成本和收益。</li>
+</ul></li>
+<li>通信
+<ul>
+<li>任务间的通信是并行算法开销的一部分。</li>
+<li>最小化并行开销是并行算法设计的一个重要目标。</li>
+</ul></li>
+</ul>
+<h5 id="通信检查清单">通信检查清单</h5>
+<ul>
+<li>任务之间的通信操作是否平衡？（不平衡的通信需求意味着一个不可伸缩的结构。重新审视您的设计，看看是否可以更公平地分配通信操作。例如，如果频繁访问的数据结构封装在单个任务中，请考虑分发或复制此数据结构。）</li>
+<li>每个任务是否与少量邻居通信？（如果每个任务必须与许多其他任务进行通信，请评估在本地通信结构方面形成这种全局通信的可能性。）</li>
+<li>通信操作能否同时进行？（否则，您的算法可能效率低下且不可缩放。尝试使用分治技术来揭示并发性）</li>
+<li>不同任务的计算是否能够同时进行？（否则，您的算法可能效率低下且不可缩放。考虑是否可以重新排序通信和计算操作）</li>
+</ul>
+<blockquote>
+<p>前两步中寻址问题中的并行性，然而，大量的并行任务并不能产生高效的并行算法，此时获得的设计可能无法很好地映射到真正的机器上，要是任务数大大的超过了处理器的数目呢？现在我们必须确定我们要定位的计算机类型
+，它是集中式多处理器还是多计算机？我们必须如何组合任务才能将它们有效地映射到处理器上？</p>
+</blockquote>
+<h4 id="agglomeration聚集">Agglomeration（聚集）</h4>
+<ul>
+<li><p>聚集：将前两个步骤中确定的任务和通信合并为更大的任务。</p>
+<ul>
+<li>如果任务 A 必须在任务 B
+执行之前执行，则将它们聚合为单个复合任务可能是有意义的。</li>
+</ul></li>
+<li><p>在聚集期间，考虑合并是否有用，并确定是否值得复制数据和/或计算。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/54.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p></li>
+<li><p>目标</p>
+<ul>
+<li>提高性能</li>
+<li>保持程序的可扩展性</li>
+<li>简化编程</li>
+</ul></li>
+</ul>
+<h5 id="聚集可以提高性能">聚集可以提高性能</h5>
+<ul>
+<li><p>降低通信成本</p>
+<ul>
+<li>合并由一个信道连接的任务，消除了通信，增加了并行算法的局部性，图a</li>
+<li>合并发送和接收任务可以减少消息的发送次数,图b</li>
+</ul>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/55.png" srcset="/img/loading.gif" lazyload
+alt="55" />
+<figcaption aria-hidden="true">55</figcaption>
+</figure></li>
+<li><p>更少的任务创建成本和任务调度成本。</p></li>
+</ul>
+<h5 id="可扩展性问题">可扩展性问题</h5>
+<p>假设我们正在操作一个尺寸为8 x 128 x
+256的3D矩阵，我们的目标机器是一个具有4个cpu的中央多处理器。</p>
+<ul>
+<li>q1：假设我们把第2维和第3维集合起来。我们可以在目标机器上运行吗?
+<ul>
+<li>可以的，因为我们有这样的任务，每个任务对应2 x 128 x
+256的子矩阵。</li>
+</ul></li>
+<li>q2：假设我们将目标机器改为一个具有8个cpu的中央多处理器。我们之前的设计能基本完成吗?
+<ul>
+<li>可以的，因为每个任务可以处理1 x 128 x 256的矩阵。</li>
+</ul></li>
+<li>q3：但是，如果我们去超过8个cpu呢?如果我们把第2维和第3维结合起来得到8
+x 128 x 256矩阵，我们的设计会改变吗?
+<ul>
+<li>是的，设计需要改变。这说明把2维和3维聚集在一起的决定从长远上来看是有一定的缺点的，即代码在更多cpu上的可移植性受到损害。</li>
+</ul></li>
+</ul>
+<h5 id="讨论">讨论</h5>
+<ul>
+<li><p>关于聚集和复制，这三个目标导向的决策有时会产生冲突。</p>
+<ul>
+<li>可以通过增加计算和通信粒度来降低通信成本，在可伸缩性和映射决策方面保持灵活性，并降低软件工程成本。</li>
+</ul></li>
+<li><p>增加粒度</p>
+<ul>
+<li>通过发送更少的数据来减少通信时间。即使我们发送相同数量的数据，也可以通过使用更少的消息来实现。</li>
+<li>还可以降低任务创建成本。</li>
+<li>方法：表面对体积效应；复制计算；避免通信。</li>
+</ul></li>
+<li><p>表面对体积效应</p>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/56.png" srcset="/img/loading.gif" lazyload
+alt="56" />
+<figcaption aria-hidden="true">56</figcaption>
+</figure></li>
+</ul>
+<p><code>8*8</code> 网格上的计算被划分为
+<code>8*8</code>个任务，每个任务负责一个点</p>
+<p>q1：需要多少通信？</p>
+<blockquote>
+<p>每个任务需要4次，共需要64*4次通信</p>
+</blockquote>
+<p>q2：传输了多少数据值？</p>
+<blockquote>
+<p>256个</p>
+</blockquote>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/57.png" srcset="/img/loading.gif" lazyload
+alt="57" />
+<figcaption aria-hidden="true">57</figcaption>
+</figure>
+<p>同样的计算分成2*2个任务，每个任务负责16个点</p>
+<p>q1:需要多少次通讯？</p>
+<blockquote>
+<p>总共4*4=16</p>
+</blockquote>
+<p>q2：传输了多少数据值？</p>
+<blockquote>
+<p>16*4=64个值</p>
+</blockquote>
+<pre><code class="hljs">一个任务的通信需求与它所操作的子域的表面成正比，而计算需求与子域的体积成正比。</code></pre>
+<ul>
+<li><p>复制计算</p>
+<ul>
+<li>有时我们可以权衡复制计算以减少通信需求和/或执行时间。</li>
+</ul>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/58.png" srcset="/img/loading.gif" lazyload
+alt="58" />
+<figcaption aria-hidden="true">58</figcaption>
+</figure>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/59.png" srcset="/img/loading.gif" lazyload
+alt="59" />
+<figcaption aria-hidden="true">59</figcaption>
+</figure>
+<p>先进行求和，再进行通信，那么经过在 2(N-1) 步之后，N
+个值的总和被复制到 N 个任务中的每一个中。</p>
+<ul>
+<li>一种替代算法，执行时间更短，但代价是不必要的(复制的)计算和通信。其基本思想是并发执行多个求和，每个并发求和在不同的任务中产生一个值。</li>
+<li>我们首先考虑一种基于这种思想的数组求和算法。在这个变体中，任务被连接成一个环而不是一个数组，所有N个任务执行相同的算法，使得N个部分和同时运动。在<code>N-1</code>步之后，在每个任务中复制完整的和。这种策略避免了后续广播操作的需要，但以<code>（N-1）^2</code>冗余加法和<code>(N-1)^2</code>不必要的通信为代价。但是，求和和和广播是以<code>N-1</code>而不是<code>2（N-1）</code>步完成的。因此，如果处理器在等待求和结果时处于空闲状态，则该策略会更快。</li>
+</ul></li>
+</ul>
+<h5 id="保持灵活性">保持灵活性</h5>
+<ul>
+<li>如果程序要具有可移植性和可扩展性，那么创建不同数量的任务的能力至关重要。</li>
+<li>在为特定计算机调整代码时，这种灵活性也很有用。</li>
+<li>如果任务在等待远程数据时经常阻塞，那么将多个任务映射到一个处理器是有益的。</li>
+<li><strong>重叠计算和通信</strong>：一个任务的通信与另一个任务的计算重叠。</li>
+<li>创建比处理器更多的任务为在可用处理器上平衡计算负载的映射策略提供了更大的范围。</li>
+</ul>
+<h5 id="降低软件工程成本">降低软件工程成本</h5>
+<ul>
+<li>当并行化现有的顺序代码时，另一个问题是与不同分区策略相关的相对开发成本。</li>
+<li>从这个角度来看，最有趣的策略可能是那些避免大量代码更改的策略。</li>
+</ul>
+<h5 id="聚集检查清单">聚集检查清单</h5>
+<ul>
+<li>集聚是否通过增加地域性降低了通信成本？（如果不是，请检查您的算法，以确定是否可以使用其他聚集策略来实现这一点。）</li>
+<li>如果聚合复制了计算，那么对于一系列问题大小和处理器数量，您是否验证了这种复制的好处大于其成本？</li>
+<li>如果聚合复制数据，您是否验证了这不会通过限制问题大小或处理器计数的范围而影响算法的可伸缩性？</li>
+<li>聚合是否产生了相似的计算和通信成本任务？（集聚所产生的任务越大，它们具有相似的成本就越重要。如果每个处理器只创建一个任务，那么这些任务的开销应该几乎相同。）</li>
+<li>任务的数量是否仍随问题的大小而变化？（如果不是，那么你的算法就不能在大型并行计算机上解决更大的问题。）</li>
+<li>如果您排除了并发执行的机会，您是否验证了当前和将来的目标计算机有足够的并发性？（如果其他算法的通信开销过大，那么并发性不足的算法可能仍然是最有效的；性能模型可以用来量化这些权衡。）</li>
+<li>在不引入负载不平衡、增加软件工程成本或降低可伸缩性的情况下，任务的数量还能进一步减少吗？（在其他条件相同的情况下，创建较少大粒度任务的算法通常比创建许多细粒度任务的算法更简单、更高效。）</li>
+<li>如果您正在并行化一个现有的顺序程序，您是否考虑过修改顺序代码所需的成本？（如果这些成本很高，那么可以考虑增加代码重用机会的其他聚合策略。如果生成的算法效率较低，请使用性能建模技术来估计成本权衡。）</li>
+</ul>
+<h4 id="mapping映射">Mapping（映射）</h4>
+<ul>
+<li><p>阶段 4. 映射：将任务分配给处理器的过程。</p></li>
+<li><p>开发映射算法的目标通常是最小化总执行时间。映射的冲突目标:</p>
+<ul>
+<li>最大化处理器利用率，即系统处理器积极执行解决问题所需任务的平均时间百分比。(通过计算平衡)</li>
+<li>最小化处理器间通信(映射到同一处理器的通信进程)</li>
+</ul></li>
+<li><p>这样做应该使通信最小化，并且每个进程/线程得到大致相同的工作量。</p></li>
+<li><p>映射示例：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/60.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p></li>
+<li><p>最佳映射</p>
+<ul>
+<li>寻找最佳映射是一个NP困难问题</li>
+<li>必须依赖于启发式</li>
+</ul></li>
+</ul>
+<h5 id="映射决策树映射策略">映射决策树（映射策略）</h5>
+<ul>
+<li>静态任务数
+<ul>
+<li>结构化通信：
+<ul>
+<li>每个任务的恒定计算时间：聚合任务以最小化通信；–每个处理器创建一个任务</li>
+<li>每个任务的可变计算时间：循环映射任务到处理器</li>
+</ul></li>
+<li>非结构化通信：
+<ul>
+<li>使用静态负载平衡算法</li>
+</ul></li>
+</ul></li>
+<li>动态任务数
+<ul>
+<li>任务之间频繁的通信
+<ul>
+<li>使用动态负载均衡算法</li>
+</ul></li>
+<li>许多短期任务(没有任务间通信)
+<ul>
+<li>使用运行时任务调度算法</li>
+</ul></li>
+</ul></li>
+</ul>
+<h5 id="映射检查清单">映射检查清单</h5>
+<ul>
+<li>考虑基于每个处理器一个任务和每个处理器多个任务的设计</li>
+<li>评估静态和动态任务分配</li>
+<li>如果使用集中式负载均衡方案，您是否验证过管理器不会成为瓶颈？（通过将指向任务的指针（而不是任务本身）传递给管理器，可以降低这些方案中的通信成本。）</li>
+<li>如果使用动态负载平衡方案，您是否评估过不同策略的相对成本？（？一定要在分析中包括实现成本。概率或循环映射方案很简单，应始终予以考虑，因为它们可以避免重复的负载平衡操作。）</li>
+<li>如果使用概率或循环方法，您是否有足够多的任务来确保合理的负载平衡？（通常，任务数至少是处理器所需任务数的十倍。）</li>
+</ul>
+<h2 id="案例研究">案例研究</h2>
+<p>详细解析，见此文章：http://www.cs.umsl.edu/~sanjiv/classes/cs5740/lectures/design.pdf</p>
+<h3 id="边值问题">边值问题</h3>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/61.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p>
+<p>棒随着时间的推移而冷却</p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/62.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p>
+<p>有限差分近似</p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/63.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p>
+<p>分区：</p>
+<ul>
+<li>每个网格点一个数据项</li>
+<li>每个网格点关联一个基本任务</li>
+<li>二维域分解</li>
+</ul>
+<p>通信：</p>
+<ul>
+<li>确定基本任务之间的通信模式</li>
+<li>每个内部基本任务有三个传入和三个传出通道</li>
+</ul>
+<p>聚集和映射：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/64.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p>
+<p><strong>并行执行时间：</strong></p>
+<p>p-处理器的数量</p>
+<p>λ-信息通信的时间</p>
+<p>x-表示计算ui,j+1所需的时间，已知ui−1,j, ui,j，和ui+1,j</p>
+<p>m-迭代次数</p>
+<p>串行执行时间：m(n-1)x</p>
+<p>并行执行时间：m(x⌈(n-1)/p⌉+2λ)</p>
+<p>比较：</p>
+<table>
+<thead>
+<tr class="header">
+<th>n-1</th>
+<th>m</th>
+<th>Sequential</th>
+<th>Task/Channel with p &lt;&lt; n-1</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td></td>
+<td></td>
+<td><strong>m</strong> <strong>(</strong>n-1) x</td>
+<td>m（x⌈(n-1)/p⌉+2λ）</td>
+</tr>
+<tr class="even">
+<td>48</td>
+<td>100</td>
+<td>4800x p = 1</td>
+<td>600x + 200λ p = 8</td>
+</tr>
+<tr class="odd">
+<td>48</td>
+<td>100</td>
+<td>ditto</td>
+<td>300x + 200λ p = 16</td>
+</tr>
+<tr class="even">
+<td>8K</td>
+<td>100</td>
+<td>~(800K)x</td>
+<td>~800x + 200λ p = 1000</td>
+</tr>
+<tr class="odd">
+<td>64K</td>
+<td>100</td>
+<td>~(6400K)x</td>
+<td>~6400x + 200λ p = 1000</td>
+</tr>
+</tbody>
+</table>
+<h3 id="寻找最大值">寻找最大值</h3>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/65.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p>
+<ul>
+<li>考虑到结合运算符： ⊕</li>
+<li>a0⊕a1⊕a2⊕.....⊕an-1</li>
+<li>例子：add，multiply，and，or，maximum，minimum</li>
+<li>并行规约：n-1个任务-----&gt;两个（n-1）/2个任务------&gt;四个(n-1)/4任务</li>
+</ul>
+<p>下面以求全局和的例子来介绍（原理上和求最大值的原理一样，最大值的求法可以查看上面给出的文章）</p>
+<ul>
+<li><p>二叉树（由根逐渐向根节点扩展）：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/66.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p></li>
+<li><p>超立方体的子图：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/67.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p></li>
+<li><p>求全局和：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/68.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p></li>
+<li><p>生成的二叉树为：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/69.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p></li>
+</ul>
+<p>聚集：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/70.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p>
+<ul>
+<li>并行执行时间
+<ul>
+<li>x:进行依次二进制操作的时间</li>
+<li>λ:信息传递的时间</li>
+<li>n个值分给p个任务，每个任务至多有⌈n/p⌉个值</li>
+<li>所有任务同时执行，计算所需的时间为(⌈n/p⌉-1)x</li>
+<li>p个任务之间的通信的步骤为⌈logp⌉</li>
+<li>接受进程等待并且执行需要的时间为λ+x</li>
+<li>总计时间为(⌈n/p⌉-1)x+⌈logp⌉(λ+x)</li>
+</ul></li>
+</ul>
+<h3 id="n-body问题">n-body问题</h3>
+<ul>
+<li><p>分区</p>
+<ul>
+<li>每个粒子有一项任务</li>
+<li>任务有粒子的位置，速度向量</li>
+<li>迭代：获取其他粒子的位置；计算新的位置，速度</li>
+</ul></li>
+<li><p>通信</p>
+<ul>
+<li>聚集（gather）操作：采用分布在一组任务中的数据集并收集单个任务上的项的全局通信；将数据项b、c和d连接到包含a的进程中。</li>
+</ul>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/71.png" srcset="/img/loading.gif" lazyload
+alt="71" />
+<figcaption aria-hidden="true">71</figcaption>
+</figure>
+<ul>
+<li><p>聚集所有（all-gather）操作:与收集类似，除了在通信结束时，每个任务都有整个数据集的副本。在当前上下文中用于更新每个粒子的位置。经过n
+~
+1个通信步骤后，每个任务拥有所有其他粒子的位置。<strong>可以通过超立方体拓扑结构实现<code>logn</code>级别的通信</strong></p>
+<ul>
+<li>相邻的两个节点进行一次通信。（比如0就有了0和1的信息，2就有了2,3的信息。）</li>
+<li>奇数处理器之间交换两个粒子，偶数处理器之间交换两个粒子（0和2进行交换，1和3进行交换）</li>
+<li>继续，直到所有处理器都有所有的粒子，每一步都增加粒子的数量</li>
+<li>all-gather原始的图</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/72.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p>
+<ul>
+<li>all-gather的超立方体图</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/73.png" srcset="/img/loading.gif" lazyload style="zoom:60%"/></p></li>
+</ul></li>
+<li><p>聚集和映射</p>
+<ul>
+<li>假设n是p的倍数且n远远大于p，每个任务处理<code>n/p</code>个粒子</li>
+<li>all-gather的通信需要<code>logp</code>个粒子
+<ul>
+<li>第一步中，消息的长度为n/p</li>
+<li>第二步中，消息的长度为2n/p</li>
+</ul></li>
+</ul></li>
+<li><p>分析</p>
+<ul>
+<li>λ为初始化通信的延迟</li>
+<li>β为带宽</li>
+<li>发送具有n个物体的消息现在需要λ+n/β</li>
+<li>logp次迭代的通信时间：<code>∑（1-&gt;logp）(λ+2^(i-1)*n/βp)</code>=<code>λ log p + n(p − 1) /βp</code></li>
+<li>执行一次计算的时间为x</li>
+<li>每一次并行的计算时间：<code>χ*(n/p)</code></li>
+</ul></li>
+<li><p>采用两种方法的通信时间：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/74.png" srcset="/img/loading.gif" lazyload alt="74" style="zoom:67%;" /></p></li>
+<li><p>计算时间：<code>χ*(n/p)</code></p></li>
+<li><p>总时间为通信时间+计算时间。</p></li>
+</ul>
+<h3 id="增加数据输入">增加数据输入</h3>
+<ul>
+<li>并行程序输入n个粒子的初始位置和速度矢量
+<ul>
+<li>假设一个任务负责所有IO</li>
+<li>打开数据文件，读取n个粒子的位置和速度</li>
+<li>输入或输出n个数据元素所需的时间:<code>λio+n/βio</code></li>
+<li>读取所有n个粒子的位置(2个数据项作为x和y坐标)和速度的时间:<code>λio+4n/βio</code></li>
+</ul></li>
+<li>通信
+<ul>
+<li>将输入数据分成若干块，为每个任务分配n/p个元素</li>
+<li>分散（scatter）操作-集合（gather）的反向操作</li>
+<li>依次向每个任务发送正确的n/p粒子
+<ul>
+<li>p-1条消息，每一个的长度为4n/p（位置坐标x，y和速度坐标vx和vy所以为4）</li>
+<li>时间：<code>(p − 1)(λ + 4n/(pβ))</code></li>
+</ul></li>
+<li>推导一个需要log p通信步骤的分散（scatter）操作
+<ul>
+<li>将列表的一半发送给另一个任务</li>
+<li>接下来，每个进程将1/4列表发送给以前不活动的任务</li>
+<li>然后继续发送前一步的一半</li>
+<li>时间：<code>∑（1-&gt;logp）(λ+4n/(2^i)βp)</code>=<code>λ log p + 4n(p − 1) /βp</code></li>
+</ul></li>
+</ul></li>
+<li>推导总时间
+<ul>
+<li>I/O的位置和速度的n个粒子是一个完全顺序的操作，需要时间：t0=<code>2(λio + 4n/βio)</code></li>
+<li>计算开始时的散射和计算结束时的粒子收集都需要时间:t1=<code>2(λ log p + 4n(p − 1) /βp)</code></li>
+<li>并行算法的每次迭代都需要粒子位置的全集通信，需要时间:t2=<code>λ log p + 2n(p − 1)/ βp</code></li>
+<li>每个处理器执行它的计算份额，需要时间:t3=<code>χ ⌈n/p⌉(n − 1)</code></li>
+<li>如果算法执行m次迭代，并行计算的总执行时间约为:<code>t0+t1+m(t2+t3)</code></li>
+</ul></li>
+</ul>
+<h2 id="总结">总结</h2>
+<h3 id="并行计算">并行计算</h3>
+<p>任务集，通过渠道互动</p>
+<h3 id="好的设计">好的设计</h3>
+<p>最大化本地计算；尽量减少沟通；按比例放大</p>
+<h3 id="设计步骤">设计步骤</h3>
+<p>1.分区计算 2.通信计算 3.聚集任务 4.任务映射到处理器
+5.目标：最大化处理器利用率；-最小化处理器间通信</p>
+<h3 id="基本算法">基本算法</h3>
+<p>1.规约；2.聚集和分散（gather and scatter）3.（全聚集）all gather</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/distributed-parallel-computing/" class="category-chain-item">distributed-parallel-computing</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">#分布式</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>第三章：并行程序设计</div>
+      <div>http://onepoint.link/2021/10/03/distributed-parallel-computing/3.并行程序设计/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>yi-ge-dian</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2021年10月3日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/10/04/distributed-parallel-computing/4.%E6%80%A7%E8%83%BD%E8%AF%84%E4%BC%B0/" title="第四章：性能评估">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">第四章：性能评估</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/10/02/distributed-parallel-computing/2.%E6%9E%B6%E6%9E%84/" title="第二章：架构">
+                        <span class="hidden-mobile">第二章：架构</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="lv-container" data-id="city" data-uid="MTAyMC81NjY1My8zMzExNw">
+    <script type="text/javascript">
+      Fluid.utils.loadComments('#lv-container', function() {
+        Fluid.utils.createScript('https://cdn-city.livere.com/js/embed.dist.js');
+      });
+    </script>
+    <noscript>Please enable JavaScript to view the comments</noscript>
+  </div>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+    <!-- 备案信息 ICP for China -->
+    <div class="beian">
+  <span>
+    <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+      蜀ICP备2022013781号
+    </a>
+  </span>
+  
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
