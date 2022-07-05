@@ -18,12 +18,12 @@
   <meta name="author" content="yi-ge-dian">
   <meta name="keywords" content="">
   
-    <meta name="description" content="异构并行计算导论 CPU和GPU的设计非常不同   127  CPU：面向延迟的设计   128  GPU：面向吞吐量的设计   129  获胜的程序同时使用CPU和GPU  GPU用于吞吐量胜出的并行部分：对于并行代码，GPU 可比 CPU 快 10 倍以上CPU 用于延迟重要的串行部分：对于顺序代码，CPU 可比 GPU 快 10 倍以上  CUDA C vs. CUDA Libs vs.Op">
+    <meta name="description" content="CPU和GPU的设计非常不同   127  CPU：面向延迟的设计   128  GPU：面向吞吐量的设计   129  获胜的程序同时使用CPU和GPU  GPU用于吞吐量胜出的并行部分：对于并行代码，GPU 可比 CPU 快 10 倍以上CPU 用于延迟重要的串行部分：对于顺序代码，CPU 可比 GPU 快 10 倍以上  CUDA C vs. CUDA Libs vs.OpenACC 加速应">
 <meta property="og:type" content="article">
 <meta property="og:title" content="第九章：CUDA C导论">
 <meta property="og:url" content="http://onepoint.link/2021/10/09/distributed-parallel-computing/9.CUDA%20C%E5%AF%BC%E8%AE%BA/index.html">
 <meta property="og:site_name" content="onepoint">
-<meta property="og:description" content="异构并行计算导论 CPU和GPU的设计非常不同   127  CPU：面向延迟的设计   128  GPU：面向吞吐量的设计   129  获胜的程序同时使用CPU和GPU  GPU用于吞吐量胜出的并行部分：对于并行代码，GPU 可比 CPU 快 10 倍以上CPU 用于延迟重要的串行部分：对于顺序代码，CPU 可比 GPU 快 10 倍以上  CUDA C vs. CUDA Libs vs.Op">
+<meta property="og:description" content="CPU和GPU的设计非常不同   127  CPU：面向延迟的设计   128  GPU：面向吞吐量的设计   129  获胜的程序同时使用CPU和GPU  GPU用于吞吐量胜出的并行部分：对于并行代码，GPU 可比 CPU 快 10 倍以上CPU 用于延迟重要的串行部分：对于顺序代码，CPU 可比 GPU 快 10 倍以上  CUDA C vs. CUDA Libs vs.OpenACC 加速应">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/parallel.jpeg">
 <meta property="article:published_time" content="2021-10-08T16:00:00.000Z">
@@ -237,7 +237,7 @@
         
         
         
-          36 分钟
+          35 分钟
         
       </span>
     
@@ -280,22 +280,21 @@
             
               <div class="markdown-body">
                 
-                <h2 id="异构并行计算导论">异构并行计算导论</h2>
-<h3 id="cpu和gpu的设计非常不同">CPU和GPU的设计非常不同</h3>
+                <h2 id="cpu和gpu的设计非常不同">CPU和GPU的设计非常不同</h2>
 <figure>
 <img
 src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/127.png" srcset="/img/loading.gif" lazyload
 alt="127" />
 <figcaption aria-hidden="true">127</figcaption>
 </figure>
-<p>CPU：面向延迟的设计</p>
+<h3 id="cpu面向延迟的设计">CPU：面向延迟的设计</h3>
 <figure>
 <img
 src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/128.png" srcset="/img/loading.gif" lazyload
 alt="128" />
 <figcaption aria-hidden="true">128</figcaption>
 </figure>
-<p>GPU：面向吞吐量的设计</p>
+<h3 id="gpu面向吞吐量的设计">GPU：面向吞吐量的设计</h3>
 <figure>
 <img
 src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/129.png" srcset="/img/loading.gif" lazyload
@@ -536,9 +535,11 @@ alt="142" />
 <li>求解体积上的偏微分方程</li>
 </ul>
 <h3 id="nvcc编译器">NVCC编译器</h3>
-<p>1.NVIDIA 提供了一个 CUDA-C 编译器：nvcc 2.NVCC
-编译devcice代码，然后将代码转发到host编译器（例如 g++）
-3.可用于编译和链接仅host应用程序</p>
+<ol type="1">
+<li>NVIDIA 提供了一个 CUDA-C 编译器：nvcc</li>
+<li>NVCC 编译devcice代码，然后将代码转发到host编译器（例如 g++）</li>
+<li>可用于编译和链接仅host应用程序</li>
+</ol>
 
                 
               </div>

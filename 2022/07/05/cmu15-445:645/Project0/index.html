@@ -1,0 +1,736 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="yi-ge-dian">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Project Specification 实现三个类: Matrix，RowMatrix和 RowMatrixOperations，这些矩阵是简单的二维矩阵，必须支持加法、矩阵乘法和简化的一般矩阵乘法(GEMM)运算。 只需修改一个文件：p0_starter.h，可以在项目的src&#x2F;include&#x2F;primer&#x2F;p0_starter.h下找到。 Matrix 抽象类定义了 RowMatrix派生">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CMU15-445&#x2F;645 Project0">
+<meta property="og:url" content="http://onepoint.link/2022/07/05/cmu15-445:645/Project0/index.html">
+<meta property="og:site_name" content="onepoint">
+<meta property="og:description" content="Project Specification 实现三个类: Matrix，RowMatrix和 RowMatrixOperations，这些矩阵是简单的二维矩阵，必须支持加法、矩阵乘法和简化的一般矩阵乘法(GEMM)运算。 只需修改一个文件：p0_starter.h，可以在项目的src&#x2F;include&#x2F;primer&#x2F;p0_starter.h下找到。 Matrix 抽象类定义了 RowMatrix派生">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/image-20220705163032632.png">
+<meta property="article:published_time" content="2022-07-04T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-07-04T16:00:00.000Z">
+<meta property="article:author" content="yi-ge-dian">
+<meta property="article:tag" content="c++">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/image-20220705163032632.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>CMU15-445/645 Project0 - onepoint</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"onepoint.link","root":"/","version":"1.9.2","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":"dd82cbda8f486148a18105c55a23ec08","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>OnePoint</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="CMU15-445/645 Project0"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-07-05 00:00" pubdate>
+          2022年7月5日 凌晨
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          4.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          36 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">CMU15-445/645 Project0</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="project-specification">Project Specification</h2>
+<p>实现三个类: <code>Matrix</code>，<code>RowMatrix</code>和
+<code>RowMatrixOperations</code>，这些矩阵是简单的二维矩阵，必须支持加法、矩阵乘法和简化的一般矩阵乘法(GEMM)运算。</p>
+<p>只需修改一个文件：<code>p0_starter.h</code>，可以在项目的<code>src/include/primer/p0_starter.h</code>下找到。</p>
+<p><code>Matrix</code> 抽象类定义了
+<code>RowMatrix</code>派生类的公共函数，
+<code>RowMatrixOperations</code> 类使用 <code>RowMatrix</code>
+对象来完成上面提到的加法，乘法和GEMM运算。函数原型和成员变量已在文件中指定。该项目要求您填写所有<strong>构造函数</strong>、析构函数和<strong>成员函数</strong>的实现，不要添加任何其他函数原型或成员变量。</p>
+<h2 id="project-environment">Project Environment</h2>
+<ol type="1">
+<li><p>下载仓库代码</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">git <span class="hljs-built_in">clone</span> https://github.com/cmu-db/bustub.git<br></code></pre></td></tr></table></figure></li>
+<li><p>进入到bustub目录，执行以下命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo ./build_support/packages.sh<br><span class="hljs-built_in">mkdir</span> build<br><span class="hljs-built_in">cd</span> build<br>cmake ..<br>make<br></code></pre></td></tr></table></figure></li>
+<li><p>测试文件为<code>Starter</code>，位于<code>test/primer/starter_test.cpp</code>，执行下面命令测试</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">make starter_test<br>./test/starter_test<br></code></pre></td></tr></table></figure>
+<blockquote>
+<p>测试前，记得关闭测试函数的<code>DISABLED_</code>
+前缀，否则会不生效！！</p>
+</blockquote></li>
+<li><p>下面是仍需要安装的东西，这些最好在你进行第二步的<code>cmake ..</code>之前完成</p>
+<ul>
+<li><p>clang-fornat：<code>brew install clang-format</code></p></li>
+<li><p>build
+tool：<code>brew install make</code>，<code>Clion</code>的<code>Ninja</code>会报错，需要切换为<code>make</code></p></li>
+<li><p>gcc/g++：<code>brew install gcc</code></p></li>
+<li><p>clang-tidy：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">brew install llvm<br><span class="hljs-built_in">ln</span> -s <span class="hljs-string">&quot;<span class="hljs-subst">$(brew --prefix llvm)</span>/bin/clang-tidy&quot;</span> <span class="hljs-string">&quot;/usr/local/bin/clang-tidy&quot;</span><br></code></pre></td></tr></table></figure></li>
+<li><p>valgrind：不支持mac os
+11以上版本了，不知道后续是否可以继续维护。</p></li>
+</ul></li>
+</ol>
+<h2 id="project-solution">Project Solution</h2>
+<h3 id="matrix">Matrix</h3>
+<ol type="1">
+<li><p>构造函数</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-built_in">Matrix</span>(<span class="hljs-type">int</span> rows, <span class="hljs-type">int</span> cols) &#123;<br>  <span class="hljs-keyword">this</span>-&gt;rows_=rows;<br>  <span class="hljs-keyword">this</span>-&gt;cols_=cols;<br>  <span class="hljs-keyword">this</span>-&gt;linear_=<span class="hljs-keyword">new</span> T[rows*cols];<br>&#125;<br></code></pre></td></tr></table></figure></li>
+<li><p>析构函数</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-keyword">virtual</span> ~<span class="hljs-built_in">Matrix</span>() &#123;<br>  <span class="hljs-keyword">delete</span>  []linear_;<br>&#125;<br></code></pre></td></tr></table></figure></li>
+</ol>
+<h3 id="rowmatrix">RowMatrix</h3>
+<ol type="1">
+<li><p>构造函数，按照行建立矩阵。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-built_in">RowMatrix</span>(<span class="hljs-type">int</span> rows, <span class="hljs-type">int</span> cols) : <span class="hljs-built_in">Matrix</span>&lt;T&gt;(rows, cols) &#123;<br>  <span class="hljs-keyword">this</span>-&gt;data_=<span class="hljs-keyword">new</span> T*[rows];<br>  <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; rows; ++i) &#123;<br>    <span class="hljs-keyword">this</span>-&gt;data_[i] = Matrix&lt;T&gt;::linear_+ i * cols;<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure></li>
+<li><p>获得行数和列数</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">GetRowCount</span><span class="hljs-params">()</span> <span class="hljs-type">const</span> -&gt; <span class="hljs-type">int</span> <span class="hljs-keyword">override</span> </span>&#123; <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>-&gt;rows_; &#125;<br><span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">GetColumnCount</span><span class="hljs-params">()</span> <span class="hljs-type">const</span> -&gt; <span class="hljs-type">int</span> <span class="hljs-keyword">override</span> </span>&#123; <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>-&gt;cols_; &#125;<br></code></pre></td></tr></table></figure></li>
+<li><p>获得第 i 行 j 列的值</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">GetElement</span><span class="hljs-params">(<span class="hljs-type">int</span> i, <span class="hljs-type">int</span> j)</span> <span class="hljs-type">const</span> -&gt; T <span class="hljs-keyword">override</span> </span>&#123;<br>  <span class="hljs-keyword">if</span> (i &gt;= <span class="hljs-keyword">this</span>-&gt;rows_ || j &gt;= <span class="hljs-keyword">this</span>-&gt;cols_ || i&lt;<span class="hljs-number">0</span> || j&lt;<span class="hljs-number">0</span>)&#123;<br>    <span class="hljs-keyword">throw</span> <span class="hljs-built_in">Exception</span>(ExceptionType::OUT_OF_RANGE,<span class="hljs-string">&quot;index is out of range&quot;</span>);<br>  &#125;<br>  <span class="hljs-keyword">return</span> data_[i][j];<br>&#125;<br></code></pre></td></tr></table></figure></li>
+<li><p>设置第 i 行 j 列的值</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">SetElement</span><span class="hljs-params">(<span class="hljs-type">int</span> i, <span class="hljs-type">int</span> j, T val)</span> <span class="hljs-keyword">override</span> </span>&#123;<br>  <span class="hljs-keyword">if</span> (i &gt;= <span class="hljs-keyword">this</span>-&gt;rows_ || j &gt;= <span class="hljs-keyword">this</span>-&gt;cols_ || i&lt;<span class="hljs-number">0</span> || j&lt;<span class="hljs-number">0</span>)&#123;<br>    <span class="hljs-keyword">throw</span> <span class="hljs-built_in">Exception</span>(ExceptionType::OUT_OF_RANGE,<span class="hljs-string">&quot;index is out of range&quot;</span>);<br>  &#125;<br>  data_[i][j] = val;<br>&#125;<br></code></pre></td></tr></table></figure></li>
+<li><p>填值</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">FillFrom</span><span class="hljs-params">(<span class="hljs-type">const</span> std::vector&lt;T&gt; &amp;source)</span> <span class="hljs-keyword">override</span> </span>&#123;<br>  <span class="hljs-type">int</span> source_size = <span class="hljs-built_in">static_cast</span>&lt;T&gt;(source);<br>  <span class="hljs-keyword">if</span> (source_size != <span class="hljs-keyword">this</span>-&gt;cols_* <span class="hljs-keyword">this</span>-&gt;rows_)&#123;<br>    <span class="hljs-keyword">throw</span> <span class="hljs-built_in">Exception</span>(ExceptionType::OUT_OF_RANGE,<span class="hljs-string">&quot;index is out of range&quot;</span>);<br>  &#125;<br>  <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; source_size; i++) &#123;<br>    Matrix&lt;T&gt;::linear_[i] = source[i];<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure></li>
+<li><p>析构函数</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs c++">~<span class="hljs-built_in">RowMatrix</span>() &#123;<br>  <span class="hljs-keyword">delete</span> []data_;<br>&#125;<br></code></pre></td></tr></table></figure></li>
+</ol>
+<h3 id="rowmatrixoperations">RowMatrixOperations</h3>
+<ol type="1">
+<li><p>Add函数</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-function"><span class="hljs-type">static</span> <span class="hljs-keyword">auto</span> <span class="hljs-title">Add</span><span class="hljs-params">(<span class="hljs-type">const</span> RowMatrix&lt;T&gt; *matrixA, <span class="hljs-type">const</span> RowMatrix&lt;T&gt; *matrixB)</span> -&gt; std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt; </span>&#123;<br>  <span class="hljs-comment">// TODO(P0): Add implementation</span><br>  <span class="hljs-keyword">if</span> (matrixA-&gt;<span class="hljs-built_in">GetRowCount</span>()!= matrixB-&gt;<span class="hljs-built_in">GetRowCount</span>()||matrixA-&gt;<span class="hljs-built_in">GetColumnCount</span>()!=matrixB-&gt;<span class="hljs-built_in">GetColumnCount</span>())&#123;<br>    <span class="hljs-keyword">return</span> std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt;(<span class="hljs-literal">nullptr</span>);<br>  &#125;<br>  <span class="hljs-type">int</span> rows = matrixA-&gt;<span class="hljs-built_in">GetRowCount</span>();<br>  <span class="hljs-type">int</span> cols = matrixA-&gt;<span class="hljs-built_in">GetColumnCount</span>();<br>  T sum;<br>  <span class="hljs-keyword">auto</span> matrixC = std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt;(<span class="hljs-keyword">new</span> <span class="hljs-built_in">RowMatrix</span>&lt;T&gt;(rows, cols));<br>  <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; rows; i++) &#123;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> j = <span class="hljs-number">0</span>; j &lt; cols; j++) &#123;<br>      sum = matrixA-&gt;<span class="hljs-built_in">GetElement</span>(i, j) + matrixB-&gt;<span class="hljs-built_in">GetElement</span>(i, j);<br>      matrixC-&gt;<span class="hljs-built_in">SetElement</span>(i, j, sum);<br>    &#125;<br>  &#125;<br>  <span class="hljs-keyword">return</span> matrixC;<br>&#125;<br></code></pre></td></tr></table></figure></li>
+<li><p>Multiply函数</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-function"><span class="hljs-type">static</span> <span class="hljs-keyword">auto</span> <span class="hljs-title">Multiply</span><span class="hljs-params">(<span class="hljs-type">const</span> RowMatrix&lt;T&gt; *matrixA, <span class="hljs-type">const</span> RowMatrix&lt;T&gt; *matrixB)</span> -&gt; std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt; </span>&#123;<br>  <span class="hljs-comment">// TODO(P0): Add implementation</span><br>  <span class="hljs-keyword">if</span> (matrixA-&gt;<span class="hljs-built_in">GetColumnCount</span>() != matrixB-&gt;<span class="hljs-built_in">GetRowCount</span>())&#123;<br>    <span class="hljs-keyword">return</span> std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt;(<span class="hljs-literal">nullptr</span>);<br>  &#125;<br>  <span class="hljs-type">int</span> rows_a = matrixA-&gt;<span class="hljs-built_in">GetRowCount</span>();<br>  <span class="hljs-type">int</span> cols_b = matrixB-&gt;<span class="hljs-built_in">GetColumnCount</span>();<br>  <span class="hljs-type">int</span> cols = matrixA-&gt;<span class="hljs-built_in">GetColumnCount</span>();<br>  T accumulate;<br>  <span class="hljs-keyword">auto</span> matrixC = std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt;(<span class="hljs-keyword">new</span> <span class="hljs-built_in">RowMatrix</span>&lt;T&gt;(rows_a, cols_b));<br>  <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; rows_a; i++) &#123;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> j = <span class="hljs-number">0</span>; j &lt; cols_b; j++) &#123;<br>      accumulate = <span class="hljs-number">0</span>;<br>      <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> k = <span class="hljs-number">0</span>; k &lt; cols; k++) &#123;<br>        accumulate += matrixA-&gt;<span class="hljs-built_in">GetElement</span>(i, k) * matrixB-&gt;<span class="hljs-built_in">GetElement</span>(k, j);<br>      &#125;<br>      matrixC-&gt;<span class="hljs-built_in">SetElement</span>(i, j, accumulate);<br>    &#125;<br>  &#125;<br>  <span class="hljs-keyword">return</span> matrixC;<br>&#125;<br></code></pre></td></tr></table></figure></li>
+<li><p>GEMM函数</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-function"><span class="hljs-type">static</span> <span class="hljs-keyword">auto</span> <span class="hljs-title">GEMM</span><span class="hljs-params">(<span class="hljs-type">const</span> RowMatrix&lt;T&gt; *matrixA, <span class="hljs-type">const</span> RowMatrix&lt;T&gt; *matrixB, <span class="hljs-type">const</span> RowMatrix&lt;T&gt; *matrixC)</span></span><br><span class="hljs-function">    -&gt; std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt; </span>&#123;<br>  <span class="hljs-comment">// TODO(P0): Add implementation</span><br>  <span class="hljs-keyword">auto</span> matrixD = <span class="hljs-built_in">Multiply</span>(matrixA, matrixB);<br>  <span class="hljs-keyword">if</span> (matrixD == <span class="hljs-literal">nullptr</span>) &#123;<br>    <span class="hljs-keyword">return</span> std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt;(<span class="hljs-literal">nullptr</span>);<br>  &#125;<br>  <span class="hljs-keyword">return</span> <span class="hljs-built_in">Add</span>(matrixD.<span class="hljs-built_in">get</span>(), matrixC);<br>&#125;<br></code></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="project-pass">Project Pass</h2>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/image-20220705162416470.png" srcset="/img/loading.gif" lazyload
+alt="image-20220705162416470" />
+<figcaption aria-hidden="true">image-20220705162416470</figcaption>
+</figure>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/cmu15-445-645/" class="category-chain-item">cmu15-445/645</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/c/">#c++</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>CMU15-445/645 Project0</div>
+      <div>http://onepoint.link/2022/07/05/cmu15-445:645/Project0/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>yi-ge-dian</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年7月5日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/07/05/environment/CLion%E8%BF%9C%E7%A8%8B%E5%BC%80%E5%8F%91/" title="CLion远程开发">
+                        <span class="hidden-mobile">CLion远程开发</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="lv-container" data-id="city" data-uid="MTAyMC81NjY1My8zMzExNw">
+    <script type="text/javascript">
+      Fluid.utils.loadComments('#lv-container', function() {
+        Fluid.utils.createScript('https://cdn-city.livere.com/js/embed.dist.js');
+      });
+    </script>
+    <noscript>Please enable JavaScript to view the comments</noscript>
+  </div>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+    <!-- 备案信息 ICP for China -->
+    <div class="beian">
+  <span>
+    <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+      蜀ICP备2022013781号
+    </a>
+  </span>
+  
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
