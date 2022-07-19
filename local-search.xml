@@ -4,6 +4,31 @@
   
   
   <entry>
+    <title>STL-Introduction</title>
+    <link href="/2022/07/19/programing-c++/STL-Introduction/"/>
+    <url>/2022/07/19/programing-c++/STL-Introduction/</url>
+    
+    <content type="html"><![CDATA[<h2 id="什么是stl">什么是STL</h2><blockquote><p>STL（<u>Standard TemplateLibrary</u>），即标准模板库，是一个具有工业强度的，高效的C++程序库。它被容纳于C++标准程序库中，是ANSI/ISOC++标准中最新的也是极具革命性的一部分。该库包含了诸多在计算机科学领域里所常用的基本数据结构和基本算法。为广大C++程序员们提供了一个可扩展的应用框架，高度体现了软件的可复用性。</p></blockquote><p><strong>STL的一个重要特点是数据结构和算法的分离</strong>。尽管这是个简单的概念，但这种分离确实使得STL变得非常通用。例如，由于STL的<code>sort()</code>函数是完全通用的，你可以用它来操作几乎任何数据集合，包括链表，容器和数组；</p><p><strong>STL另一个重要特性是它不是面向对象的</strong>。为了具有足够通用性，STL主要依赖于模板而不是封装，继承和虚函数（多态性）——OOP的三个要素。在STL中找不到任何明显的类继承关系。这好像是一种倒退，但这正好是使得STL的组件具有广泛通用性的底层特征。另外，由于STL是基于模板，内联函数的使用使得生成的代码短小高效；</p><p><strong>从逻辑层次来看，在STL中体现了泛型化程序设计的思想</strong>，引入了诸多新的名词，比如像需求（requirements），概念（concept），模型（model），容器（container），算法（algorithmn），迭代器（iterator）等。与OOP 中的多态一样，泛型也是一种软件的复用技术；</p><p><strong>从实现层次看，整个STL是以一种类型参数化的方式实现的</strong>，这种方式基于一个在早先C++标准中没有出现的语言特性---模板（template）。</p><h2 id="六大组件">六大组件</h2><p><strong>容器（Container）</strong>，是一种数据结构，如list，vector，和deques，以模板类的方法提供。为了访问容器中的数据，可以使用由容器类输出的迭代器；</p><p><strong>迭代器（Iterator）</strong>，提供了访问容器中对象的方法。例如，可以使用一对迭代器指定list或vector中的一定范围的对象。迭代器就如同一个指针。事实上，C++的指针也是一种迭代器。但是，迭代器也可以是那些定义了operator*()以及其他类似于指针的操作符地方法的类对象；</p><p><strong>算法（Algorithm）</strong>，是用来操作容器中的数据的模板函数。例如，STL用sort()来对一个vector中的数据进行排序，用find()来搜索一个list中的对象，函数本身与他们操作的数据的结构和类型无关，因此他们可以在从简单数组到高度复杂容器的任何数据结构上使用；</p><p><strong>仿函数（Functor）</strong></p><p><strong>适配器（Adaptor）</strong></p><p><strong>分配器（allocator）</strong></p><p>重要的三大组件就是：容器，算法，迭代器</p><h2 id="组件关系">组件关系</h2><p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/image-20220719121129865.png" alt="image-20220719121129865"/></p><h2 id="几个观念">几个观念</h2><h3 id="前闭后开区间">前闭后开区间</h3><figure><imgsrc="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/image-20220719135349179.png"alt="image-20220719135349179" /><figcaption aria-hidden="true">image-20220719135349179</figcaption></figure><p><code>begin</code>：指向第一个元素</p><p><code>end</code>：指向最后一个元素的下一个空间</p><h3 id="ranged-base-for-statement">Ranged-base for statement</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-keyword">for</span>(dec1: coll)&#123;<br>  statement;<br>&#125;<br></code></pre></td></tr></table></figure><figure><imgsrc="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/image-20220719140255449.png"alt="image-20220719140255449" /><figcaption aria-hidden="true">image-20220719140255449</figcaption></figure><h3 id="auto-keyword">Auto keyword</h3><figure><imgsrc="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/image-20220719140523744.png"alt="image-20220719140523744" /><figcaption aria-hidden="true">image-20220719140523744</figcaption></figure><p>为了写作方便，可以适当使用<code>auto</code>，清楚的知道何时使用何种变量类型是一个程序员的基本内功。</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>programing-c++</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>c++</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>CMU15-445/645 Project0</title>
     <link href="/2022/07/05/cmu15-445:645/Project0/"/>
     <url>/2022/07/05/cmu15-445:645/Project0/</url>
