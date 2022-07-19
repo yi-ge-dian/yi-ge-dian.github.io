@@ -18,23 +18,26 @@
   <meta name="author" content="yi-ge-dian">
   <meta name="keywords" content="">
   
-    <meta name="description" content="STL-Container(Array) 主函数 12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667int main(int argc, char **argv) &amp;#123;    jjxx::te">
+    <meta name="description" content="主函数 12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667int main(int argc, char **argv) &amp;#123;    jjxx::test_containers();    r">
 <meta property="og:type" content="article">
-<meta property="og:title" content="onepoint">
+<meta property="og:title" content="STL-Container(Array)">
 <meta property="og:url" content="http://onepoint.link/2022/07/19/programing-c++/STL-Container(Array)/index.html">
 <meta property="og:site_name" content="onepoint">
-<meta property="og:description" content="STL-Container(Array) 主函数 12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667int main(int argc, char **argv) &amp;#123;    jjxx::te">
+<meta property="og:description" content="主函数 12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667int main(int argc, char **argv) &amp;#123;    jjxx::test_containers();    r">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2022-07-19T08:09:46.000Z">
-<meta property="article:modified_time" content="2022-07-19T08:26:39.000Z">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/c++.png">
+<meta property="article:published_time" content="2022-07-18T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-07-18T16:00:00.000Z">
 <meta property="article:author" content="yi-ge-dian">
+<meta property="article:tag" content="c++">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/c++.png">
   
   
     <meta name="referrer" content="no-referrer-when-downgrade">
   
   
-  <title>onepoint</title>
+  <title>STL-Container(Array) - onepoint</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -199,7 +202,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text=""></span>
+            <span id="subtitle" data-typed-text="STL-Container(Array)"></span>
           
         </div>
 
@@ -210,8 +213,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-07-19 16:09" pubdate>
-          2022年7月19日 下午
+        <time datetime="2022-07-19 00:00" pubdate>
+          2022年7月19日 凌晨
         </time>
       </span>
     
@@ -233,7 +236,7 @@
         
         
         
-          36 分钟
+          35 分钟
         
       </span>
     
@@ -271,13 +274,12 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none"></h1>
+            <h1 style="display: none">STL-Container(Array)</h1>
             
             
               <div class="markdown-body">
                 
-                <h1 id="stl-containerarray">STL-Container(Array)</h1>
-<h2 id="主函数">主函数</h2>
+                <h2 id="主函数">主函数</h2>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span> **argv)</span> </span>&#123;<br>    jjxx::<span class="hljs-built_in">test_containers</span>();<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br><span class="hljs-keyword">namespace</span> jjxx &#123;<br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">test_containers</span><span class="hljs-params">()</span> </span>&#123;<br>        <span class="hljs-type">int</span> choice;<br>        <span class="hljs-type">long</span> value;<br>        <span class="hljs-built_in">srand</span>(<span class="hljs-built_in">time</span>(<span class="hljs-literal">NULL</span>));<br>        cout &lt;&lt; <span class="hljs-string">&quot;test_containers()......... \n&quot;</span>;<br>        cout &lt;&lt; <span class="hljs-string">&quot;select: \n&quot;</span>;<br>        cout &lt;&lt; <span class="hljs-string">&quot;(1)array (2)vector (3)list (4)forward_list (5)deque (6)multiset \n&quot;</span>;<br>        cout &lt;&lt; <span class="hljs-string">&quot;(7)multimap (8)unordered_multiset (9)unordered_multimap (10)slist \n&quot;</span>;<br>        cout &lt;&lt; <span class="hljs-string">&quot;(11)hash_multiset (12)hash_multimap (13)set (14)map (15)unordered_set \n&quot;</span>;<br>        cout &lt;&lt; <span class="hljs-string">&quot;(16)unordered_map (17)stack (18)queue \n&quot;</span>;<br>        cout &lt;&lt; <span class="hljs-string">&quot; (2),(3),(5),(6),(8) will test also movable elements. \n&quot;</span>;<br>        cin &gt;&gt; choice;<br>        <span class="hljs-keyword">if</span> (choice != <span class="hljs-number">1</span>) &#123;    <span class="hljs-comment">//1 ==&gt; array, use ASIZE</span><br>            cout &lt;&lt; <span class="hljs-string">&quot;how many elements: &quot;</span>;<br>            cin &gt;&gt; value;<br>        &#125;<br><br>        <span class="hljs-keyword">switch</span> (choice) &#123;<br>            <span class="hljs-keyword">case</span> <span class="hljs-number">1</span> :<br>                jj01::<span class="hljs-built_in">test_array</span>();<br>                <span class="hljs-keyword">break</span>;<br><span class="hljs-comment">//            case 2 : 	jj02::test_vector(value);</span><br><span class="hljs-comment">//                //jj02::test_vector_with_move(value);</span><br><span class="hljs-comment">//                break;</span><br><span class="hljs-comment">//            case 3 : 	jj03::test_list(value);</span><br><span class="hljs-comment">//                break;</span><br><span class="hljs-comment">//            case 4 : 	jj04::test_forward_list(value);</span><br><span class="hljs-comment">//                break;</span><br><span class="hljs-comment">//            case 5 : 	jj05::test_deque(value);</span><br><span class="hljs-comment">//                break;</span><br><span class="hljs-comment">//            case 6 : 	jj06::test_multiset(value);</span><br><span class="hljs-comment">//                break;</span><br><span class="hljs-comment">//            case 7 : 	jj07::test_multimap(value);</span><br><span class="hljs-comment">//                break;</span><br><span class="hljs-comment">//            case 8 : 	jj08::test_unordered_multiset(value);</span><br><span class="hljs-comment">//                break;</span><br><span class="hljs-comment">//            case 9 : 	jj09::test_unordered_multimap(value);</span><br><span class="hljs-comment">//                break;</span><br><span class="hljs-comment">//            case 10: 	jj10::test_slist(value);</span><br><span class="hljs-comment">//                break;</span><br><span class="hljs-comment">//            case 11: 	jj11::test_hash_multiset(value);</span><br><span class="hljs-comment">//                break;</span><br><span class="hljs-comment">//            case 12: 	jj12::test_hash_multimap(value);</span><br><span class="hljs-comment">//                break;</span><br><span class="hljs-comment">//            case 13 : 	jj13::test_set(value);</span><br><span class="hljs-comment">//                break;</span><br><span class="hljs-comment">//            case 14 : 	jj14::test_map(value);</span><br><span class="hljs-comment">//                break;</span><br><span class="hljs-comment">//            case 15 : 	jj15::test_unordered_set(value);</span><br><span class="hljs-comment">//                break;</span><br><span class="hljs-comment">//            case 16 : 	jj16::test_unordered_map(value);</span><br><span class="hljs-comment">//                break;</span><br><span class="hljs-comment">//            case 17 : 	jj17::test_stack(value);</span><br><span class="hljs-comment">//                break;</span><br><span class="hljs-comment">//            case 18 : 	jj18::test_queue(value);</span><br>                <span class="hljs-keyword">break</span>;<br>            <span class="hljs-keyword">default</span>:<br>                <span class="hljs-keyword">break</span>;<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>在后面的章节中这一部分就不会再显示了，直接解除对应测试函数的注释即可。</p>
 <h2 id="辅助函数">辅助函数</h2>
@@ -299,6 +301,34 @@
             <div>
               <div class="post-metas my-3">
   
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/programing-c/" class="category-chain-item">programing-c++</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/c/">#c++</a>
+      
+    </div>
   
 </div>
 
@@ -308,7 +338,7 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div></div>
+      <div>STL-Container(Array)</div>
       <div>http://onepoint.link/2022/07/19/programing-c++/STL-Container(Array)/</div>
     </div>
     <div class="license-meta">
@@ -351,12 +381,18 @@
                   <article class="post-prev col-6">
                     
                     
+                      <a href="/2022/07/19/programing-c++/STL-Introduction/" title="STL-Introduction">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">STL-Introduction</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2022/07/19/programing-c++/STL-Introduction/" title="STL-Introduction">
-                        <span class="hidden-mobile">STL-Introduction</span>
+                      <a href="/2022/07/05/cmu15-445:645/Project0/" title="CMU15-445/645 Project0">
+                        <span class="hidden-mobile">CMU15-445/645 Project0</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
