@@ -30,7 +30,7 @@
     border-radius: 5px;
     height: 25px;
     line-height: 30px;
-    background: #21252b;
+    background: #dcdce4;
     color: #fff;
     font-size: 16px;
     position: absolute;
@@ -66,7 +66,7 @@
     background: #322931;
   }
   code {
-    color: #c4c6c9;
+    color: #e8773b;
   }
   pre.language-none {
     padding-left: 15px;
