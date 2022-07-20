@@ -232,7 +232,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          4.7k 字
+          4.4k 字
         
       </span>
     
@@ -243,7 +243,7 @@
         
         
         
-          39 分钟
+          37 分钟
         
       </span>
     
@@ -296,16 +296,16 @@
 对象来完成上面提到的加法，乘法和GEMM运算。函数原型和成员变量已在文件中指定。该项目要求您填写所有<strong>构造函数</strong>、析构函数和<strong>成员函数</strong>的实现，不要添加任何其他函数原型或成员变量。</p>
 <h2 id="project-environment">Project Environment</h2>
 <p>下载仓库代码</p>
-<figure><div class="code-wrapper"><pre class="language-bash" data-language="bash"><code class="language-bash">git clone https:&#x2F;&#x2F;github.com&#x2F;cmu-db&#x2F;bustub.git</code></pre></div></figure>
+<div class="code-wrapper"><pre><code class="hljs bash">git <span class="hljs-built_in">clone</span> https://github.com/cmu-db/bustub.git</code></pre></div>
 <p>进入到bustub目录，执行以下命令</p>
-<figure><div class="code-wrapper"><pre class="language-bash" data-language="bash"><code class="language-bash">sudo .&#x2F;build_support&#x2F;packages.sh
-mkdir build
-cd build
+<div class="code-wrapper"><pre><code class="hljs bash">sudo ./build_support/packages.sh
+<span class="hljs-built_in">mkdir</span> build
+<span class="hljs-built_in">cd</span> build
 cmake ..
-make</code></pre></div></figure>
+make</code></pre></div>
 <p>测试文件为<code>Starter</code>，位于<code>test/primer/starter_test.cpp</code>，执行下面命令测试</p>
-<figure><div class="code-wrapper"><pre class="language-bash" data-language="bash"><code class="language-bash">make starter_test
-.&#x2F;test&#x2F;starter_test</code></pre></div></figure>
+<div class="code-wrapper"><pre><code class="hljs bash">make starter_test
+./test/starter_test</code></pre></div>
 <blockquote>
 <p>测试前，记得关闭测试函数的<code>DISABLED_</code>
 前缀，否则会不生效！！</p>
@@ -329,114 +329,114 @@ tool：<code>brew install make</code>，<code>Clion</code>的<code>Ninja</code>�
 <p><img
 src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/image-20220710140657041.png" srcset="/img/loading.gif" lazyload
 alt="image-20220710140657041" />书写完成后要进行格式检测（一个比较好的方法是些一个脚本，每次直接脚本运行就可以)</p>
-<figure><div class="code-wrapper"><pre class="language-bash" data-language="bash"><code class="language-bash">make format
+<div class="code-wrapper"><pre><code class="hljs bash">make format
 make check-lint
-make check-clang-tidy</code></pre></div></figure>
+make check-clang-tidy</code></pre></div>
 <blockquote>
 <p>如果本地测试能通过，gradescope报错<code>Test Failed: Test was not run. Please check the autograder!</code>，说明build失败，可能的原因是没有进行<code>make format</code>格式检查，还可能是上传课程的年份搞错了（注意仓库是最新的版本，所以提交到最新的课程）</p>
 </blockquote>
 <h2 id="project-solution">Project Solution</h2>
 <h3 id="matrix">Matrix</h3>
 <p>构造函数</p>
-<figure><div class="code-wrapper"><pre class="language-c++" data-language="c++"><code class="language-c++">Matrix(int rows, int cols) &#123;
-   this-&gt;rows_&#x3D;rows;
-   this-&gt;cols_&#x3D;cols;
-   this-&gt;linear_&#x3D;new T[rows*cols];
- &#125;</code></pre></div></figure>
+<div class="code-wrapper"><pre><code class="hljs c++"><span class="hljs-built_in">Matrix</span>(<span class="hljs-type">int</span> rows, <span class="hljs-type">int</span> cols) &#123;
+   <span class="hljs-keyword">this</span>-&gt;rows_=rows;
+   <span class="hljs-keyword">this</span>-&gt;cols_=cols;
+   <span class="hljs-keyword">this</span>-&gt;linear_=<span class="hljs-keyword">new</span> T[rows*cols];
+ &#125;</code></pre></div>
 <p>析构函数</p>
-<figure><div class="code-wrapper"><pre class="language-c++" data-language="c++"><code class="language-c++">virtual ~Matrix() &#123;
-  delete  []linear_;
-&#125;</code></pre></div></figure>
+<div class="code-wrapper"><pre><code class="hljs c++"><span class="hljs-keyword">virtual</span> ~<span class="hljs-built_in">Matrix</span>() &#123;
+  <span class="hljs-keyword">delete</span>  []linear_;
+&#125;</code></pre></div>
 <h3 id="rowmatrix">RowMatrix</h3>
 <p>构造函数，按照行建立矩阵。</p>
-<figure><div class="code-wrapper"><pre class="language-c++" data-language="c++"><code class="language-c++">RowMatrix(int rows, int cols) : Matrix&lt;T&gt;(rows, cols) &#123;
-  this-&gt;data_&#x3D;new T*[rows];
-  for (int i &#x3D; 0; i &lt; rows; ++i) &#123;
-    this-&gt;data_[i] &#x3D; Matrix&lt;T&gt;::linear_+ i * cols;
+<div class="code-wrapper"><pre><code class="hljs c++"><span class="hljs-built_in">RowMatrix</span>(<span class="hljs-type">int</span> rows, <span class="hljs-type">int</span> cols) : <span class="hljs-built_in">Matrix</span>&lt;T&gt;(rows, cols) &#123;
+  <span class="hljs-keyword">this</span>-&gt;data_=<span class="hljs-keyword">new</span> T*[rows];
+  <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; rows; ++i) &#123;
+    <span class="hljs-keyword">this</span>-&gt;data_[i] = Matrix&lt;T&gt;::linear_+ i * cols;
   &#125;
-&#125;</code></pre></div></figure>
+&#125;</code></pre></div>
 <p>获得行数和列数</p>
-<figure><div class="code-wrapper"><pre class="language-c++" data-language="c++"><code class="language-c++">auto GetRowCount() const -&gt; int override &#123; return this-&gt;rows_; &#125;
-auto GetColumnCount() const -&gt; int override &#123; return this-&gt;cols_; &#125;</code></pre></div></figure>
+<div class="code-wrapper"><pre><code class="hljs c++"><span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">GetRowCount</span><span class="hljs-params">()</span> <span class="hljs-type">const</span> -&gt; <span class="hljs-type">int</span> <span class="hljs-keyword">override</span> </span>&#123; <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>-&gt;rows_; &#125;
+<span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">GetColumnCount</span><span class="hljs-params">()</span> <span class="hljs-type">const</span> -&gt; <span class="hljs-type">int</span> <span class="hljs-keyword">override</span> </span>&#123; <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>-&gt;cols_; &#125;</code></pre></div>
 <p>获得第 i 行 j 列的值</p>
-<figure><div class="code-wrapper"><pre class="language-c++" data-language="c++"><code class="language-c++">auto GetElement(int i, int j) const -&gt; T override &#123;
-  if (i &gt;&#x3D; this-&gt;rows_ || j &gt;&#x3D; this-&gt;cols_ || i&lt;0 || j&lt;0)&#123;
-    throw Exception(ExceptionType::OUT_OF_RANGE,&quot;index is out of range&quot;);
+<div class="code-wrapper"><pre><code class="hljs c++"><span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">GetElement</span><span class="hljs-params">(<span class="hljs-type">int</span> i, <span class="hljs-type">int</span> j)</span> <span class="hljs-type">const</span> -&gt; T <span class="hljs-keyword">override</span> </span>&#123;
+  <span class="hljs-keyword">if</span> (i &gt;= <span class="hljs-keyword">this</span>-&gt;rows_ || j &gt;= <span class="hljs-keyword">this</span>-&gt;cols_ || i&lt;<span class="hljs-number">0</span> || j&lt;<span class="hljs-number">0</span>)&#123;
+    <span class="hljs-keyword">throw</span> <span class="hljs-built_in">Exception</span>(ExceptionType::OUT_OF_RANGE,<span class="hljs-string">&quot;index is out of range&quot;</span>);
   &#125;
-  return data_[i][j];
-&#125;</code></pre></div></figure>
+  <span class="hljs-keyword">return</span> data_[i][j];
+&#125;</code></pre></div>
 <p>设置第 i 行 j 列的值</p>
-<figure><div class="code-wrapper"><pre class="language-c++" data-language="c++"><code class="language-c++">void SetElement(int i, int j, T val) override &#123;
-  if (i &gt;&#x3D; this-&gt;rows_ || j &gt;&#x3D; this-&gt;cols_ || i&lt;0 || j&lt;0)&#123;
-    throw Exception(ExceptionType::OUT_OF_RANGE,&quot;index is out of range&quot;);
+<div class="code-wrapper"><pre><code class="hljs c++"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">SetElement</span><span class="hljs-params">(<span class="hljs-type">int</span> i, <span class="hljs-type">int</span> j, T val)</span> <span class="hljs-keyword">override</span> </span>&#123;
+  <span class="hljs-keyword">if</span> (i &gt;= <span class="hljs-keyword">this</span>-&gt;rows_ || j &gt;= <span class="hljs-keyword">this</span>-&gt;cols_ || i&lt;<span class="hljs-number">0</span> || j&lt;<span class="hljs-number">0</span>)&#123;
+    <span class="hljs-keyword">throw</span> <span class="hljs-built_in">Exception</span>(ExceptionType::OUT_OF_RANGE,<span class="hljs-string">&quot;index is out of range&quot;</span>);
   &#125;
-  data_[i][j] &#x3D; val;
-&#125;</code></pre></div></figure>
+  data_[i][j] = val;
+&#125;</code></pre></div>
 <p>填值</p>
-<figure><div class="code-wrapper"><pre class="language-c++" data-language="c++"><code class="language-c++">void FillFrom(const std::vector&lt;T&gt; &amp;source) override &#123;
-  int source_size &#x3D; static_cast&lt;T&gt;(source.size());
-  if (source_size !&#x3D; this-&gt;cols_* this-&gt;rows_)&#123;
-    throw Exception(ExceptionType::OUT_OF_RANGE,&quot;index is out of range&quot;);
+<div class="code-wrapper"><pre><code class="hljs c++"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">FillFrom</span><span class="hljs-params">(<span class="hljs-type">const</span> std::vector&lt;T&gt; &amp;source)</span> <span class="hljs-keyword">override</span> </span>&#123;
+  <span class="hljs-type">int</span> source_size = <span class="hljs-built_in">static_cast</span>&lt;T&gt;(source.<span class="hljs-built_in">size</span>());
+  <span class="hljs-keyword">if</span> (source_size != <span class="hljs-keyword">this</span>-&gt;cols_* <span class="hljs-keyword">this</span>-&gt;rows_)&#123;
+    <span class="hljs-keyword">throw</span> <span class="hljs-built_in">Exception</span>(ExceptionType::OUT_OF_RANGE,<span class="hljs-string">&quot;index is out of range&quot;</span>);
   &#125;
-  for (int i &#x3D; 0; i &lt; source_size; i++) &#123;
-    Matrix&lt;T&gt;::linear_[i] &#x3D; source[i];
+  <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; source_size; i++) &#123;
+    Matrix&lt;T&gt;::linear_[i] = source[i];
   &#125;
-&#125;</code></pre></div></figure>
+&#125;</code></pre></div>
 <p>析构函数</p>
-<figure><div class="code-wrapper"><pre class="language-c++" data-language="c++"><code class="language-c++">~RowMatrix() override&#123;
-  delete []data_;
-&#125;</code></pre></div></figure>
+<div class="code-wrapper"><pre><code class="hljs c++">~<span class="hljs-built_in">RowMatrix</span>() <span class="hljs-keyword">override</span>&#123;
+  <span class="hljs-keyword">delete</span> []data_;
+&#125;</code></pre></div>
 <h3 id="rowmatrixoperations">RowMatrixOperations</h3>
 <p>Add函数</p>
-<figure><div class="code-wrapper"><pre class="language-c++" data-language="c++"><code class="language-c++">static auto Add(const RowMatrix&lt;T&gt; *matrixA, const RowMatrix&lt;T&gt; *matrixB) -&gt; std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt; &#123;
-  &#x2F;&#x2F; TODO(P0): Add implementation
-  if (matrixA-&gt;GetRowCount() !&#x3D; matrixB-&gt;GetRowCount() || matrixA-&gt;GetColumnCount() !&#x3D; matrixB-&gt;GetColumnCount()) &#123;
-    return std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt;(nullptr);
+<div class="code-wrapper"><pre><code class="hljs c++"><span class="hljs-function"><span class="hljs-type">static</span> <span class="hljs-keyword">auto</span> <span class="hljs-title">Add</span><span class="hljs-params">(<span class="hljs-type">const</span> RowMatrix&lt;T&gt; *matrixA, <span class="hljs-type">const</span> RowMatrix&lt;T&gt; *matrixB)</span> -&gt; std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt; </span>&#123;
+  <span class="hljs-comment">// TODO(P0): Add implementation</span>
+  <span class="hljs-keyword">if</span> (matrixA-&gt;<span class="hljs-built_in">GetRowCount</span>() != matrixB-&gt;<span class="hljs-built_in">GetRowCount</span>() || matrixA-&gt;<span class="hljs-built_in">GetColumnCount</span>() != matrixB-&gt;<span class="hljs-built_in">GetColumnCount</span>()) &#123;
+    <span class="hljs-keyword">return</span> std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt;(<span class="hljs-literal">nullptr</span>);
   &#125;
-  int rows &#x3D; matrixA-&gt;GetRowCount();
-  int cols &#x3D; matrixA-&gt;GetColumnCount();
+  <span class="hljs-type">int</span> rows = matrixA-&gt;<span class="hljs-built_in">GetRowCount</span>();
+  <span class="hljs-type">int</span> cols = matrixA-&gt;<span class="hljs-built_in">GetColumnCount</span>();
   T sum;
-  auto matrix_c &#x3D; std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt;(new RowMatrix&lt;T&gt;(rows, cols));
-  for (int i &#x3D; 0; i &lt; rows; i++) &#123;
-    for (int j &#x3D; 0; j &lt; cols; j++) &#123;
-      sum &#x3D; matrixA-&gt;GetElement(i, j) + matrixB-&gt;GetElement(i, j);
-      matrix_c-&gt;SetElement(i, j, sum);
+  <span class="hljs-keyword">auto</span> matrix_c = std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt;(<span class="hljs-keyword">new</span> <span class="hljs-built_in">RowMatrix</span>&lt;T&gt;(rows, cols));
+  <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; rows; i++) &#123;
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> j = <span class="hljs-number">0</span>; j &lt; cols; j++) &#123;
+      sum = matrixA-&gt;<span class="hljs-built_in">GetElement</span>(i, j) + matrixB-&gt;<span class="hljs-built_in">GetElement</span>(i, j);
+      matrix_c-&gt;<span class="hljs-built_in">SetElement</span>(i, j, sum);
     &#125;
   &#125;
-  return matrix_c;
-&#125;</code></pre></div></figure>
+  <span class="hljs-keyword">return</span> matrix_c;
+&#125;</code></pre></div>
 <p>Multiply函数</p>
-<figure><div class="code-wrapper"><pre class="language-c++" data-language="c++"><code class="language-c++">static auto Multiply(const RowMatrix&lt;T&gt; *matrixA, const RowMatrix&lt;T&gt; *matrixB) -&gt; std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt; &#123;
-    &#x2F;&#x2F; TODO(P0): Add implementation
-    if (matrixA-&gt;GetColumnCount() !&#x3D; matrixB-&gt;GetRowCount()) &#123;
-      return std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt;(nullptr);
+<div class="code-wrapper"><pre><code class="hljs c++"><span class="hljs-function"><span class="hljs-type">static</span> <span class="hljs-keyword">auto</span> <span class="hljs-title">Multiply</span><span class="hljs-params">(<span class="hljs-type">const</span> RowMatrix&lt;T&gt; *matrixA, <span class="hljs-type">const</span> RowMatrix&lt;T&gt; *matrixB)</span> -&gt; std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt; </span>&#123;
+    <span class="hljs-comment">// TODO(P0): Add implementation</span>
+    <span class="hljs-keyword">if</span> (matrixA-&gt;<span class="hljs-built_in">GetColumnCount</span>() != matrixB-&gt;<span class="hljs-built_in">GetRowCount</span>()) &#123;
+      <span class="hljs-keyword">return</span> std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt;(<span class="hljs-literal">nullptr</span>);
     &#125;
-    int rows_a &#x3D; matrixA-&gt;GetRowCount();
-    int cols_b &#x3D; matrixB-&gt;GetColumnCount();
-    int cols &#x3D; matrixA-&gt;GetColumnCount();
+    <span class="hljs-type">int</span> rows_a = matrixA-&gt;<span class="hljs-built_in">GetRowCount</span>();
+    <span class="hljs-type">int</span> cols_b = matrixB-&gt;<span class="hljs-built_in">GetColumnCount</span>();
+    <span class="hljs-type">int</span> cols = matrixA-&gt;<span class="hljs-built_in">GetColumnCount</span>();
     T accumulate;
-    auto matrix_c &#x3D; std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt;(new RowMatrix&lt;T&gt;(rows_a, cols_b));
-    for (int i &#x3D; 0; i &lt; rows_a; i++) &#123;
-      for (int j &#x3D; 0; j &lt; cols_b; j++) &#123;
-        accumulate &#x3D; 0;
-        for (int k &#x3D; 0; k &lt; cols; k++) &#123;
-          accumulate +&#x3D; matrixA-&gt;GetElement(i, k) * matrixB-&gt;GetElement(k, j);
+    <span class="hljs-keyword">auto</span> matrix_c = std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt;(<span class="hljs-keyword">new</span> <span class="hljs-built_in">RowMatrix</span>&lt;T&gt;(rows_a, cols_b));
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; rows_a; i++) &#123;
+      <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> j = <span class="hljs-number">0</span>; j &lt; cols_b; j++) &#123;
+        accumulate = <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> k = <span class="hljs-number">0</span>; k &lt; cols; k++) &#123;
+          accumulate += matrixA-&gt;<span class="hljs-built_in">GetElement</span>(i, k) * matrixB-&gt;<span class="hljs-built_in">GetElement</span>(k, j);
         &#125;
-        matrix_c-&gt;SetElement(i, j, accumulate);
+        matrix_c-&gt;<span class="hljs-built_in">SetElement</span>(i, j, accumulate);
       &#125;
     &#125;
-    return matrix_c;
-  &#125;</code></pre></div></figure>
+    <span class="hljs-keyword">return</span> matrix_c;
+  &#125;</code></pre></div>
 <p>GEMM函数</p>
-<figure><div class="code-wrapper"><pre class="language-c++" data-language="c++"><code class="language-c++">static auto GEMM(const RowMatrix&lt;T&gt; *matrixA, const RowMatrix&lt;T&gt; *matrixB, const RowMatrix&lt;T&gt; *matrixC)
-    -&gt; std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt; &#123;
-  &#x2F;&#x2F; TODO(P0): Add implementation
-  auto matrix_d &#x3D; Multiply(matrixA, matrixB);
-  if (matrix_d &#x3D;&#x3D; nullptr) &#123;
-    return std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt;(nullptr);
+<div class="code-wrapper"><pre><code class="hljs c++"><span class="hljs-function"><span class="hljs-type">static</span> <span class="hljs-keyword">auto</span> <span class="hljs-title">GEMM</span><span class="hljs-params">(<span class="hljs-type">const</span> RowMatrix&lt;T&gt; *matrixA, <span class="hljs-type">const</span> RowMatrix&lt;T&gt; *matrixB, <span class="hljs-type">const</span> RowMatrix&lt;T&gt; *matrixC)</span></span>
+<span class="hljs-function">    -&gt; std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt; </span>&#123;
+  <span class="hljs-comment">// TODO(P0): Add implementation</span>
+  <span class="hljs-keyword">auto</span> matrix_d = <span class="hljs-built_in">Multiply</span>(matrixA, matrixB);
+  <span class="hljs-keyword">if</span> (matrix_d == <span class="hljs-literal">nullptr</span>) &#123;
+    <span class="hljs-keyword">return</span> std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt;(<span class="hljs-literal">nullptr</span>);
   &#125;
-  return Add(matrix_d.get(), matrixC);
-&#125;</code></pre></div></figure>
+  <span class="hljs-keyword">return</span> <span class="hljs-built_in">Add</span>(matrix_d.<span class="hljs-built_in">get</span>(), matrixC);
+&#125;</code></pre></div>
 <h3 id="project-pass">Project Pass</h3>
 <h3 id="local-pass">Local Pass</h3>
 <figure>
@@ -545,18 +545,12 @@ alt="PASS" />
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2022/07/05/environment/CLion%E8%BF%9C%E7%A8%8B%E5%BC%80%E5%8F%91/" title="CLion远程开发">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">CLion远程开发</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2022/04/16/postgraduate/postgraduate-exam/" title="考研初试经验">
-                        <span class="hidden-mobile">考研初试经验</span>
+                      <a href="/2022/07/05/environment/CLion%E8%BF%9C%E7%A8%8B%E5%BC%80%E5%8F%91/" title="CLion远程开发">
+                        <span class="hidden-mobile">CLion远程开发</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -788,10 +782,6 @@ alt="PASS" />
   });
 </script>
 
-
-  <script  src="https://lib.baomitu.com/prism/1.27.0/components/prism-core.min.js" ></script>
-
-  <script  src="https://lib.baomitu.com/prism/1.27.0/plugins/autoloader/prism-autoloader.min.js" ></script>
 
   <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
 

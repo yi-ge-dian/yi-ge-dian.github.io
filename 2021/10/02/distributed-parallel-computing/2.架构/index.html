@@ -230,7 +230,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          14k 字
+          13k 字
         
       </span>
     
@@ -241,7 +241,7 @@
         
         
         
-          114 分钟
+          110 分钟
         
       </span>
     
@@ -321,12 +321,12 @@ Neumann）瓶颈。</p>
 Block或者Cache Line）</li>
 </ul>
 <p>最常见的形式，数组：</p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">float z[1000]
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">float</span> z[<span class="hljs-number">1000</span>]
     ....
-sum &#x3D;0.0
-    for(i&#x3D;0;i&lt;1000;i++)&#123;
-        sum+&#x3D;z[i];
-    &#125;</code></pre></div></figure>
+sum =<span class="hljs-number">0.0</span>
+    <span class="hljs-keyword">for</span>(i=<span class="hljs-number">0</span>;i&lt;<span class="hljs-number">1000</span>;i++)&#123;
+        sum+=z[i];
+    &#125;</code></pre></div>
 <p><strong>2.缓存级别</strong></p>
 <p>目前大多数的计算机都有三级缓存。</p>
 <p>L1的容量最小，但是最快。L2次之。L3的容量最大，但是最慢。</p>
@@ -357,23 +357,23 @@ sum &#x3D;0.0
 </blockquote>
 <p><strong>6.缓存和编程</strong></p>
 <p>了解空间和时间局部性的原理可以使我们对缓存进行一些间接控制。</p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">double A[max][max],x[max].y[max]
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">double</span> A[max][max],x[max].y[max]
     ...
-&#x2F;*Initialize A and x,assign y&#x3D;0*&#x2F;
+<span class="hljs-comment">/*Initialize A and x,assign y=0*/</span>
     ...
-&#x2F;*first pair of loop*&#x2F;
- for(i&#x3D;0;i&lt;max;i++)&#123;
-     for(j&#x3D;0;j&lt;max;j++)&#123;
-         y[i]+&#x3D;A[i][j]*x[j];
+<span class="hljs-comment">/*first pair of loop*/</span>
+ <span class="hljs-keyword">for</span>(i=<span class="hljs-number">0</span>;i&lt;max;i++)&#123;
+     <span class="hljs-keyword">for</span>(j=<span class="hljs-number">0</span>;j&lt;max;j++)&#123;
+         y[i]+=A[i][j]*x[j];
      &#125;
 &#125;
-&#x2F;*assign y&#x3D;0*&#x2F;
-&#x2F;*second pair of loop*&#x2F;     
- for(j&#x3D;0;j&lt;max;j++)&#123;
-     for(i&#x3D;0;i&lt;max;i++)&#123;
-         y[i]+&#x3D;A[i][j]*x[j];
+<span class="hljs-comment">/*assign y=0*/</span>
+<span class="hljs-comment">/*second pair of loop*/</span>     
+ <span class="hljs-keyword">for</span>(j=<span class="hljs-number">0</span>;j&lt;max;j++)&#123;
+     <span class="hljs-keyword">for</span>(i=<span class="hljs-number">0</span>;i&lt;max;i++)&#123;
+         y[i]+=A[i][j]*x[j];
      &#125;
-&#125;</code></pre></div></figure>
+&#125;</code></pre></div>
 <p>假设max=4。 假设A的元素都不在高速缓存中时 循环开始执行。
 假设缓存行由A的四个元素组成，A [0] [0]是第一个缓存行的元素。
 假设缓存为直接映射 而且只能存储A的八个元素或两条缓存行。</p>
@@ -405,11 +405,11 @@ alt="5" />
 <h4 id="流水线">流水线</h4>
 <p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/6.png" srcset="/img/loading.gif" lazyload alt="6" style="zoom:80%;" /></p>
 <p>浮点数加法部件9.87×10^4 and 6.54×10^3</p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">float x[1000],y[1000],z[1000]
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">float</span> x[<span class="hljs-number">1000</span>],y[<span class="hljs-number">1000</span>],z[<span class="hljs-number">1000</span>]
     ..
-for(i&#x3D;0;i&lt;1000;i++)&#123;
-    z[i]&#x3D;x[i]+y[i];
-&#125;</code></pre></div></figure>
+<span class="hljs-keyword">for</span>(i=<span class="hljs-number">0</span>;i&lt;<span class="hljs-number">1000</span>;i++)&#123;
+    z[i]=x[i]+y[i];
+&#125;</code></pre></div>
 <p>假设每个操作花费一纳秒（10^-9 秒），该for循环大约需要7000纳秒。</p>
 <p>另一种方案：</p>
 <ol type="1">
@@ -447,15 +447,15 @@ alt="8" />
 <h4 id="推测">推测</h4>
 <p>为了利用多级发射，系统必须找到可以同时执行的指令。</p>
 <p>在推测中，编译器或处理器对一条指令进行猜测，然后根据该猜测执行该指令。</p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">z &#x3D; x + y ;
-i f ( z &gt; 0)
-     w &#x3D; x ;
+<div class="code-wrapper"><pre><code class="hljs c">z = x + y ;
+i <span class="hljs-title function_">f</span> <span class="hljs-params">( z &gt; <span class="hljs-number">0</span>)</span>
+     w = x ;
 e l s e
-     w &#x3D; y ;</code></pre></div></figure>
+     w = y ;</code></pre></div>
 <p>z将大于0嘛?如果系统推测不正确，则必须返回并重新计算w = y。</p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">z &#x3D; x + y;
-w &#x3D; *a_p; 
-&#x2F;*  a_p is a pointer  *&#x2F;</code></pre></div></figure>
+<div class="code-wrapper"><pre><code class="hljs c">z = x + y;
+w = *a_p; 
+<span class="hljs-comment">/*  a_p is a pointer  */</span></code></pre></div>
 <p>a_p不是指z吗？如果系统推测不正确，则必须返回并重新执行分配w = *
 a_p。</p>
 <p>推测执行必须考虑到预测行为不正确的可能性</p>
@@ -525,11 +525,11 @@ a_p。</p>
 <p>对于大型数据并行问题有效，但对其他类型的更复杂的并行问题则无效。
 示例：矢量处理器</p>
 <p>例3：在SIMD架构上执行</p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">if(B&#x3D;&#x3D;0)&#123;
-    C&#x3D;A;
-&#125;else&#123;
-    C&#x3D;A&#x2F;B;
-&#125;&#x2F;&#x2F;a）有条件的陈述；（b）分两步执行该语句。</code></pre></div></figure>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-keyword">if</span>(B==<span class="hljs-number">0</span>)&#123;
+    C=A;
+&#125;<span class="hljs-keyword">else</span>&#123;
+    C=A/B;
+&#125;<span class="hljs-comment">//a）有条件的陈述；（b）分两步执行该语句。</span></code></pre></div>
 <p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/11.png" srcset="/img/loading.gif" lazyload style="zoom: 67%;"/></p>
 <p><strong>向量处理器</strong></p>
 <p>1.操作数组或数据向量，而传统CPU操作单个数据元素或标量。</p>
@@ -1050,34 +1050,34 @@ CPU缓存在缓存行而不是单个变量上运行。</p>
 <p>具体细节可以参考这篇<a
 target="_blank" rel="noopener" href="https://www.cnblogs.com/cyfonly/p/5800758.html">博客</a></p>
 <p>串行版本：</p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">int i,j,m,n;
-double y[m];
-&#x2F;*Assign y&#x3D;0*&#x2F;
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">int</span> i,j,m,n;
+<span class="hljs-type">double</span> y[m];
+<span class="hljs-comment">/*Assign y=0*/</span>
 ...
-for(i&#x3D;0;i&lt;m;i++)&#123;
-	for(j&#x3D;0;j&lt;n;j++)&#123;
-        y[i]&#x3D;f(i,j)
+<span class="hljs-keyword">for</span>(i=<span class="hljs-number">0</span>;i&lt;m;i++)&#123;
+	<span class="hljs-keyword">for</span>(j=<span class="hljs-number">0</span>;j&lt;n;j++)&#123;
+        y[i]=f(i,j)
     &#125;
-&#125;</code></pre></div></figure>
+&#125;</code></pre></div>
 <p>并行版本：</p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">&#x2F;*private varibles*&#x2F;
-int i,j,iter_count;
-&#x2F;*shared varibles initialzed by one core*&#x2F;
-int m,n,core_count;
-double y[m];
-iter_count&#x3D;m&#x2F;core_count;
-&#x2F;*Core 0 does this*&#x2F;
-for(i&#x3D;0;i&lt;iter_count;i++)&#123;
-    for(j&#x3D;0;j&lt;n;j++)&#123;
-        y[i]&#x3D;f(i,j);
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-comment">/*private varibles*/</span>
+<span class="hljs-type">int</span> i,j,iter_count;
+<span class="hljs-comment">/*shared varibles initialzed by one core*/</span>
+<span class="hljs-type">int</span> m,n,core_count;
+<span class="hljs-type">double</span> y[m];
+iter_count=m/core_count;
+<span class="hljs-comment">/*Core 0 does this*/</span>
+<span class="hljs-keyword">for</span>(i=<span class="hljs-number">0</span>;i&lt;iter_count;i++)&#123;
+    <span class="hljs-keyword">for</span>(j=<span class="hljs-number">0</span>;j&lt;n;j++)&#123;
+        y[i]=f(i,j);
     &#125;
 &#125;
-&#x2F;*Core 1 does this*&#x2F;
-for(i&#x3D;iter_count;i&lt;2*iter_count;i++)&#123;
-    for(j&#x3D;0;j&lt;n;j++)&#123;
-        y[i]&#x3D;f(i,j);
+<span class="hljs-comment">/*Core 1 does this*/</span>
+<span class="hljs-keyword">for</span>(i=iter_count;i&lt;<span class="hljs-number">2</span>*iter_count;i++)&#123;
+    <span class="hljs-keyword">for</span>(j=<span class="hljs-number">0</span>;j&lt;n;j++)&#123;
+        y[i]=f(i,j);
     &#125;
-&#125;</code></pre></div></figure>
+&#125;</code></pre></div>
 <p>假设共享内存系统有2个核，m = 8，y
 [0]存储在高速缓存行的开头，并且高速缓存行可以存储8个双精度数，而y占用一个完整的高速缓存行。</p>
 <p>当核心0和核心1同时执行其代码时会发生什么？</p>
@@ -1103,25 +1103,25 @@ for(i&#x3D;iter_count;i&lt;2*iter_count;i++)&#123;
 </ul>
 <h3 id="spmd单程序多数据流">SPMD单程序多数据流</h3>
 <p>SPMD程序不是在每个核上运行不同的程序，由一个可执行文件组成，通过实验分支指令在执行的时候表现的像是在不同处理器上执行不同的程序。</p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">if(I&#39;m thread&#x2F;process 0) 
-   do this;
-else
-   do that;</code></pre></div></figure>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-keyword">if</span>(I<span class="hljs-number">&#x27;</span>m thread/process <span class="hljs-number">0</span>) 
+   <span class="hljs-keyword">do</span> this;
+<span class="hljs-keyword">else</span>
+   <span class="hljs-keyword">do</span> that;</code></pre></div>
 <p>SPMD可以实现数据并行</p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">if(I&#39;m thread&#x2F;process 0) 
-   operate on the first half of the array;
-else
-   opearte on the second half of the array;</code></pre></div></figure>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-keyword">if</span>(I<span class="hljs-number">&#x27;</span>m thread/process <span class="hljs-number">0</span>) 
+   operate on the first half of the <span class="hljs-built_in">array</span>;
+<span class="hljs-keyword">else</span>
+   opearte on the second half of the <span class="hljs-built_in">array</span>;</code></pre></div>
 <p><strong>编写并行程序</strong></p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">double x[n], y[n];
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">double</span> x[n], y[n];
 …
-for (i &#x3D; 0; i &lt; n; i++)
-     x[i] +&#x3D; y[i];</code></pre></div></figure>
+<span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; n; i++)
+     x[i] += y[i];</code></pre></div>
 <p>假如有p个进程，可以让进程0负责0,......，n/p-1的相加，进程1负责n/p....2n/p-1的相加，以此类推。</p>
 <p>1.将工作划分为多个进程/线程</p>
-<figure><div class="code-wrapper"><pre class="language-none"><code class="language-none">-每个进程&#x2F;线程获得的工作量大致相同
+<div class="code-wrapper"><pre><code class="hljs diff"><span class="hljs-deletion">-每个进程/线程获得的工作量大致相同</span>
 
--沟通被最小化</code></pre></div></figure>
+<span class="hljs-deletion">-沟通被最小化</span></code></pre></div>
 <p>2.安排进程/线程进行同步</p>
 <p>3.安排进程/线程之间的通信。</p>
 <h3 id="共享内存">共享内存</h3>
@@ -1142,17 +1142,17 @@ for (i &#x3D; 0; i &lt; n; i++)
 </ul></li>
 </ul>
 <p>例如下面的一段程序：</p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">。。。
-printf（“线程％d&gt; my_val &#x3D;％d \ n”， my_rank，my_x）;
-。。。</code></pre></div></figure>
+<div class="code-wrapper"><pre><code class="hljs c">。。。
+<span class="hljs-built_in">printf</span>（“线程％d&gt; my_val =％d \ n”， my_rank，my_x）;
+。。。</code></pre></div>
 <p>假设线程1中的值为19，线程0的值为7</p>
 <p>最后的输出有两种情况。</p>
 <p>情况1：</p>
 <p>线程1&gt; my_val = 19 线程0&gt; my_val = 7</p>
 <p>情况2：</p>
 <p>线程0&gt; my_val = 7 线程1&gt; my_val = 19</p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">my_val &#x3D; Compute_val（my_rank）;
-x + &#x3D; my_val;</code></pre></div></figure>
+<div class="code-wrapper"><pre><code class="hljs c">my_val = Compute_val（my_rank）;
+x + = my_val;</code></pre></div>
 <p>假设x为共享内存中的值初始化为0，那么调用之后我们所期望的结果为19+7+0=28。
 但是我们如果按照下述顺序进行执行：</p>
 <table>
@@ -1204,34 +1204,34 @@ x + &#x3D; my_val;</code></pre></div></figure>
 <li>互斥锁定</li>
 </ul>
 <p>我们可以更改上面的代码如下：</p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">my_val &#x3D; Compute_val（my_rank）;
+<div class="code-wrapper"><pre><code class="hljs c">my_val = Compute_val（my_rank）;
 Lock（＆add_my_val_lock）;
-x + &#x3D; my_val;
-Unlock（＆add_my_val_lock）;</code></pre></div></figure>
+x + = my_val;
+Unlock（＆add_my_val_lock）;</code></pre></div>
 <p>使用互斥量增加了串行性。可以有代替互斥量的方法：</p>
 <p>在忙等待时：</p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">ok_for_1&#x3D;false;
+<div class="code-wrapper"><pre><code class="hljs c">ok_for_1=<span class="hljs-literal">false</span>;
 
-my_val &#x3D; Compute_val ( my_rank ) ;
-if ( my_rank &#x3D;&#x3D; 1)
-     while ( ! ok_for_1 ) ;  &#x2F;* Busy−wait loop *&#x2F;
-x +&#x3D; my_val ;  &#x2F;* Critical section *&#x2F;
-if ( my_rank &#x3D;&#x3D; 0)
-     ok_for_1 &#x3D; true ;  &#x2F;* Let thread 1 update x *&#x2F;</code></pre></div></figure>
+my_val = Compute_val ( my_rank ) ;
+<span class="hljs-keyword">if</span> ( my_rank == <span class="hljs-number">1</span>)
+     <span class="hljs-keyword">while</span> ( ! ok_for_1 ) ;  <span class="hljs-comment">/* Busy−wait loop */</span>
+x += my_val ;  <span class="hljs-comment">/* Critical section */</span>
+<span class="hljs-keyword">if</span> ( my_rank == <span class="hljs-number">0</span>)
+     ok_for_1 = <span class="hljs-literal">true</span> ;  <span class="hljs-comment">/* Let thread 1 update x */</span></code></pre></div>
 <ul>
 <li>分布式内存</li>
 </ul>
 <p>消息传递的方式：API至少提供一个发送函数和一个接受函数。</p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">char message [ 1 0 0 ] ;
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">char</span> message [ <span class="hljs-number">1</span> <span class="hljs-number">0</span> <span class="hljs-number">0</span> ] ;
 . . .
-my_rank &#x3D; Get_rank ( ) ;
-if ( my_rank &#x3D;&#x3D; 1) &#123;
-     sprintf ( message , &quot;Greetings from process 1&quot; ) ;
-     Send ( message , MSG_CHAR , 100 , 0 ) ;
-&#125; else if ( my_rank &#x3D;&#x3D; 0) &#123;
-     Receive ( message , MSG_CHAR , 100 , 1 ) ;
-     printf ( &quot;Process 0 &gt; Received: %s\n&quot; , message ) ;
-&#125;</code></pre></div></figure>
+my_rank = Get_rank ( ) ;
+<span class="hljs-keyword">if</span> ( my_rank == <span class="hljs-number">1</span>) &#123;
+     <span class="hljs-built_in">sprintf</span> ( message , <span class="hljs-string">&quot;Greetings from process 1&quot;</span> ) ;
+     Send ( message , MSG_CHAR , <span class="hljs-number">100</span> , <span class="hljs-number">0</span> ) ;
+&#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> ( my_rank == <span class="hljs-number">0</span>) &#123;
+     Receive ( message , MSG_CHAR , <span class="hljs-number">100</span> , <span class="hljs-number">1</span> ) ;
+     <span class="hljs-built_in">printf</span> ( <span class="hljs-string">&quot;Process 0 &gt; Received: %s\n&quot;</span> , message ) ;
+&#125;</code></pre></div>
 <p>程序段为SPMD。 变量消息引用不同进程上的不同内存块。</p>
 <ul>
 <li><p>单向通信</p>
@@ -1244,15 +1244,15 @@ if ( my_rank &#x3D;&#x3D; 1) &#123;
 <ul>
 <li><p>允许用户使用某些共享内存技术对分布式内存硬件进行编程。</p></li>
 <li><p>考虑下面的共享内存向量加法的伪代码</p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">shared int n &#x3D; . . . ;
-shared double x [ n ] , y [ n ] ;
-private int i , my_first_element , my_last_element ;
-my_first_element &#x3D; . . . ;
-my_last_element &#x3D; . . . ;
-&#x2F; * Initialize x and y  *&#x2F;
+<div class="code-wrapper"><pre><code class="hljs c">shared <span class="hljs-type">int</span> n = . . . ;
+shared <span class="hljs-type">double</span> x [ n ] , y [ n ] ;
+private <span class="hljs-type">int</span> i , my_first_element , my_last_element ;
+my_first_element = . . . ;
+my_last_element = . . . ;
+/ * Initialize x and y  */
 . . .
-for ( i &#x3D; my_first_element ; i &lt;&#x3D; my_last_element ; i++)
-     x [ i ] +&#x3D; y [ i ] ;</code></pre></div></figure>
+<span class="hljs-keyword">for</span> ( i = my_first_element ; i &lt;= my_last_element ; i++)
+     x [ i ] += y [ i ] ;</code></pre></div>
 <p>首先定义两个共享数组，x和y。如果分配的核同时拥有x和y的元素，那么执行速度是很快的，但是如果核分配的全为x或者y，那么程序的性能非常糟糕，因为每次都要访问自己远端的内存。</p></li>
 <li><p>私有变量被分配到执行进程的核心的局部内存中，<strong>共享数据结构</strong>中的数据分布由程序员控制。</p></li>
 </ul></li>
@@ -1597,10 +1597,6 @@ for ( i &#x3D; my_first_element ; i &lt;&#x3D; my_last_element ; i++)
   });
 </script>
 
-
-  <script  src="https://lib.baomitu.com/prism/1.27.0/components/prism-core.min.js" ></script>
-
-  <script  src="https://lib.baomitu.com/prism/1.27.0/plugins/autoloader/prism-autoloader.min.js" ></script>
 
   <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
 

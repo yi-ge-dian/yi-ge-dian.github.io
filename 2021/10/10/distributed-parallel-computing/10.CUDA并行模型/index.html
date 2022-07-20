@@ -231,7 +231,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          4.2k 字
+          3.8k 字
         
       </span>
     
@@ -242,7 +242,7 @@
         
         
         
-          35 分钟
+          33 分钟
         
       </span>
     
@@ -309,29 +309,29 @@ alt="145" />
 <figcaption aria-hidden="true">145</figcaption>
 </figure>
 <p>源代码图片内核</p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">__global__ void PictureKernel(float* d_Pin, float* d_Pout, int height, int width)&#123;
+<div class="code-wrapper"><pre><code class="hljs c">__global__ <span class="hljs-type">void</span> <span class="hljs-title function_">PictureKernel</span><span class="hljs-params">(<span class="hljs-type">float</span>* d_Pin, <span class="hljs-type">float</span>* d_Pout, <span class="hljs-type">int</span> height, <span class="hljs-type">int</span> width)</span>&#123;
 
-  &#x2F;&#x2F; Calculate the row # of the d_Pin and d_Pout element
-  int Row &#x3D; blockIdx.y*blockDim.y + threadIdx.y;
+  <span class="hljs-comment">// Calculate the row # of the d_Pin and d_Pout element</span>
+  <span class="hljs-type">int</span> Row = blockIdx.y*blockDim.y + threadIdx.y;
   
-  &#x2F;&#x2F; Calculate the column # of the d_Pin and d_Pout element
-  int Col &#x3D; blockIdx.x*blockDim.x + threadIdx.x;
+  <span class="hljs-comment">// Calculate the column # of the d_Pin and d_Pout element</span>
+  <span class="hljs-type">int</span> Col = blockIdx.x*blockDim.x + threadIdx.x;
 
-  &#x2F;&#x2F; each thread computes one element of d_Pout if in range
-  if ((Row &lt; height) &amp;&amp; (Col &lt; width)) &#123;
-    d_Pout[Row*width+Col] &#x3D; 2.0*d_Pin[Row*width+Col];
+  <span class="hljs-comment">// each thread computes one element of d_Pout if in range</span>
+  <span class="hljs-keyword">if</span> ((Row &lt; height) &amp;&amp; (Col &lt; width)) &#123;
+    d_Pout[Row*width+Col] = <span class="hljs-number">2.0</span>*d_Pin[Row*width+Col];
   &#125;
-&#125;</code></pre></div></figure>
+&#125;</code></pre></div>
 <p>启动PictureKernel的HOST代码</p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">&#x2F;&#x2F; assume that the picture is m × n, 
-&#x2F;&#x2F; m pixels in y dimension and n pixels in x dimension
-&#x2F;&#x2F; input d_Pin has been allocated on and copied to device
-&#x2F;&#x2F; output d_Pout has been allocated on device
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-comment">// assume that the picture is m × n, </span>
+<span class="hljs-comment">// m pixels in y dimension and n pixels in x dimension</span>
+<span class="hljs-comment">// input d_Pin has been allocated on and copied to device</span>
+<span class="hljs-comment">// output d_Pout has been allocated on device</span>
 …
-dim3 DimGrid((n-1)&#x2F;16 + 1, (m-1)&#x2F;16+1, 1);&#x2F;&#x2F;网格，线程块的个数
-dim3 DimBlock(16, 16, 1);&#x2F;&#x2F;块，每个线程块中线程的个数
+dim3 <span class="hljs-title function_">DimGrid</span><span class="hljs-params">((n<span class="hljs-number">-1</span>)/<span class="hljs-number">16</span> + <span class="hljs-number">1</span>, (m<span class="hljs-number">-1</span>)/<span class="hljs-number">16</span>+<span class="hljs-number">1</span>, <span class="hljs-number">1</span>)</span>;<span class="hljs-comment">//网格，线程块的个数</span>
+dim3 <span class="hljs-title function_">DimBlock</span><span class="hljs-params">(<span class="hljs-number">16</span>, <span class="hljs-number">16</span>, <span class="hljs-number">1</span>)</span>;<span class="hljs-comment">//块，每个线程块中线程的个数</span>
 PictureKernel&lt;&lt;&lt;DimGrid,DimBlock&gt;&gt;&gt;(d_Pin, d_Pout, m, n);
-…</code></pre></div></figure>
+…</code></pre></div>
 <p>并非 Block 中的所有线程都将遵循相同的控制流路径。</p>
 <figure>
 <img
@@ -374,26 +374,26 @@ alt="149" />
 <figcaption aria-hidden="true">149</figcaption>
 </figure>
 <h3 id="rgb到灰度转换代码">RGB到灰度转换代码</h3>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">#define CHANNELS 3 &#x2F;&#x2F; we have 3 channels corresponding to RGB
-&#x2F;&#x2F; The input image is encoded as unsigned characters [0, 255]
-__global__ void colorConvert(unsigned char * grayImage, unsigned char * rgbImage,int width, int height) &#123;
- int x &#x3D; threadIdx.x + blockIdx.x * blockDim.x;
- int y &#x3D; threadIdx.y + blockIdx.y * blockDim.y;
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">define</span> CHANNELS 3 <span class="hljs-comment">// we have 3 channels corresponding to RGB</span></span>
+<span class="hljs-comment">// The input image is encoded as unsigned characters [0, 255]</span>
+__global__ <span class="hljs-type">void</span> <span class="hljs-title function_">colorConvert</span><span class="hljs-params">(<span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> * grayImage, <span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> * rgbImage,<span class="hljs-type">int</span> width, <span class="hljs-type">int</span> height)</span> &#123;
+ <span class="hljs-type">int</span> x = threadIdx.x + blockIdx.x * blockDim.x;
+ <span class="hljs-type">int</span> y = threadIdx.y + blockIdx.y * blockDim.y;
 
- if (x &lt; width &amp;&amp; y &lt; height) &#123;
-    &#x2F;&#x2F; get 1D coordinate for the grayscale image
-    int grayOffset &#x3D; y*width + x;
-    &#x2F;&#x2F; one can think of the RGB image having
-    &#x2F;&#x2F; CHANNEL times columns than the gray scale image
-    int rgbOffset &#x3D; grayOffset*CHANNELS;
-    unsigned char r &#x3D;  rgbImage[rgbOffset     ]; &#x2F;&#x2F; red value for pixel
-    unsigned char g &#x3D; rgbImage[rgbOffset + 1]; &#x2F;&#x2F; green value for pixel
-    unsigned char b &#x3D; rgbImage[rgbOffset + 2]; &#x2F;&#x2F; blue value for pixel
-    &#x2F;&#x2F; perform the rescaling and store it
-    &#x2F;&#x2F; We multiply by floating point constants
-    grayImage[grayOffset] &#x3D; 0.21f*r + 0.71f*g + 0.07f*b;
+ <span class="hljs-keyword">if</span> (x &lt; width &amp;&amp; y &lt; height) &#123;
+    <span class="hljs-comment">// get 1D coordinate for the grayscale image</span>
+    <span class="hljs-type">int</span> grayOffset = y*width + x;
+    <span class="hljs-comment">// one can think of the RGB image having</span>
+    <span class="hljs-comment">// CHANNEL times columns than the gray scale image</span>
+    <span class="hljs-type">int</span> rgbOffset = grayOffset*CHANNELS;
+    <span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> r =  rgbImage[rgbOffset     ]; <span class="hljs-comment">// red value for pixel</span>
+    <span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> g = rgbImage[rgbOffset + <span class="hljs-number">1</span>]; <span class="hljs-comment">// green value for pixel</span>
+    <span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> b = rgbImage[rgbOffset + <span class="hljs-number">2</span>]; <span class="hljs-comment">// blue value for pixel</span>
+    <span class="hljs-comment">// perform the rescaling and store it</span>
+    <span class="hljs-comment">// We multiply by floating point constants</span>
+    grayImage[grayOffset] = <span class="hljs-number">0.21f</span>*r + <span class="hljs-number">0.71f</span>*g + <span class="hljs-number">0.07f</span>*b;
  &#125;
-&#125;</code></pre></div></figure>
+&#125;</code></pre></div>
 <h2 id="模糊图像处理示例">模糊图像处理示例</h2>
 <figure>
 <img
@@ -409,30 +409,30 @@ alt="151" />
 <figcaption aria-hidden="true">151</figcaption>
 </figure>
 <p>图像模糊作为 2D 内核</p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">__global__ 
-  void blurKernel(unsigned char * in, unsigned char * out, int w, int h) &#123;
-    int Col  &#x3D; blockIdx.x * blockDim.x + threadIdx.x;
-    int Row  &#x3D; blockIdx.y * blockDim.y + threadIdx.y;
+<div class="code-wrapper"><pre><code class="hljs c">__global__ 
+  <span class="hljs-type">void</span> <span class="hljs-title function_">blurKernel</span><span class="hljs-params">(<span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> * in, <span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> * out, <span class="hljs-type">int</span> w, <span class="hljs-type">int</span> h)</span> &#123;
+    <span class="hljs-type">int</span> Col  = blockIdx.x * blockDim.x + threadIdx.x;
+    <span class="hljs-type">int</span> Row  = blockIdx.y * blockDim.y + threadIdx.y;
 
-    if (Col &lt; w &amp;&amp; Row &lt; h) &#123;
-          int pixVal &#x3D; 0;
-          int pixels &#x3D; 0;
-          &#x2F;&#x2F; Get the average of the surrounding 2xBLUR_SIZE x 2xBLUR_SIZE box
-  for(int blurRow &#x3D; -BLUR_SIZE; blurRow &lt; BLUR_SIZE+1; ++blurRow)&#123;
-    for(int blurCol &#x3D; -BLUR_SIZE; blurCol &lt; BLUR_SIZE+1; ++blurCol) &#123;
-                  int curRow &#x3D; Row + blurRow;
-                  int curCol &#x3D; Col + blurCol;
-                  &#x2F;&#x2F; Verify we have a valid image pixel
-         if(curRow &gt; -1 &amp;&amp; curRow &lt; h &amp;&amp; curCol &gt; -1 &amp;&amp; curCol &lt; w) &#123;
-                      pixVal +&#x3D; in[curRow * w + curCol];
-                      pixels++; &#x2F;&#x2F; Keep track of number of pixels in the accumulated total
+    <span class="hljs-keyword">if</span> (Col &lt; w &amp;&amp; Row &lt; h) &#123;
+          <span class="hljs-type">int</span> pixVal = <span class="hljs-number">0</span>;
+          <span class="hljs-type">int</span> pixels = <span class="hljs-number">0</span>;
+          <span class="hljs-comment">// Get the average of the surrounding 2xBLUR_SIZE x 2xBLUR_SIZE box</span>
+  <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> blurRow = -BLUR_SIZE; blurRow &lt; BLUR_SIZE+<span class="hljs-number">1</span>; ++blurRow)&#123;
+    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> blurCol = -BLUR_SIZE; blurCol &lt; BLUR_SIZE+<span class="hljs-number">1</span>; ++blurCol) &#123;
+                  <span class="hljs-type">int</span> curRow = Row + blurRow;
+                  <span class="hljs-type">int</span> curCol = Col + blurCol;
+                  <span class="hljs-comment">// Verify we have a valid image pixel</span>
+         <span class="hljs-keyword">if</span>(curRow &gt; <span class="hljs-number">-1</span> &amp;&amp; curRow &lt; h &amp;&amp; curCol &gt; <span class="hljs-number">-1</span> &amp;&amp; curCol &lt; w) &#123;
+                      pixVal += in[curRow * w + curCol];
+                      pixels++; <span class="hljs-comment">// Keep track of number of pixels in the accumulated total</span>
                   &#125;
               &#125;
           &#125;
-          &#x2F;&#x2F; Write our new pixel value out
-          out[Row * w + Col] &#x3D; (unsigned char)(pixVal &#x2F; pixels);
+          <span class="hljs-comment">// Write our new pixel value out</span>
+          out[Row * w + Col] = (<span class="hljs-type">unsigned</span> <span class="hljs-type">char</span>)(pixVal / pixels);
     &#125;
-&#125;</code></pre></div></figure>
+&#125;</code></pre></div>
 <h2 id="线程调度">线程调度</h2>
 <p>SP：最基本的处理单元，streaming processor，也称为CUDA
 core。最后具体的指令和任务都是在SP上处理的。GPU进行并行计算，也就是很多个SP同时做处理。
@@ -849,10 +849,6 @@ alt="154" />
   });
 </script>
 
-
-  <script  src="https://lib.baomitu.com/prism/1.27.0/components/prism-core.min.js" ></script>
-
-  <script  src="https://lib.baomitu.com/prism/1.27.0/plugins/autoloader/prism-autoloader.min.js" ></script>
 
   <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
 

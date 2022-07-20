@@ -18,12 +18,12 @@
   <meta name="author" content="yi-ge-dian">
   <meta name="keywords" content="">
   
-    <meta name="description" content="内存访问效率 例：矩阵相乘 一个基本的矩阵乘法： __global__ void MatrixMulKernel(float* M, float* N, float* P, int Width) &amp;#123;    &#x2F;&#x2F; Calculate the row index of the P element and M   int Row &#x3D; blockIdx.y*bloc">
+    <meta name="description" content="内存访问效率 例：矩阵相乘 一个基本的矩阵乘法： __global__ void MatrixMulKernel(float* M, float* N, float* P, int Width) &amp;#123;    &#x2F;&#x2F; Calculate the row index of the P element and M   int Row &#x3D; blockIdx.y*blockDim.y+threadId">
 <meta property="og:type" content="article">
 <meta property="og:title" content="第十一章：内存和数据的局部性">
 <meta property="og:url" content="http://onepoint.link/2021/10/11/distributed-parallel-computing/11.%E5%86%85%E5%AD%98%E5%92%8C%E6%95%B0%E6%8D%AE%E7%9A%84%E5%B1%80%E9%83%A8%E6%80%A7/index.html">
 <meta property="og:site_name" content="onepoint">
-<meta property="og:description" content="内存访问效率 例：矩阵相乘 一个基本的矩阵乘法： __global__ void MatrixMulKernel(float* M, float* N, float* P, int Width) &amp;#123;    &#x2F;&#x2F; Calculate the row index of the P element and M   int Row &#x3D; blockIdx.y*bloc">
+<meta property="og:description" content="内存访问效率 例：矩阵相乘 一个基本的矩阵乘法： __global__ void MatrixMulKernel(float* M, float* N, float* P, int Width) &amp;#123;    &#x2F;&#x2F; Calculate the row index of the P element and M   int Row &#x3D; blockIdx.y*blockDim.y+threadId">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/parallel.jpeg">
 <meta property="article:published_time" content="2021-10-10T16:00:00.000Z">
@@ -231,7 +231,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          5.6k 字
+          5.4k 字
         
       </span>
     
@@ -242,7 +242,7 @@
         
         
         
-          48 分钟
+          45 分钟
         
       </span>
     
@@ -288,22 +288,22 @@
                 <h2 id="内存访问效率">内存访问效率</h2>
 <h3 id="例矩阵相乘">例：矩阵相乘</h3>
 <p>一个基本的矩阵乘法：</p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">__global__ void MatrixMulKernel(float* M, float* N, float* P, int Width) &#123;
+<div class="code-wrapper"><pre><code class="hljs c">__global__ <span class="hljs-type">void</span> <span class="hljs-title function_">MatrixMulKernel</span><span class="hljs-params">(<span class="hljs-type">float</span>* M, <span class="hljs-type">float</span>* N, <span class="hljs-type">float</span>* P, <span class="hljs-type">int</span> Width)</span> &#123;
 
-  &#x2F;&#x2F; Calculate the row index of the P element and M
-  int Row &#x3D; blockIdx.y*blockDim.y+threadIdx.y;
+  <span class="hljs-comment">// Calculate the row index of the P element and M</span>
+  <span class="hljs-type">int</span> Row = blockIdx.y*blockDim.y+threadIdx.y;
 
-  &#x2F;&#x2F; Calculate the column index of P and N
-  int Col &#x3D; blockIdx.x*blockDim.x+threadIdx.x;
+  <span class="hljs-comment">// Calculate the column index of P and N</span>
+  <span class="hljs-type">int</span> Col = blockIdx.x*blockDim.x+threadIdx.x;
 
-  if ((Row &lt; Width) &amp;&amp; (Col &lt; Width)) &#123;
-    float Pvalue &#x3D; 0;
-    &#x2F;&#x2F; each thread computes one element of the block sub-matrix
-    for (int k &#x3D; 0; k &lt; Width; ++k) &#123;
-      Pvalue +&#x3D; M[Row*Width+k]*N[k*Width+Col];
+  <span class="hljs-keyword">if</span> ((Row &lt; Width) &amp;&amp; (Col &lt; Width)) &#123;
+    <span class="hljs-type">float</span> Pvalue = <span class="hljs-number">0</span>;
+    <span class="hljs-comment">// each thread computes one element of the block sub-matrix</span>
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> k = <span class="hljs-number">0</span>; k &lt; Width; ++k) &#123;
+      Pvalue += M[Row*Width+k]*N[k*Width+Col];
     &#125;
-    P[Row*Width+Col] &#x3D; Pvalue;
-  &#125;</code></pre></div></figure>
+    P[Row*Width+Col] = Pvalue;
+  &#125;</code></pre></div>
 <p>GPU的性能如何?</p>
 <blockquote>
 <p>CGMA比率(计算与全局内存访问比率):在CUDA内核的一个区域内，每次访问全局内存所执行的浮点计算的数量。
@@ -359,10 +359,10 @@ alt="157" />
 <p>自动变量
 住在一个寄存器中，自动数组变量并不在寄存器中，相反他们存储在全局存储器中。</p>
 <p>例：共享内存变量声明</p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">void blurKernel(unsigned char * in, unsigned char * out, int w, int h) &#123;
-  __shared__ float ds_in[TILE_WIDTH][TILE_WIDTH];
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">void</span> <span class="hljs-title function_">blurKernel</span><span class="hljs-params">(<span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> * in, <span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> * out, <span class="hljs-type">int</span> w, <span class="hljs-type">int</span> h)</span> &#123;
+  __shared__ <span class="hljs-type">float</span> ds_in[TILE_WIDTH][TILE_WIDTH];
  …
-&#125;</code></pre></div></figure>
+&#125;</code></pre></div>
 <p>在哪声明变量：</p>
 <figure>
 <img
@@ -486,40 +486,40 @@ alt="164" />
 <h2 id="处理块的边界条件">处理块的边界条件</h2>
 <h3 id="加载mn的输入图块0phase-0">加载M,N的输入图块0（Phase 0）</h3>
 <p>让每个线程在其P元素相同的相对位置加载一个M元素和一个N元素。</p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">int Row &#x3D; by * blockDim.y + ty;
-int Col &#x3D; bx * blockDim.x + tx;</code></pre></div></figure>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">int</span> Row = by * blockDim.y + ty;
+<span class="hljs-type">int</span> Col = bx * blockDim.x + tx;</code></pre></div>
 <p>用于访问Tile
 0的2维索引:<code>M[Row][tx]</code>,<code>N[ty][Col]</code></p>
 <h3 id="加载n的输入图块1phase-1">加载N的输入图块1（Phase 1）</h3>
 <p>用于访问Tile
 0的2维索引:<code>M[Row][1*TILE_WIDTH + tx]</code>,<code>N[1*TILE*WIDTH + ty][Col]</code></p>
 <h3 id="代码">代码</h3>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">__global__ void MatrixMulKernel(float* M, float* N, float* P, int Width)&#123;
-  __shared__ float ds_M[TILE_WIDTH][TILE_WIDTH];
-  __shared__ float ds_N[TILE_WIDTH][TILE_WIDTH];
+<div class="code-wrapper"><pre><code class="hljs c">__global__ <span class="hljs-type">void</span> <span class="hljs-title function_">MatrixMulKernel</span><span class="hljs-params">(<span class="hljs-type">float</span>* M, <span class="hljs-type">float</span>* N, <span class="hljs-type">float</span>* P, <span class="hljs-type">int</span> Width)</span>&#123;
+  __shared__ <span class="hljs-type">float</span> ds_M[TILE_WIDTH][TILE_WIDTH];
+  __shared__ <span class="hljs-type">float</span> ds_N[TILE_WIDTH][TILE_WIDTH];
 
-  int bx &#x3D; blockIdx.x;  int by &#x3D; blockIdx.y;
-  int tx &#x3D; threadIdx.x; int ty &#x3D; threadIdx.y;
+  <span class="hljs-type">int</span> bx = blockIdx.x;  <span class="hljs-type">int</span> by = blockIdx.y;
+  <span class="hljs-type">int</span> tx = threadIdx.x; <span class="hljs-type">int</span> ty = threadIdx.y;
 
-  int Row &#x3D; by * blockDim.y + ty;
-  int Col &#x3D; bx * blockDim.x + tx;
-  float Pvalue &#x3D; 0;
+  <span class="hljs-type">int</span> Row = by * blockDim.y + ty;
+  <span class="hljs-type">int</span> Col = bx * blockDim.x + tx;
+  <span class="hljs-type">float</span> Pvalue = <span class="hljs-number">0</span>;
 
- &#x2F;&#x2F; Loop over the M and N tiles required to compute the P element
- for (int p &#x3D; 0; p &lt; WIDHT&#x2F;TILE_WIDTH; ++p) &#123;
-    &#x2F;&#x2F; Collaborative loading of M and N tiles into shared memory
-    ds_M[ty][tx] &#x3D; M[Row*Width + p*TILE_WIDTH+tx];
-    ds_N[ty][tx] &#x3D; N[(p*TILE_WIDTH+ty)*Width + Col];
+ <span class="hljs-comment">// Loop over the M and N tiles required to compute the P element</span>
+ <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> p = <span class="hljs-number">0</span>; p &lt; WIDHT/TILE_WIDTH; ++p) &#123;
+    <span class="hljs-comment">// Collaborative loading of M and N tiles into shared memory</span>
+    ds_M[ty][tx] = M[Row*Width + p*TILE_WIDTH+tx];
+    ds_N[ty][tx] = N[(p*TILE_WIDTH+ty)*Width + Col];
     __syncthreads();
 
-    for (int i &#x3D; 0; i &lt; TILE_WIDTH; ++i)&#x2F;&#x2F;迭代TILE_WIDTH 
-        Pvalue +&#x3D; ds_M[ty][i] * ds_N[i][tx];
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; TILE_WIDTH; ++i)<span class="hljs-comment">//迭代TILE_WIDTH </span>
+        Pvalue += ds_M[ty][i] * ds_N[i][tx];
     __synchthreads();
-	&#x2F;&#x2F;第一个同步：确保shared memory中的M，N完成加载
-	&#x2F;&#x2F;第二个同步：确保shared memory中的M，N完成使用
+	<span class="hljs-comment">//第一个同步：确保shared memory中的M，N完成加载</span>
+	<span class="hljs-comment">//第二个同步：确保shared memory中的M，N完成使用</span>
   &#125;	
-  P[Row*Width+Col] &#x3D; Pvalue;
-&#125;</code></pre></div></figure>
+  P[Row*Width+Col] = Pvalue;
+&#125;</code></pre></div>
 <h3 id="平铺线程块大小注意事项">平铺线程块大小注意事项</h3>
 <p>每个 线程块 应该有很多线程 1.16 的 TILE_WIDTH 给出
 <code>16*  16  =  256</code> 个线程</p>
@@ -618,28 +618,28 @@ alt="166" />
 <li><code>If true, load N element</code>，<code>Else , load 0</code></li>
 </ul>
 <p><strong>加载元素 - 带边界检查</strong></p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">for (int p &#x3D; 0; p &lt; (Width-1) &#x2F; TILE_WIDTH + 1; ++p) &#123;
-	if(Row &lt; Width &amp;&amp; t * TILE_WIDTH+tx &lt; Width) &#123;
-   	ds_M[ty][tx] &#x3D; M[Row * Width + p * TILE_WIDTH + tx];
- &#125; else &#123;
-    	ds_M[ty][tx] &#x3D; 0.0;
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> p = <span class="hljs-number">0</span>; p &lt; (Width<span class="hljs-number">-1</span>) / TILE_WIDTH + <span class="hljs-number">1</span>; ++p) &#123;
+	<span class="hljs-keyword">if</span>(Row &lt; Width &amp;&amp; t * TILE_WIDTH+tx &lt; Width) &#123;
+   	ds_M[ty][tx] = M[Row * Width + p * TILE_WIDTH + tx];
+ &#125; <span class="hljs-keyword">else</span> &#123;
+    	ds_M[ty][tx] = <span class="hljs-number">0.0</span>;
    &#125;
-  if (p*TILE_WIDTH+ty &lt; Width &amp;&amp; Col &lt; Width) &#123;
-   	ds_N[ty][tx] &#x3D; N[(p*TILE_WIDTH + ty) * Width + Col];
-    &#125; else &#123;
-    	ds_N[ty][tx] &#x3D; 0.0;
+  <span class="hljs-keyword">if</span> (p*TILE_WIDTH+ty &lt; Width &amp;&amp; Col &lt; Width) &#123;
+   	ds_N[ty][tx] = N[(p*TILE_WIDTH + ty) * Width + Col];
+    &#125; <span class="hljs-keyword">else</span> &#123;
+    	ds_N[ty][tx] = <span class="hljs-number">0.0</span>;
     &#125;
-__syncthreads();</code></pre></div></figure>
+__syncthreads();</code></pre></div>
 <p><strong>内积-前和后</strong></p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">if(Row &lt; Width &amp;&amp; Col &lt; Width) &#123;
-	for (int i &#x3D; 0; i &lt; TILE_WIDTH; ++i) &#123;
-	 	Pvalue +&#x3D; ds_M[ty][i] * ds_N[i][tx];
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-keyword">if</span>(Row &lt; Width &amp;&amp; Col &lt; Width) &#123;
+	<span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; TILE_WIDTH; ++i) &#123;
+	 	Pvalue += ds_M[ty][i] * ds_N[i][tx];
      &#125;
    __syncthreads();
- &#125; &#x2F;* end of outer for loop *&#x2F;
-  if (Row &lt; Width &amp;&amp; Col &lt; Width)&#123;
-  	P[Row*Width + Col] &#x3D; Pvalue;
- &#125; &#x2F;* end of kernel *&#x2F;</code></pre></div></figure>
+ &#125; <span class="hljs-comment">/* end of outer for loop */</span>
+  <span class="hljs-keyword">if</span> (Row &lt; Width &amp;&amp; Col &lt; Width)&#123;
+  	P[Row*Width + Col] = Pvalue;
+ &#125; <span class="hljs-comment">/* end of kernel */</span></code></pre></div>
 <h3 id="一些要点">一些要点</h3>
 <p>对于每个线程，条件是不同的</p>
 <ul>
@@ -995,10 +995,6 @@ M矩阵乘以<code>k x l</code>N矩阵导致<code>j x l</code>P矩阵</li>
   });
 </script>
 
-
-  <script  src="https://lib.baomitu.com/prism/1.27.0/components/prism-core.min.js" ></script>
-
-  <script  src="https://lib.baomitu.com/prism/1.27.0/plugins/autoloader/prism-autoloader.min.js" ></script>
 
   <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
 

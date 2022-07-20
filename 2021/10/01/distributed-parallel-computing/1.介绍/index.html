@@ -241,7 +241,7 @@
         
         
         
-          33 分钟
+          32 分钟
         
       </span>
     
@@ -508,19 +508,19 @@
 </ol>
 <p><strong>example：计算n个值并将它们加在一起。</strong></p>
 <p>串行解决方案：</p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">sum&#x3D;0；
-for(i&#x3D;0;i&lt;n;i++)&#123;
-    x&#x3D;compute_next_value(..);
-    sum+&#x3D;x;
-&#125;</code></pre></div></figure>
+<div class="code-wrapper"><pre><code class="hljs c">sum=<span class="hljs-number">0</span>；
+<span class="hljs-keyword">for</span>(i=<span class="hljs-number">0</span>;i&lt;n;i++)&#123;
+    x=compute_next_value(..);
+    sum+=x;
+&#125;</code></pre></div>
 <p>我们有p个核，p比n小得多。每个内核执行大约n / p个值的部分和。</p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">my_sum&#x3D;0;
-my_first_i&#x3D;....;
-my_last_i&#x3D;....;
-for(my_i&#x3D;my_first_i;my_i&lt;my_last_i;my_i++)&#123;
-    my_x&#x3D;compute_next_value(..);
-    my_sum+&#x3D;my_x;
-&#125;</code></pre></div></figure>
+<div class="code-wrapper"><pre><code class="hljs c">my_sum=<span class="hljs-number">0</span>;
+my_first_i=....;
+my_last_i=....;
+<span class="hljs-keyword">for</span>(my_i=my_first_i;my_i&lt;my_last_i;my_i++)&#123;
+    my_x=compute_next_value(..);
+    my_sum+=my_x;
+&#125;</code></pre></div>
 <p>每个内核完成代码执行后，其私有变量<code>my_sum</code>将存储其对的调用计算出的值的总和
 <code>Compute_next_value</code>。</p>
 <p>例如p=8，n=24</p>
@@ -557,15 +557,15 @@ for(my_i&#x3D;my_first_i;my_i&lt;my_last_i;my_i++)&#123;
 </table>
 <p><strong>示例1：</strong></p>
 <p>一旦所有内核完成了计算其私有<code>my_sum</code>的操作，它们就会通过将结果发送到指定的“主”内核来形成全局和，从而将最终结果相加。</p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">if(I&#39;m the master core)&#123;
-	sum&#x3D;my_x;
-   for each core other than mayself&#123;
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-keyword">if</span>(I<span class="hljs-number">&#x27;</span>m the master core)&#123;
+	sum=my_x;
+   <span class="hljs-keyword">for</span> each core other than mayself&#123;
        receive value from core;
-       sum+&#x3D;value;
-   &#125;else&#123;
+       sum+=value;
+   &#125;<span class="hljs-keyword">else</span>&#123;
        send my_x to the master;
    &#125;
-&#125;</code></pre></div></figure>
+&#125;</code></pre></div>
 <p>如0号为master:</p>
 <p>sum=8+19+7+15+7+13+12+14=95</p>
 <table>
@@ -958,10 +958,6 @@ for(my_i&#x3D;my_first_i;my_i&lt;my_last_i;my_i++)&#123;
   });
 </script>
 
-
-  <script  src="https://lib.baomitu.com/prism/1.27.0/components/prism-core.min.js" ></script>
-
-  <script  src="https://lib.baomitu.com/prism/1.27.0/plugins/autoloader/prism-autoloader.min.js" ></script>
 
   <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
 

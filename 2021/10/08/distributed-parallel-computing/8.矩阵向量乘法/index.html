@@ -18,12 +18,12 @@
   <meta name="author" content="yi-ge-dian">
   <meta name="keywords" content="">
   
-    <meta name="description" content="顺序算法及其复杂度   108  存储向量 1.在进程之间划分向量元素 2.复制向量元素 3.向量复制是可以接受的，因为向量只有n个元素，而矩阵中只有n2个元素 串行代码 for(i&#x3D;0;i&lt;m;i++)&amp;#123;     y[i]&#x3D;0.0;     for(j&#x3D;0;j&lt;n;j++)&amp;#123;         y[i]+&#x3D;A[i][j]*x[">
+    <meta name="description" content="顺序算法及其复杂度   108  存储向量 1.在进程之间划分向量元素 2.复制向量元素 3.向量复制是可以接受的，因为向量只有n个元素，而矩阵中只有n2个元素 串行代码 for(i&#x3D;0;i&lt;m;i++)&amp;#123;     y[i]&#x3D;0.0;     for(j&#x3D;0;j&lt;n;j++)&amp;#123;         y[i]+&#x3D;A[i][j]*x[j]     &amp;#125; &amp;#125;">
 <meta property="og:type" content="article">
 <meta property="og:title" content="第八章：矩阵向量乘法">
 <meta property="og:url" content="http://onepoint.link/2021/10/08/distributed-parallel-computing/8.%E7%9F%A9%E9%98%B5%E5%90%91%E9%87%8F%E4%B9%98%E6%B3%95/index.html">
 <meta property="og:site_name" content="onepoint">
-<meta property="og:description" content="顺序算法及其复杂度   108  存储向量 1.在进程之间划分向量元素 2.复制向量元素 3.向量复制是可以接受的，因为向量只有n个元素，而矩阵中只有n2个元素 串行代码 for(i&#x3D;0;i&lt;m;i++)&amp;#123;     y[i]&#x3D;0.0;     for(j&#x3D;0;j&lt;n;j++)&amp;#123;         y[i]+&#x3D;A[i][j]*x[">
+<meta property="og:description" content="顺序算法及其复杂度   108  存储向量 1.在进程之间划分向量元素 2.复制向量元素 3.向量复制是可以接受的，因为向量只有n个元素，而矩阵中只有n2个元素 串行代码 for(i&#x3D;0;i&lt;m;i++)&amp;#123;     y[i]&#x3D;0.0;     for(j&#x3D;0;j&lt;n;j++)&amp;#123;         y[i]+&#x3D;A[i][j]*x[j]     &amp;#125; &amp;#125;">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/parallel.jpeg">
 <meta property="article:published_time" content="2021-10-07T16:00:00.000Z">
@@ -231,7 +231,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          17k 字
+          15k 字
         
       </span>
     
@@ -242,7 +242,7 @@
         
         
         
-          139 分钟
+          126 分钟
         
       </span>
     
@@ -296,12 +296,12 @@ alt="108" />
 <p>1.在进程之间划分向量元素 2.复制向量元素
 3.向量复制是可以接受的，因为向量只有n个元素，而矩阵中只有n2个元素</p>
 <h3 id="串行代码">串行代码</h3>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">for(i&#x3D;0;i&lt;m;i++)&#123;
-    y[i]&#x3D;0.0;
-    for(j&#x3D;0;j&lt;n;j++)&#123;
-        y[i]+&#x3D;A[i][j]*x[j]
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-keyword">for</span>(i=<span class="hljs-number">0</span>;i&lt;m;i++)&#123;
+    y[i]=<span class="hljs-number">0.0</span>;
+    <span class="hljs-keyword">for</span>(j=<span class="hljs-number">0</span>;j&lt;n;j++)&#123;
+        y[i]+=A[i][j]*x[j]
     &#125;
-&#125;</code></pre></div></figure>
+&#125;</code></pre></div>
 <h3 id="时间复杂度">时间复杂度</h3>
 <p>Θ（n^2）</p>
 <h2
@@ -314,7 +314,7 @@ id="三个并行程序的设计分析和实现">三个并行程序的设计、�
 </ul>
 <p>3.并行阶段的阶段</p>
 <div style="text-align:center">
-<figure><div class="code-wrapper"><pre class="language-none"><code class="language-none">&lt;img src=&quot;https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/109.png&quot; style=&quot;zoom:67%;&quot;/&gt;</code></pre></div></figure>
+<div class="code-wrapper"><pre><code class="hljs">&lt;img src=&quot;https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/109.png&quot; style=&quot;zoom:67%;&quot;/&gt;</code></pre></div>
 </div>
 <p>4.gather：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/110.png" srcset="/img/loading.gif" lazyload  style="zoom:67%;" /></p>
@@ -347,15 +347,15 @@ all-gather的通信复杂度：<code>(Θlogp+n)</code></p>
 <p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/112.png" srcset="/img/loading.gif" lazyload  style="zoom:67%;" /></p>
 <p><strong>MPI_Allgatherv</strong></p>
 <p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/113.png" srcset="/img/loading.gif" lazyload  style="zoom:67%;" /></p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">int MPI_Allgatherv (
-   void         *send_buffer,
-   int           send_cnt,
-   MPI_Datatype  send_type,
-   void         *receive_buffer,
-   int          *receive_cnt,
-   int          *receive_disp,
-   MPI_Datatype  receive_type,
-   MPI_Comm      communicator)</code></pre></div></figure>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">MPI_Allgatherv</span> <span class="hljs-params">(</span>
+<span class="hljs-params">   <span class="hljs-type">void</span>         *send_buffer,</span>
+<span class="hljs-params">   <span class="hljs-type">int</span>           send_cnt,</span>
+<span class="hljs-params">   MPI_Datatype  send_type,</span>
+<span class="hljs-params">   <span class="hljs-type">void</span>         *receive_buffer,</span>
+<span class="hljs-params">   <span class="hljs-type">int</span>          *receive_cnt,</span>
+<span class="hljs-params">   <span class="hljs-type">int</span>          *receive_disp,</span>
+<span class="hljs-params">   MPI_Datatype  receive_type,</span>
+<span class="hljs-params">   MPI_Comm      communicator)</span></code></pre></div>
 <p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/114.png" srcset="/img/loading.gif" lazyload  style="zoom:67%;" /></p>
 <h4
 id="函数create_mixed_xfer_arrays">函数<code>create_mixed_xfer_arrays</code></h4>
@@ -370,157 +370,157 @@ id="函数create_mixed_xfer_arrays">函数<code>create_mixed_xfer_arrays</code><
 <li>假设块按进程排序</li>
 </ul>
 <p><strong>代码：</strong></p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">void create_mixed_xfer_arrays (
-   int id,       &#x2F;* IN - Process rank *&#x2F;
-   int p,        &#x2F;* IN - Number of processes *&#x2F;
-   int n,        &#x2F;* IN - Total number of elements *&#x2F;
-   int **count,  &#x2F;* OUT - Array of counts *&#x2F;
-   int **disp)   &#x2F;* OUT - Array of displacements *&#x2F;
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">void</span> <span class="hljs-title function_">create_mixed_xfer_arrays</span> <span class="hljs-params">(</span>
+<span class="hljs-params">   <span class="hljs-type">int</span> id,       <span class="hljs-comment">/* IN - Process rank */</span></span>
+<span class="hljs-params">   <span class="hljs-type">int</span> p,        <span class="hljs-comment">/* IN - Number of processes */</span></span>
+<span class="hljs-params">   <span class="hljs-type">int</span> n,        <span class="hljs-comment">/* IN - Total number of elements */</span></span>
+<span class="hljs-params">   <span class="hljs-type">int</span> **count,  <span class="hljs-comment">/* OUT - Array of counts */</span></span>
+<span class="hljs-params">   <span class="hljs-type">int</span> **disp)</span>   <span class="hljs-comment">/* OUT - Array of displacements */</span>
 &#123;
 
-   int i;
+   <span class="hljs-type">int</span> i;
 
-   *count &#x3D; my_malloc (id, p * sizeof(int));
-   *disp &#x3D; my_malloc (id, p * sizeof(int));
-   (*count)[0] &#x3D; BLOCK_SIZE(0,p,n);
-   (*disp)[0] &#x3D; 0;
-   for (i &#x3D; 1; i &lt; p; i++) &#123;
-      (*disp)[i] &#x3D; (*disp)[i-1] + (*count)[i-1];
-      (*count)[i] &#x3D; BLOCK_SIZE(i,p,n);
+   *count = my_malloc (id, p * <span class="hljs-keyword">sizeof</span>(<span class="hljs-type">int</span>));
+   *disp = my_malloc (id, p * <span class="hljs-keyword">sizeof</span>(<span class="hljs-type">int</span>));
+   (*count)[<span class="hljs-number">0</span>] = BLOCK_SIZE(<span class="hljs-number">0</span>,p,n);
+   (*disp)[<span class="hljs-number">0</span>] = <span class="hljs-number">0</span>;
+   <span class="hljs-keyword">for</span> (i = <span class="hljs-number">1</span>; i &lt; p; i++) &#123;
+      (*disp)[i] = (*disp)[i<span class="hljs-number">-1</span>] + (*count)[i<span class="hljs-number">-1</span>];
+      (*count)[i] = BLOCK_SIZE(i,p,n);
    &#125;
-&#125;</code></pre></div></figure>
+&#125;</code></pre></div>
 <h4
 id="函数replicate_block_vector">函数<code>replicate_block_vector</code></h4>
 <p>1.为整个向量创建空间 2.创建“混合传输”阵列 3.调用MPI_Allgatherv</p>
 <p><strong>代码：</strong></p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">void replicate_block_vector (
-  void  *ablock,  &#x2F;* IN - Block-distributed vector *&#x2F;
-   int          n,       &#x2F;* IN - Elements in vector *&#x2F;
-   void        *arep,    &#x2F;* OUT - Replicated vector *&#x2F;
-   MPI_Datatype dtype,   &#x2F;* IN - Element type *&#x2F;
-   MPI_Comm     comm)    &#x2F;* IN - Communicator *&#x2F;
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">void</span> <span class="hljs-title function_">replicate_block_vector</span> <span class="hljs-params">(</span>
+<span class="hljs-params">  <span class="hljs-type">void</span>  *ablock,  <span class="hljs-comment">/* IN - Block-distributed vector */</span></span>
+<span class="hljs-params">   <span class="hljs-type">int</span>          n,       <span class="hljs-comment">/* IN - Elements in vector */</span></span>
+<span class="hljs-params">   <span class="hljs-type">void</span>        *arep,    <span class="hljs-comment">/* OUT - Replicated vector */</span></span>
+<span class="hljs-params">   MPI_Datatype dtype,   <span class="hljs-comment">/* IN - Element type */</span></span>
+<span class="hljs-params">   MPI_Comm     comm)</span>    <span class="hljs-comment">/* IN - Communicator */</span>
 &#123;
-   int *cnt;  &#x2F;* Elements contributed by each process *&#x2F;
-   int *disp; &#x2F;* Displacement in concatenated array *&#x2F;
-   int id;    &#x2F;* Process id *&#x2F;
-   int p;     &#x2F;* Processes in communicator *&#x2F;
+   <span class="hljs-type">int</span> *cnt;  <span class="hljs-comment">/* Elements contributed by each process */</span>
+   <span class="hljs-type">int</span> *disp; <span class="hljs-comment">/* Displacement in concatenated array */</span>
+   <span class="hljs-type">int</span> id;    <span class="hljs-comment">/* Process id */</span>
+   <span class="hljs-type">int</span> p;     <span class="hljs-comment">/* Processes in communicator */</span>
 
    MPI_Comm_size (comm, &amp;p);
    MPI_Comm_rank (comm, &amp;id);
    create_mixed_xfer_arrays (id, p, n, &amp;cnt, &amp;disp);
    MPI_Allgatherv (ablock, cnt[id], dtype, arep, cnt,
                    disp, dtype, comm);
-   free (cnt);
-   free (disp);
-&#125;</code></pre></div></figure>
+   <span class="hljs-built_in">free</span> (cnt);
+   <span class="hljs-built_in">free</span> (disp);
+&#125;</code></pre></div>
 <h4
 id="函数read_replicated_vector">函数<code>read_replicated_vector</code></h4>
 <p>1.进程p-1：打开文件，读向量的长度 2.广播向量的长度（根进程为p-1）
 3.为向量分配空间 4.进程p-1读向量，关闭文件 5.广播向量</p>
 <p><strong>代码：</strong></p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">&#x2F;*   Open a file containing a vector, read its contents,
-     and replicate the vector among all processes in a
-     communicator. *&#x2F;
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-comment">/*   Open a file containing a vector, read its contents,</span>
+<span class="hljs-comment">     and replicate the vector among all processes in a</span>
+<span class="hljs-comment">     communicator. */</span>
 
-void read_replicated_vector (
-char        *s,      &#x2F;* IN - File name *&#x2F;
-void       **v,      &#x2F;* OUT - Vector *&#x2F;
-MPI_Datatype dtype,  &#x2F;* IN - Vector type *&#x2F;
-int         *n,      &#x2F;* OUT - Vector length *&#x2F;
-MPI_Comm     comm  ) &#x2F;* IN - Communicator *&#x2F;
+<span class="hljs-type">void</span> <span class="hljs-title function_">read_replicated_vector</span> <span class="hljs-params">(</span>
+<span class="hljs-params"><span class="hljs-type">char</span>        *s,      <span class="hljs-comment">/* IN - File name */</span></span>
+<span class="hljs-params"><span class="hljs-type">void</span>       **v,      <span class="hljs-comment">/* OUT - Vector */</span></span>
+<span class="hljs-params">MPI_Datatype dtype,  <span class="hljs-comment">/* IN - Vector type */</span></span>
+<span class="hljs-params"><span class="hljs-type">int</span>         *n,      <span class="hljs-comment">/* OUT - Vector length */</span></span>
+<span class="hljs-params">MPI_Comm     comm  )</span> <span class="hljs-comment">/* IN - Communicator */</span>
 &#123;
-int    datum_size; &#x2F;* Bytes per vector element *&#x2F;
-int        i;
-int        id;         &#x2F;* Process rank *&#x2F;
-FILE   *infileptr;  &#x2F;* Input file pointer *&#x2F;
-int        p;          &#x2F;* Number of processes *&#x2F;
+<span class="hljs-type">int</span>    datum_size; <span class="hljs-comment">/* Bytes per vector element */</span>
+<span class="hljs-type">int</span>        i;
+<span class="hljs-type">int</span>        id;         <span class="hljs-comment">/* Process rank */</span>
+FILE   *infileptr;  <span class="hljs-comment">/* Input file pointer */</span>
+<span class="hljs-type">int</span>        p;          <span class="hljs-comment">/* Number of processes */</span>
 
 MPI_Comm_rank (comm, &amp;id);
 MPI_Comm_size (comm, &amp;p);
-datum_size &#x3D; get_size (dtype);
-if (id &#x3D;&#x3D; (p-1)) &#123;
-infileptr &#x3D; fopen (s, “r”);
-if (infileptr &#x3D;&#x3D; NULL) *n &#x3D; 0;
-   else fread (n, sizeof(int), 1, infileptr);
+datum_size = get_size (dtype);
+<span class="hljs-keyword">if</span> (id == (p<span class="hljs-number">-1</span>)) &#123;
+infileptr = fopen (s, “r”);
+<span class="hljs-keyword">if</span> (infileptr == <span class="hljs-literal">NULL</span>) *n = <span class="hljs-number">0</span>;
+   <span class="hljs-keyword">else</span> fread (n, <span class="hljs-keyword">sizeof</span>(<span class="hljs-type">int</span>), <span class="hljs-number">1</span>, infileptr);
 &#125;
-MPI_Bcast (n, 1, MPI_INT, p-1, MPI_COMM_WORLD);
-if (! *n) terminate (id, “Cannot open vector file”);
+MPI_Bcast (n, <span class="hljs-number">1</span>, MPI_INT, p<span class="hljs-number">-1</span>, MPI_COMM_WORLD);
+<span class="hljs-keyword">if</span> (! *n) <span class="hljs-built_in">terminate</span> (id, “Cannot open <span class="hljs-built_in">vector</span> file”);
 
-*v &#x3D; my_malloc (id, *n * datum_size);
+*v = my_malloc (id, *n * datum_size);
 
-if (id &#x3D;&#x3D; (p-1)) &#123;
+<span class="hljs-keyword">if</span> (id == (p<span class="hljs-number">-1</span>)) &#123;
       fread (*v, datum_size, *n, infileptr);
       fclose (infileptr);
 &#125;
 
-MPI_Bcast (*v, *n, dtype, p-1, MPI_COMM_WORLD);
-&#125;</code></pre></div></figure>
+MPI_Bcast (*v, *n, dtype, p<span class="hljs-number">-1</span>, MPI_COMM_WORLD);
+&#125;</code></pre></div>
 <h4
 id="函数print_replicated_vector">函数<code>print_replicated_vector</code></h4>
 <p>进程 0 打印向量 准确调用<code>printf</code>取决于参数值
 <code>datatype</code></p>
 <p><strong>main函数：</strong></p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">#include &lt;stdio.h&gt;
-#include &lt;mpi.h&gt;
-#include &quot;..&#x2F;MyMPI.h&quot;
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;mpi.h&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;../MyMPI.h&quot;</span></span>
 
-&#x2F;* Change these two definitions when the matrix and vector
-   element types change *&#x2F;
+<span class="hljs-comment">/* Change these two definitions when the matrix and vector</span>
+<span class="hljs-comment">   element types change */</span>
 
-typedef double dtype;
-#define mpitype MPI_DOUBLE
+<span class="hljs-keyword">typedef</span> <span class="hljs-type">double</span> dtype;
+<span class="hljs-meta">#<span class="hljs-keyword">define</span> mpitype MPI_DOUBLE</span>
 
-int main (int argc, char *argv[]) &#123;
-   dtype **a;       &#x2F;* First factor, a matrix *&#x2F;
-   dtype *b;        &#x2F;* Second factor, a vector *&#x2F;
-   dtype *c_block;  &#x2F;* Partial product vector *&#x2F;
-   dtype *c;        &#x2F;* Replicated product vector *&#x2F;
-   double    max_seconds;
-   double    seconds;    &#x2F;* Elapsed time for matrix-vector multiply *&#x2F;
-   dtype *storage;  &#x2F;* Matrix elements stored here *&#x2F;
-   int    i, j;     &#x2F;* Loop indices *&#x2F;
-   int    id;       &#x2F;* Process ID number *&#x2F;
-   int    m;        &#x2F;* Rows in matrix *&#x2F;
-   int    n;        &#x2F;* Columns in matrix *&#x2F;
-   int    nprime;   &#x2F;* Elements in vector *&#x2F;
-   int    p;        &#x2F;* Number of processes *&#x2F;
-   int    rows;     &#x2F;* Number of rows on this process *&#x2F;
-   int    its;
+<span class="hljs-type">int</span> <span class="hljs-title function_">main</span> <span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span> *argv[])</span> &#123;
+   dtype **a;       <span class="hljs-comment">/* First factor, a matrix */</span>
+   dtype *b;        <span class="hljs-comment">/* Second factor, a vector */</span>
+   dtype *c_block;  <span class="hljs-comment">/* Partial product vector */</span>
+   dtype *c;        <span class="hljs-comment">/* Replicated product vector */</span>
+   <span class="hljs-type">double</span>    max_seconds;
+   <span class="hljs-type">double</span>    seconds;    <span class="hljs-comment">/* Elapsed time for matrix-vector multiply */</span>
+   dtype *storage;  <span class="hljs-comment">/* Matrix elements stored here */</span>
+   <span class="hljs-type">int</span>    i, j;     <span class="hljs-comment">/* Loop indices */</span>
+   <span class="hljs-type">int</span>    id;       <span class="hljs-comment">/* Process ID number */</span>
+   <span class="hljs-type">int</span>    m;        <span class="hljs-comment">/* Rows in matrix */</span>
+   <span class="hljs-type">int</span>    n;        <span class="hljs-comment">/* Columns in matrix */</span>
+   <span class="hljs-type">int</span>    nprime;   <span class="hljs-comment">/* Elements in vector */</span>
+   <span class="hljs-type">int</span>    p;        <span class="hljs-comment">/* Number of processes */</span>
+   <span class="hljs-type">int</span>    rows;     <span class="hljs-comment">/* Number of rows on this process */</span>
+   <span class="hljs-type">int</span>    its;
 
    MPI_Init (&amp;argc, &amp;argv);
    MPI_Comm_rank (MPI_COMM_WORLD, &amp;id);
    MPI_Comm_size (MPI_COMM_WORLD, &amp;p);
 
-   read_row_striped_matrix (argv[1], (void *) &amp;a,(void *) &amp;storage, mpitype, &amp;m, &amp;n, MPI_COMM_WORLD);
-   rows &#x3D; BLOCK_SIZE(id,p,m);
-   print_row_striped_matrix ((void **) a, mpitype, m, n,MPI_COMM_WORLD);
-   read_replicated_vector (argv[2], (void *) &amp;b, mpitype,&amp;nprime, MPI_COMM_WORLD);
+   read_row_striped_matrix (argv[<span class="hljs-number">1</span>], (<span class="hljs-type">void</span> *) &amp;a,(<span class="hljs-type">void</span> *) &amp;storage, mpitype, &amp;m, &amp;n, MPI_COMM_WORLD);
+   rows = BLOCK_SIZE(id,p,m);
+   print_row_striped_matrix ((<span class="hljs-type">void</span> **) a, mpitype, m, n,MPI_COMM_WORLD);
+   read_replicated_vector (argv[<span class="hljs-number">2</span>], (<span class="hljs-type">void</span> *) &amp;b, mpitype,&amp;nprime, MPI_COMM_WORLD);
    print_replicated_vector (b, mpitype, nprime,MPI_COMM_WORLD);
-   c_block &#x3D; (dtype *) malloc (rows * sizeof(dtype));
-   c &#x3D; (dtype *) malloc (n * sizeof(dtype));
+   c_block = (dtype *) <span class="hljs-built_in">malloc</span> (rows * <span class="hljs-keyword">sizeof</span>(dtype));
+   c = (dtype *) <span class="hljs-built_in">malloc</span> (n * <span class="hljs-keyword">sizeof</span>(dtype));
    MPI_Barrier (MPI_COMM_WORLD);
-   seconds &#x3D; - MPI_Wtime();
-   for (i &#x3D; 0; i &lt; rows; i++) &#123;
-      c_block[i] &#x3D; 0.0;
-      for (j &#x3D; 0; j &lt; n; j++)
-         c_block[i] +&#x3D; a[i][j] * b[j];
+   seconds = - MPI_Wtime();
+   <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; rows; i++) &#123;
+      c_block[i] = <span class="hljs-number">0.0</span>;
+      <span class="hljs-keyword">for</span> (j = <span class="hljs-number">0</span>; j &lt; n; j++)
+         c_block[i] += a[i][j] * b[j];
    &#125;
 
-   replicate_block_vector (c_block, n, (void *) c, mpitype,
+   replicate_block_vector (c_block, n, (<span class="hljs-type">void</span> *) c, mpitype,
 MPI_COMM_WORLD);
    MPI_Barrier (MPI_COMM_WORLD);
-   seconds +&#x3D; MPI_Wtime();
+   seconds += MPI_Wtime();
    print_replicated_vector (c, mpitype, n, MPI_COMM_WORLD);
-   MPI_Allreduce (&amp;seconds, &amp;max_seconds, 1, mpitype, MPI_MAX,
+   MPI_Allreduce (&amp;seconds, &amp;max_seconds, <span class="hljs-number">1</span>, mpitype, MPI_MAX,
       MPI_COMM_WORLD);
-   if (!id) &#123;
-      printf (&quot;MV1) N &#x3D; %d, Processes &#x3D; %d, Time &#x3D; %12.6f sec,&quot;,
+   <span class="hljs-keyword">if</span> (!id) &#123;
+      <span class="hljs-built_in">printf</span> (<span class="hljs-string">&quot;MV1) N = %d, Processes = %d, Time = %12.6f sec,&quot;</span>,
          n, p, max_seconds);
-      printf (&quot;Mflop &#x3D; %6.2f\n&quot;, 2*n*n&#x2F;(1000000.0*max_seconds));
+      <span class="hljs-built_in">printf</span> (<span class="hljs-string">&quot;Mflop = %6.2f\n&quot;</span>, <span class="hljs-number">2</span>*n*n/(<span class="hljs-number">1000000.0</span>*max_seconds));
    &#125;
    MPI_Finalize();
-   return 0;
-&#125;</code></pre></div></figure>
+   <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+&#125;</code></pre></div>
 <h4 id="运行时间表达式">运行时间表达式</h4>
 <p>x：内积循环迭代时间 计算时间：<code>xn↑[n/p]</code>
 all-gather的<code>↑[logp]</code>消息每一条需要λ延迟
@@ -644,144 +644,144 @@ all-to-all通信复杂度：<code>Θ(p + n/p)</code> 或 <code>Θ(n+logp)</code>
 <p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/118.png" srcset="/img/loading.gif" lazyload  style="zoom:67%;" /></p>
 <h4 id="mpi_scatter">MPI_Scatter</h4>
 <p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/119.png" srcset="/img/loading.gif" lazyload  style="zoom:67%;" /></p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">int MPI_Scatterv (
-   void         *send_buffer,
-   int          *send_cnt,
-   int          *send_disp,
-   MPI_Datatype  send_type,
-   void         *receive_buffer,
-   int           receive_cnt,
-   MPI_Datatype  receive_type,
-   int           root,
-   MPI_Comm      communicator)</code></pre></div></figure>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">MPI_Scatterv</span> <span class="hljs-params">(</span>
+<span class="hljs-params">   <span class="hljs-type">void</span>         *send_buffer,</span>
+<span class="hljs-params">   <span class="hljs-type">int</span>          *send_cnt,</span>
+<span class="hljs-params">   <span class="hljs-type">int</span>          *send_disp,</span>
+<span class="hljs-params">   MPI_Datatype  send_type,</span>
+<span class="hljs-params">   <span class="hljs-type">void</span>         *receive_buffer,</span>
+<span class="hljs-params">   <span class="hljs-type">int</span>           receive_cnt,</span>
+<span class="hljs-params">   MPI_Datatype  receive_type,</span>
+<span class="hljs-params">   <span class="hljs-type">int</span>           root,</span>
+<span class="hljs-params">   MPI_Comm      communicator)</span></code></pre></div>
 <h4 id="打印一个列块矩阵">打印一个列块矩阵</h4>
 <p>与我们在读取矩阵时所做的相反的数据移动 用“gather”代替“scatter”
 使用“v”变体，因为不同的进程贡献不同数量的元素</p>
 <p>读：</p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">void read_col_striped_matrix (
-      char         *s,       &#x2F;* IN - File name *&#x2F;
-      void      ***subs,     &#x2F;* OUT - 2-D array *&#x2F;
-      void       **storage,  &#x2F;* OUT - Array elements *&#x2F;
-      MPI_Datatype dtype,    &#x2F;* IN - Element type *&#x2F;
-      int         *m,        &#x2F;* OUT - Rows *&#x2F;
-      int         *n,        &#x2F;* OUT - Cols *&#x2F;
-      MPI_Comm     comm)     &#x2F;* IN - Communicator *&#x2F;
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">void</span> <span class="hljs-title function_">read_col_striped_matrix</span> <span class="hljs-params">(</span>
+<span class="hljs-params">      <span class="hljs-type">char</span>         *s,       <span class="hljs-comment">/* IN - File name */</span></span>
+<span class="hljs-params">      <span class="hljs-type">void</span>      ***subs,     <span class="hljs-comment">/* OUT - 2-D array */</span></span>
+<span class="hljs-params">      <span class="hljs-type">void</span>       **storage,  <span class="hljs-comment">/* OUT - Array elements */</span></span>
+<span class="hljs-params">      MPI_Datatype dtype,    <span class="hljs-comment">/* IN - Element type */</span></span>
+<span class="hljs-params">      <span class="hljs-type">int</span>         *m,        <span class="hljs-comment">/* OUT - Rows */</span></span>
+<span class="hljs-params">      <span class="hljs-type">int</span>         *n,        <span class="hljs-comment">/* OUT - Cols */</span></span>
+<span class="hljs-params">      MPI_Comm     comm)</span>     <span class="hljs-comment">/* IN - Communicator */</span>
 &#123;
-   void      *buffer;        &#x2F;* File buffer *&#x2F;
-   int        datum_size;    &#x2F;* Size of matrix element *&#x2F;
-   int        i, j;
-   int        id;            &#x2F;* Process rank *&#x2F;
-   FILE      *infileptr;     &#x2F;* Input file ptr *&#x2F;
-   int        local_cols;    &#x2F;* Cols on this process *&#x2F;
-   void     **lptr;          &#x2F;* Pointer into &#39;subs&#39; *&#x2F;
-   void      *rptr;          &#x2F;* Pointer into &#39;storage&#39; *&#x2F;
-   int        p;             &#x2F;* Number of processes *&#x2F;
-   int       *send_count;    &#x2F;* Each proc&#39;s count *&#x2F;
-   int       *send_disp;     &#x2F;* Each proc&#39;s displacement *&#x2F;
+   <span class="hljs-type">void</span>      *buffer;        <span class="hljs-comment">/* File buffer */</span>
+   <span class="hljs-type">int</span>        datum_size;    <span class="hljs-comment">/* Size of matrix element */</span>
+   <span class="hljs-type">int</span>        i, j;
+   <span class="hljs-type">int</span>        id;            <span class="hljs-comment">/* Process rank */</span>
+   FILE      *infileptr;     <span class="hljs-comment">/* Input file ptr */</span>
+   <span class="hljs-type">int</span>        local_cols;    <span class="hljs-comment">/* Cols on this process */</span>
+   <span class="hljs-type">void</span>     **lptr;          <span class="hljs-comment">/* Pointer into &#x27;subs&#x27; */</span>
+   <span class="hljs-type">void</span>      *rptr;          <span class="hljs-comment">/* Pointer into &#x27;storage&#x27; */</span>
+   <span class="hljs-type">int</span>        p;             <span class="hljs-comment">/* Number of processes */</span>
+   <span class="hljs-type">int</span>       *send_count;    <span class="hljs-comment">/* Each proc&#x27;s count */</span>
+   <span class="hljs-type">int</span>       *send_disp;     <span class="hljs-comment">/* Each proc&#x27;s displacement */</span>
 
    MPI_Comm_size (comm, &amp;p);
    MPI_Comm_rank (comm, &amp;id);
-   datum_size &#x3D; get_size (dtype);
+   datum_size = get_size (dtype);
 
-   &#x2F;* Process p-1 opens file, gets number of rows and
-      cols, and broadcasts this info to other procs. *&#x2F;
+   <span class="hljs-comment">/* Process p-1 opens file, gets number of rows and</span>
+<span class="hljs-comment">      cols, and broadcasts this info to other procs. */</span>
 
-   if (id &#x3D;&#x3D; (p-1)) &#123;
-      infileptr &#x3D; fopen (s, &quot;r&quot;);
-      if (infileptr &#x3D;&#x3D; NULL) *m &#x3D; 0;
-      else &#123;
-         fread (m, sizeof(int), 1, infileptr);
-         fread (n, sizeof(int), 1, infileptr);
+   <span class="hljs-keyword">if</span> (id == (p<span class="hljs-number">-1</span>)) &#123;
+      infileptr = fopen (s, <span class="hljs-string">&quot;r&quot;</span>);
+      <span class="hljs-keyword">if</span> (infileptr == <span class="hljs-literal">NULL</span>) *m = <span class="hljs-number">0</span>;
+      <span class="hljs-keyword">else</span> &#123;
+         fread (m, <span class="hljs-keyword">sizeof</span>(<span class="hljs-type">int</span>), <span class="hljs-number">1</span>, infileptr);
+         fread (n, <span class="hljs-keyword">sizeof</span>(<span class="hljs-type">int</span>), <span class="hljs-number">1</span>, infileptr);
       &#125;
    &#125;
-   MPI_Bcast (m, 1, MPI_INT, p-1, comm);
+   MPI_Bcast (m, <span class="hljs-number">1</span>, MPI_INT, p<span class="hljs-number">-1</span>, comm);
 
-   if (!(*m)) MPI_Abort (comm, OPEN_FILE_ERROR);
+   <span class="hljs-keyword">if</span> (!(*m)) MPI_Abort (comm, OPEN_FILE_ERROR);
 
-   MPI_Bcast (n, 1, MPI_INT, p-1, comm);
+   MPI_Bcast (n, <span class="hljs-number">1</span>, MPI_INT, p<span class="hljs-number">-1</span>, comm);
 
-   local_cols &#x3D; BLOCK_SIZE(id,p,*n);
+   local_cols = BLOCK_SIZE(id,p,*n);
 
-   &#x2F;* Dynamically allocate two-dimensional matrix &#39;subs&#39; *&#x2F;
+   <span class="hljs-comment">/* Dynamically allocate two-dimensional matrix &#x27;subs&#x27; */</span>
 
-   *storage &#x3D; my_malloc (id, *m * local_cols * datum_size);
-   *subs &#x3D; (void **) my_malloc (id, *m * PTR_SIZE);
-   lptr &#x3D; (void *) *subs;
-   rptr &#x3D; (void *) *storage;
-   for (i &#x3D; 0; i &lt; *m; i++) &#123;
-      *(lptr++) &#x3D; (void *) rptr;
-      rptr +&#x3D; local_cols * datum_size;
+   *storage = my_malloc (id, *m * local_cols * datum_size);
+   *subs = (<span class="hljs-type">void</span> **) my_malloc (id, *m * PTR_SIZE);
+   lptr = (<span class="hljs-type">void</span> *) *subs;
+   rptr = (<span class="hljs-type">void</span> *) *storage;
+   <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; *m; i++) &#123;
+      *(lptr++) = (<span class="hljs-type">void</span> *) rptr;
+      rptr += local_cols * datum_size;
    &#125;
 
-   &#x2F;* Process p-1 reads in the matrix one row at a time and
-      distributes each row among the MPI processes. *&#x2F;
+   <span class="hljs-comment">/* Process p-1 reads in the matrix one row at a time and</span>
+<span class="hljs-comment">      distributes each row among the MPI processes. */</span>
 
-   if (id &#x3D;&#x3D; (p-1))
-      buffer &#x3D; my_malloc (id, *n * datum_size);
+   <span class="hljs-keyword">if</span> (id == (p<span class="hljs-number">-1</span>))
+      buffer = my_malloc (id, *n * datum_size);
    create_mixed_xfer_arrays (id,p,*n,&amp;send_count,&amp;send_disp);
-   for (i &#x3D; 0; i &lt; *m; i++) &#123;
-      if (id &#x3D;&#x3D; (p-1))
+   <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; *m; i++) &#123;
+      <span class="hljs-keyword">if</span> (id == (p<span class="hljs-number">-1</span>))
       fread (buffer, datum_size, *n, infileptr);
       MPI_Scatterv (buffer, send_count, send_disp, dtype,
          (*storage)+i*local_cols*datum_size, local_cols,
-         dtype, p-1, comm);
+         dtype, p<span class="hljs-number">-1</span>, comm);
    &#125;
-   free (send_count);
-   free (send_disp);
-   if (id &#x3D;&#x3D; (p-1)) free (buffer);
-&#125;</code></pre></div></figure>
+   <span class="hljs-built_in">free</span> (send_count);
+   <span class="hljs-built_in">free</span> (send_disp);
+   <span class="hljs-keyword">if</span> (id == (p<span class="hljs-number">-1</span>)) <span class="hljs-built_in">free</span> (buffer);
+&#125;</code></pre></div>
 <p>打印:</p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">void print_col_striped_matrix (
-   void       **a,       &#x2F;* IN - 2D array *&#x2F;
-   MPI_Datatype dtype,   &#x2F;* IN - Type of matrix elements *&#x2F;
-   int          m,       &#x2F;* IN - Matrix rows *&#x2F;
-   int          n,       &#x2F;* IN - Matrix cols *&#x2F;
-   MPI_Comm     comm)    &#x2F;* IN - Communicator *&#x2F;
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">void</span> <span class="hljs-title function_">print_col_striped_matrix</span> <span class="hljs-params">(</span>
+<span class="hljs-params">   <span class="hljs-type">void</span>       **a,       <span class="hljs-comment">/* IN - 2D array */</span></span>
+<span class="hljs-params">   MPI_Datatype dtype,   <span class="hljs-comment">/* IN - Type of matrix elements */</span></span>
+<span class="hljs-params">   <span class="hljs-type">int</span>          m,       <span class="hljs-comment">/* IN - Matrix rows */</span></span>
+<span class="hljs-params">   <span class="hljs-type">int</span>          n,       <span class="hljs-comment">/* IN - Matrix cols */</span></span>
+<span class="hljs-params">   MPI_Comm     comm)</span>    <span class="hljs-comment">/* IN - Communicator */</span>
 &#123;
-   MPI_Status status;     &#x2F;* Result of receive *&#x2F;
-   int        datum_size; &#x2F;* Bytes per matrix element *&#x2F;
-   void      *buffer;     &#x2F;* Enough room to hold 1 row *&#x2F;
-    int        i, j;
-    int        id;         &#x2F;* Process rank *&#x2F;
-    int        p;          &#x2F;* Number of processes *&#x2F;
-   int*       rec_count;  &#x2F;* Elements received per proc *&#x2F;
-   int*       rec_disp;   &#x2F;* Offset of each proc&#39;s block *&#x2F;
+   MPI_Status status;     <span class="hljs-comment">/* Result of receive */</span>
+   <span class="hljs-type">int</span>        datum_size; <span class="hljs-comment">/* Bytes per matrix element */</span>
+   <span class="hljs-type">void</span>      *buffer;     <span class="hljs-comment">/* Enough room to hold 1 row */</span>
+    <span class="hljs-type">int</span>        i, j;
+    <span class="hljs-type">int</span>        id;         <span class="hljs-comment">/* Process rank */</span>
+    <span class="hljs-type">int</span>        p;          <span class="hljs-comment">/* Number of processes */</span>
+   <span class="hljs-type">int</span>*       rec_count;  <span class="hljs-comment">/* Elements received per proc */</span>
+   <span class="hljs-type">int</span>*       rec_disp;   <span class="hljs-comment">/* Offset of each proc&#x27;s block */</span>
 
    MPI_Comm_rank (comm, &amp;id);
    MPI_Comm_size (comm, &amp;p);
-   datum_size &#x3D; get_size (dtype);
+   datum_size = get_size (dtype);
    create_mixed_xfer_arrays (id, p, n, &amp;rec_count,&amp;rec_disp);
 
-   if (!id)
-      buffer &#x3D; my_malloc (id, n*datum_size);
+   <span class="hljs-keyword">if</span> (!id)
+      buffer = my_malloc (id, n*datum_size);
 
-   for (i &#x3D; 0; i &lt; m; i++) &#123;
+   <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; m; i++) &#123;
       MPI_Gatherv (a[i], BLOCK_SIZE(id,p,n), dtype, buffer,
-         rec_count, rec_disp, dtype, 0, MPI_COMM_WORLD);
-      if (!id) &#123;
+         rec_count, rec_disp, dtype, <span class="hljs-number">0</span>, MPI_COMM_WORLD);
+      <span class="hljs-keyword">if</span> (!id) &#123;
          print_subvector (buffer, dtype, n);
-         putchar (&#39;\n&#39;);
+         <span class="hljs-built_in">putchar</span> (<span class="hljs-string">&#x27;\n&#x27;</span>);
       &#125;
    &#125;
-   free (rec_count);
-   free (rec_disp);
-   if (!id) &#123;
-      free (buffer);
-      putchar (&#39;\n&#39;);
+   <span class="hljs-built_in">free</span> (rec_count);
+   <span class="hljs-built_in">free</span> (rec_disp);
+   <span class="hljs-keyword">if</span> (!id) &#123;
+      <span class="hljs-built_in">free</span> (buffer);
+      <span class="hljs-built_in">putchar</span> (<span class="hljs-string">&#x27;\n&#x27;</span>);
    &#125;
-&#125;</code></pre></div></figure>
+&#125;</code></pre></div>
 <h4 id="函数mpi_gatherv">函数MPI_Gatherv</h4>
 <p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/120.png" srcset="/img/loading.gif" lazyload  style="zoom:67%;" /></p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">int MPI_Gatherv (
-   void         *send_buffer,
-   int           send_cnt,
-   MPI_Datatype  send_type,
-   void         *receive_buffer,
-   int          *receive_cnt,
-   int          *receive_disp,
-   MPI_Datatype  receive_type,
-   int           root,
-   MPI_Comm      communicator)</code></pre></div></figure>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">MPI_Gatherv</span> <span class="hljs-params">(</span>
+<span class="hljs-params">   <span class="hljs-type">void</span>         *send_buffer,</span>
+<span class="hljs-params">   <span class="hljs-type">int</span>           send_cnt,</span>
+<span class="hljs-params">   MPI_Datatype  send_type,</span>
+<span class="hljs-params">   <span class="hljs-type">void</span>         *receive_buffer,</span>
+<span class="hljs-params">   <span class="hljs-type">int</span>          *receive_cnt,</span>
+<span class="hljs-params">   <span class="hljs-type">int</span>          *receive_disp,</span>
+<span class="hljs-params">   MPI_Datatype  receive_type,</span>
+<span class="hljs-params">   <span class="hljs-type">int</span>           root,</span>
+<span class="hljs-params">   MPI_Comm      communicator)</span></code></pre></div>
 <h4 id="函数mpi_alltoallv">函数<code>MPI_Alltoallv</code></h4>
 <figure>
 <img
@@ -789,101 +789,101 @@ src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/121.png" srcse
 alt="121" />
 <figcaption aria-hidden="true">121</figcaption>
 </figure>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">int MPI_Alltoallv (
-   void         *send_buffer,
-   int          *send_cnt,
-   int          *send_disp,
-   MPI_Datatype  send_type,
-   void         *receive_buffer,
-   int          *receive_cnt,
-   int          *receive_disp,
-   MPI_Datatype  receive_type,
-   MPI_Comm      communicator)</code></pre></div></figure>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">MPI_Alltoallv</span> <span class="hljs-params">(</span>
+<span class="hljs-params">   <span class="hljs-type">void</span>         *send_buffer,</span>
+<span class="hljs-params">   <span class="hljs-type">int</span>          *send_cnt,</span>
+<span class="hljs-params">   <span class="hljs-type">int</span>          *send_disp,</span>
+<span class="hljs-params">   MPI_Datatype  send_type,</span>
+<span class="hljs-params">   <span class="hljs-type">void</span>         *receive_buffer,</span>
+<span class="hljs-params">   <span class="hljs-type">int</span>          *receive_cnt,</span>
+<span class="hljs-params">   <span class="hljs-type">int</span>          *receive_disp,</span>
+<span class="hljs-params">   MPI_Datatype  receive_type,</span>
+<span class="hljs-params">   MPI_Comm      communicator)</span></code></pre></div>
 <h4 id="main函数">main函数</h4>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">#include &lt;stdio.h&gt;
-#include &lt;mpi.h&gt;
-#include &quot;..&#x2F;MyMPI.h&quot;
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;mpi.h&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;../MyMPI.h&quot;</span></span>
 
-&#x2F;* Change these two definitions when the matrix and vector
-   element types change *&#x2F;
+<span class="hljs-comment">/* Change these two definitions when the matrix and vector</span>
+<span class="hljs-comment">   element types change */</span>
 
-typedef double dtype;
-#define mpitype MPI_DOUBLE
+<span class="hljs-keyword">typedef</span> <span class="hljs-type">double</span> dtype;
+<span class="hljs-meta">#<span class="hljs-keyword">define</span> mpitype MPI_DOUBLE</span>
 
-int main (int argc, char *argv[]) &#123;
-   dtype **a;             &#x2F;* The first factor, a matrix *&#x2F;
-   dtype  *b;             &#x2F;* The second factor, a vector *&#x2F;
-   dtype  *c;             &#x2F;* The product, a vector *&#x2F;
-   dtype  *c_part_out;    &#x2F;* Partial sums, sent *&#x2F;
-   dtype  *c_part_in;     &#x2F;* Partial sums, received *&#x2F;
-   int    *cnt_out;       &#x2F;* Elements sent to each proc *&#x2F;
-   int    *cnt_in;        &#x2F;* Elements received per proc *&#x2F;
-   int    *disp_out;      &#x2F;* Indices of sent elements *&#x2F;
-   int    *disp_in;       &#x2F;* Indices of received elements *&#x2F;
-   int     i, j;          &#x2F;* Loop indices *&#x2F;
-   int     id;            &#x2F;* Process ID number *&#x2F;
-   int     local_els;     &#x2F;* Cols of &#39;a&#39; and elements of &#39;b&#39;
-                             held by this process *&#x2F;
-   int     m;             &#x2F;* Rows in the matrix *&#x2F;
-   int     n;             &#x2F;* Columns in the matrix *&#x2F;
-   int     nprime;        &#x2F;* Size of the vector *&#x2F;
-   int     p;             &#x2F;* Number of processes *&#x2F;
-   double    max_seconds;
-   double    seconds;     &#x2F;* Elapsed time *&#x2F;
-   dtype  *storage;       &#x2F;* This process&#39;s portion of &#39;a&#39; *&#x2F;
+<span class="hljs-type">int</span> <span class="hljs-title function_">main</span> <span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span> *argv[])</span> &#123;
+   dtype **a;             <span class="hljs-comment">/* The first factor, a matrix */</span>
+   dtype  *b;             <span class="hljs-comment">/* The second factor, a vector */</span>
+   dtype  *c;             <span class="hljs-comment">/* The product, a vector */</span>
+   dtype  *c_part_out;    <span class="hljs-comment">/* Partial sums, sent */</span>
+   dtype  *c_part_in;     <span class="hljs-comment">/* Partial sums, received */</span>
+   <span class="hljs-type">int</span>    *cnt_out;       <span class="hljs-comment">/* Elements sent to each proc */</span>
+   <span class="hljs-type">int</span>    *cnt_in;        <span class="hljs-comment">/* Elements received per proc */</span>
+   <span class="hljs-type">int</span>    *disp_out;      <span class="hljs-comment">/* Indices of sent elements */</span>
+   <span class="hljs-type">int</span>    *disp_in;       <span class="hljs-comment">/* Indices of received elements */</span>
+   <span class="hljs-type">int</span>     i, j;          <span class="hljs-comment">/* Loop indices */</span>
+   <span class="hljs-type">int</span>     id;            <span class="hljs-comment">/* Process ID number */</span>
+   <span class="hljs-type">int</span>     local_els;     <span class="hljs-comment">/* Cols of &#x27;a&#x27; and elements of &#x27;b&#x27;</span>
+<span class="hljs-comment">                             held by this process */</span>
+   <span class="hljs-type">int</span>     m;             <span class="hljs-comment">/* Rows in the matrix */</span>
+   <span class="hljs-type">int</span>     n;             <span class="hljs-comment">/* Columns in the matrix */</span>
+   <span class="hljs-type">int</span>     nprime;        <span class="hljs-comment">/* Size of the vector */</span>
+   <span class="hljs-type">int</span>     p;             <span class="hljs-comment">/* Number of processes */</span>
+   <span class="hljs-type">double</span>    max_seconds;
+   <span class="hljs-type">double</span>    seconds;     <span class="hljs-comment">/* Elapsed time */</span>
+   dtype  *storage;       <span class="hljs-comment">/* This process&#x27;s portion of &#x27;a&#x27; */</span>
 
    MPI_Init (&amp;argc, &amp;argv);
    MPI_Comm_rank (MPI_COMM_WORLD, &amp;id);
    MPI_Comm_size (MPI_COMM_WORLD, &amp;p);
 
-   read_col_striped_matrix (argv[1], (void ***) &amp;a,
-      (void **) &amp;storage, mpitype, &amp;m, &amp;n, MPI_COMM_WORLD);
-   print_col_striped_matrix ((void **) a, mpitype, m, n, 
+   read_col_striped_matrix (argv[<span class="hljs-number">1</span>], (<span class="hljs-type">void</span> ***) &amp;a,
+      (<span class="hljs-type">void</span> **) &amp;storage, mpitype, &amp;m, &amp;n, MPI_COMM_WORLD);
+   print_col_striped_matrix ((<span class="hljs-type">void</span> **) a, mpitype, m, n, 
       MPI_COMM_WORLD);
-   read_block_vector (argv[2], (void **) &amp;b, mpitype,
+   read_block_vector (argv[<span class="hljs-number">2</span>], (<span class="hljs-type">void</span> **) &amp;b, mpitype,
       &amp;nprime, MPI_COMM_WORLD);
-   print_block_vector ((void *) b, mpitype, nprime,
+   print_block_vector ((<span class="hljs-type">void</span> *) b, mpitype, nprime,
       MPI_COMM_WORLD);
 
-   &#x2F;* Each process multiplies its columns of &#39;a&#39; and vector
-      &#39;b&#39;, resulting in a partial sum of product &#39;c&#39;. *&#x2F;
+   <span class="hljs-comment">/* Each process multiplies its columns of &#x27;a&#x27; and vector</span>
+<span class="hljs-comment">      &#x27;b&#x27;, resulting in a partial sum of product &#x27;c&#x27;. */</span>
 
-   c_part_out &#x3D; (dtype *) my_malloc (id, n * sizeof(dtype));
-   local_els &#x3D; BLOCK_SIZE(id,p,n);
+   c_part_out = (dtype *) my_malloc (id, n * <span class="hljs-keyword">sizeof</span>(dtype));
+   local_els = BLOCK_SIZE(id,p,n);
    MPI_Barrier (MPI_COMM_WORLD);
-   seconds &#x3D; -MPI_Wtime();
-   for (i &#x3D; 0; i &lt; n; i++) &#123;
-      c_part_out[i] &#x3D; 0.0;
-      for (j &#x3D; 0; j &lt; local_els; j++)
-         c_part_out[i] +&#x3D; a[i][j] * b[j];
+   seconds = -MPI_Wtime();
+   <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; n; i++) &#123;
+      c_part_out[i] = <span class="hljs-number">0.0</span>;
+      <span class="hljs-keyword">for</span> (j = <span class="hljs-number">0</span>; j &lt; local_els; j++)
+         c_part_out[i] += a[i][j] * b[j];
    &#125;
 
    create_mixed_xfer_arrays (id, p, n, &amp;cnt_out, &amp;disp_out);
    create_uniform_xfer_arrays (id, p, n, &amp;cnt_in, &amp;disp_in);
-   c_part_in &#x3D;
-      (dtype*) my_malloc (id, p*local_els*sizeof(dtype));
+   c_part_in =
+      (dtype*) my_malloc (id, p*local_els*<span class="hljs-keyword">sizeof</span>(dtype));
    MPI_Alltoallv (c_part_out, cnt_out, disp_out, mpitype,
       c_part_in, cnt_in, disp_in, mpitype, MPI_COMM_WORLD);
 
-   c &#x3D; (dtype*) my_malloc (id, local_els * sizeof(dtype));
-   for (i &#x3D; 0; i &lt; local_els; i++) &#123;
-      c[i] &#x3D; 0.0;
-      for (j &#x3D; 0; j &lt; p; j++)
-         c[i] +&#x3D; c_part_in[i + j*local_els];
+   c = (dtype*) my_malloc (id, local_els * <span class="hljs-keyword">sizeof</span>(dtype));
+   <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; local_els; i++) &#123;
+      c[i] = <span class="hljs-number">0.0</span>;
+      <span class="hljs-keyword">for</span> (j = <span class="hljs-number">0</span>; j &lt; p; j++)
+         c[i] += c_part_in[i + j*local_els];
    &#125;
    MPI_Barrier (MPI_COMM_WORLD);
-   seconds +&#x3D; MPI_Wtime();
-   MPI_Allreduce (&amp;seconds, &amp;max_seconds, 1, mpitype, MPI_MAX,
+   seconds += MPI_Wtime();
+   MPI_Allreduce (&amp;seconds, &amp;max_seconds, <span class="hljs-number">1</span>, mpitype, MPI_MAX,
       MPI_COMM_WORLD);
-   if (!id) &#123;
-      printf (&quot;MV3) N &#x3D; %d, Processes &#x3D; %d, Time &#x3D; %12.6f sec,&quot;,
+   <span class="hljs-keyword">if</span> (!id) &#123;
+      <span class="hljs-built_in">printf</span> (<span class="hljs-string">&quot;MV3) N = %d, Processes = %d, Time = %12.6f sec,&quot;</span>,
          n, p, max_seconds);
-      printf (&quot;Mflop &#x3D; %6.2f\n&quot;, 2*n*n&#x2F;(1000000.0*max_seconds));
+      <span class="hljs-built_in">printf</span> (<span class="hljs-string">&quot;Mflop = %6.2f\n&quot;</span>, <span class="hljs-number">2</span>*n*n/(<span class="hljs-number">1000000.0</span>*max_seconds));
    &#125;
-   print_block_vector ((void *) c, mpitype, n, MPI_COMM_WORLD);
+   print_block_vector ((<span class="hljs-type">void</span> *) c, mpitype, n, MPI_COMM_WORLD);
    MPI_Finalize();
-   return 0;
-&#125;</code></pre></div></figure>
+   <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+&#125;</code></pre></div>
 <h4 id="计数位移数组">计数/位移数组</h4>
 <p>MPI_Alltoallv 需要两对计数/位移数组 发送值的第一对</p>
 <ul>
@@ -898,25 +898,25 @@ int main (int argc, char *argv[]) &#123;
 <blockquote>
 <p>create_mixed_xfer_arrays会建立这些</p>
 </blockquote>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">void create_mixed_xfer_arrays (
-   int id,       &#x2F;* IN - Process rank *&#x2F;
-   int p,        &#x2F;* IN - Number of processes *&#x2F;
-   int n,        &#x2F;* IN - Total number of elements *&#x2F;
-   int **count,  &#x2F;* OUT - Array of counts *&#x2F;
-   int **disp)   &#x2F;* OUT - Array of displacements *&#x2F;
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">void</span> <span class="hljs-title function_">create_mixed_xfer_arrays</span> <span class="hljs-params">(</span>
+<span class="hljs-params">   <span class="hljs-type">int</span> id,       <span class="hljs-comment">/* IN - Process rank */</span></span>
+<span class="hljs-params">   <span class="hljs-type">int</span> p,        <span class="hljs-comment">/* IN - Number of processes */</span></span>
+<span class="hljs-params">   <span class="hljs-type">int</span> n,        <span class="hljs-comment">/* IN - Total number of elements */</span></span>
+<span class="hljs-params">   <span class="hljs-type">int</span> **count,  <span class="hljs-comment">/* OUT - Array of counts */</span></span>
+<span class="hljs-params">   <span class="hljs-type">int</span> **disp)</span>   <span class="hljs-comment">/* OUT - Array of displacements */</span>
 &#123;
 
-   int i;
+   <span class="hljs-type">int</span> i;
 
-   *count &#x3D; my_malloc (id, p * sizeof(int));
-   *disp &#x3D; my_malloc (id, p * sizeof(int));
-   (*count)[0] &#x3D; BLOCK_SIZE(0,p,n);
-   (*disp)[0] &#x3D; 0;
-   for (i &#x3D; 1; i &lt; p; i++) &#123;
-      (*disp)[i] &#x3D; (*disp)[i-1] + (*count)[i-1];
-      (*count)[i] &#x3D; BLOCK_SIZE(i,p,n);
+   *count = my_malloc (id, p * <span class="hljs-keyword">sizeof</span>(<span class="hljs-type">int</span>));
+   *disp = my_malloc (id, p * <span class="hljs-keyword">sizeof</span>(<span class="hljs-type">int</span>));
+   (*count)[<span class="hljs-number">0</span>] = BLOCK_SIZE(<span class="hljs-number">0</span>,p,n);
+   (*disp)[<span class="hljs-number">0</span>] = <span class="hljs-number">0</span>;
+   <span class="hljs-keyword">for</span> (i = <span class="hljs-number">1</span>; i &lt; p; i++) &#123;
+      (*disp)[i] = (*disp)[i<span class="hljs-number">-1</span>] + (*count)[i<span class="hljs-number">-1</span>];
+      (*count)[i] = BLOCK_SIZE(i,p,n);
    &#125;
-&#125;</code></pre></div></figure>
+&#125;</code></pre></div>
 <p>函数<code>create_uniform_xfer_arrays</code></p>
 <p>第一个数组</p>
 <ul>
@@ -1084,67 +1084,67 @@ id="创建进程的2维虚拟网格mpi_dims_create">创建进程的2维虚拟网
 <li>网格维度数</li>
 </ul>
 <p>返回每个维度中的进程数</p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">int MPI_Dims_create (
-   int nodes,
-       &#x2F;* Input - Procs in grid *&#x2F;
- 
-   int dims,
-       &#x2F;* Input - Number of dims *&#x2F;
-
-   int *size)
-       &#x2F;* Input&#x2F;Output - Size of
-          each grid dimension *&#x2F;</code></pre></div></figure>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">MPI_Dims_create</span> <span class="hljs-params">(</span>
+<span class="hljs-params">   <span class="hljs-type">int</span> nodes,</span>
+<span class="hljs-params">       <span class="hljs-comment">/* Input - Procs in grid */</span></span>
+<span class="hljs-params"> </span>
+<span class="hljs-params">   <span class="hljs-type">int</span> dims,</span>
+<span class="hljs-params">       <span class="hljs-comment">/* Input - Number of dims */</span></span>
+<span class="hljs-params"></span>
+<span class="hljs-params">   <span class="hljs-type">int</span> *size)</span>
+       <span class="hljs-comment">/* Input/Output - Size of</span>
+<span class="hljs-comment">          each grid dimension */</span></code></pre></div>
 <p><code>MPI_Cart_create</code></p>
 <p>创建笛卡尔拓扑的通信子</p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">int MPI_Cart_create (
-   MPI_Comm old_comm, &#x2F;* Input - old communicator *&#x2F;
-
-   int dims, &#x2F;* Input - grid dimensions *&#x2F;
-
-   int *size, &#x2F;* Input - # procs in each dim *&#x2F;
-
-   int *periodic,
-       &#x2F;* Input - periodic[j] is 1 if dimension j
-          wraps around; 0 otherwise *&#x2F;
-
-   int reorder,
-       &#x2F;* 1 if process ranks can be reordered *&#x2F;
-
-   MPI_Comm *cart_comm)
-       &#x2F;* Output - new communicator *&#x2F;</code></pre></div></figure>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">MPI_Cart_create</span> <span class="hljs-params">(</span>
+<span class="hljs-params">   MPI_Comm old_comm, <span class="hljs-comment">/* Input - old communicator */</span></span>
+<span class="hljs-params"></span>
+<span class="hljs-params">   <span class="hljs-type">int</span> dims, <span class="hljs-comment">/* Input - grid dimensions */</span></span>
+<span class="hljs-params"></span>
+<span class="hljs-params">   <span class="hljs-type">int</span> *size, <span class="hljs-comment">/* Input - # procs in each dim */</span></span>
+<span class="hljs-params"></span>
+<span class="hljs-params">   <span class="hljs-type">int</span> *periodic,</span>
+<span class="hljs-params">       <span class="hljs-comment">/* Input - periodic[j] is 1 if dimension j</span></span>
+<span class="hljs-comment"><span class="hljs-params">          wraps around; 0 otherwise */</span></span>
+<span class="hljs-params"></span>
+<span class="hljs-params">   <span class="hljs-type">int</span> reorder,</span>
+<span class="hljs-params">       <span class="hljs-comment">/* 1 if process ranks can be reordered */</span></span>
+<span class="hljs-params"></span>
+<span class="hljs-params">   MPI_Comm *cart_comm)</span>
+       <span class="hljs-comment">/* Output - new communicator */</span></code></pre></div>
 <p>使用<code>MPI_Dims_create</code>和<code>MPI_Cart_create</code></p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">MPI_Comm cart_comm;
-int p;
-int periodic[2];
-int size[2];
+<div class="code-wrapper"><pre><code class="hljs c">MPI_Comm cart_comm;
+<span class="hljs-type">int</span> p;
+<span class="hljs-type">int</span> periodic[<span class="hljs-number">2</span>];
+<span class="hljs-type">int</span> size[<span class="hljs-number">2</span>];
 ...
-size[0] &#x3D; size[1] &#x3D; 0;
-MPI_Dims_create (p, 2, size);
-periodic[0] &#x3D; periodic[1] &#x3D; 0;
-MPI_Cart_create (MPI_COMM_WORLD, 2, size,
-                 1, &amp;cart_comm);</code></pre></div></figure>
+size[<span class="hljs-number">0</span>] = size[<span class="hljs-number">1</span>] = <span class="hljs-number">0</span>;
+MPI_Dims_create (p, <span class="hljs-number">2</span>, size);
+periodic[<span class="hljs-number">0</span>] = periodic[<span class="hljs-number">1</span>] = <span class="hljs-number">0</span>;
+MPI_Cart_create (MPI_COMM_WORLD, <span class="hljs-number">2</span>, size,
+                 <span class="hljs-number">1</span>, &amp;cart_comm);</code></pre></div>
 <p>有用的Grid相关的函数</p>
 <p><code>MPI_Cart_rank</code>:给定进程在笛卡儿通信器中的坐标，返回进程的秩</p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">int MPI_Cart_rank (
-   MPI_Comm comm,
-      &#x2F;* In - Communicator *&#x2F;
-   int *coords,
-      &#x2F;* In - Array containing process’
-              grid location *&#x2F;
-   int *rank)
-      &#x2F;* Out - Rank of process at
-         specified coords *&#x2F;</code></pre></div></figure>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">MPI_Cart_rank</span> <span class="hljs-params">(</span>
+<span class="hljs-params">   MPI_Comm comm,</span>
+<span class="hljs-params">      <span class="hljs-comment">/* In - Communicator */</span></span>
+<span class="hljs-params">   <span class="hljs-type">int</span> *coords,</span>
+<span class="hljs-params">      <span class="hljs-comment">/* In - Array containing process’</span></span>
+<span class="hljs-comment"><span class="hljs-params">              grid location */</span></span>
+<span class="hljs-params">   <span class="hljs-type">int</span> *rank)</span>
+      <span class="hljs-comment">/* Out - Rank of process at</span>
+<span class="hljs-comment">         specified coords */</span></code></pre></div>
 <p><code>nMPI_Cart_coords</code>:给定进程在笛卡儿通信器中的秩，返回进程的坐标</p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">int MPI_Cart_coords (
-   MPI_Comm comm,
-      &#x2F;* In - Communicator *&#x2F;
-   int rank,
-      &#x2F;* In - Rank of process *&#x2F;
-   int dims,
-      &#x2F;* In - Dimensions in virtual grid *&#x2F;
-   int *coords)
-      &#x2F;* Out - Coordinates of specified
-         process in virtual grid *&#x2F;</code></pre></div></figure>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">MPI_Cart_coords</span> <span class="hljs-params">(</span>
+<span class="hljs-params">   MPI_Comm comm,</span>
+<span class="hljs-params">      <span class="hljs-comment">/* In - Communicator */</span></span>
+<span class="hljs-params">   <span class="hljs-type">int</span> rank,</span>
+<span class="hljs-params">      <span class="hljs-comment">/* In - Rank of process */</span></span>
+<span class="hljs-params">   <span class="hljs-type">int</span> dims,</span>
+<span class="hljs-params">      <span class="hljs-comment">/* In - Dimensions in virtual grid */</span></span>
+<span class="hljs-params">   <span class="hljs-type">int</span> *coords)</span>
+      <span class="hljs-comment">/* Out - Coordinates of specified</span>
+<span class="hljs-comment">         process in virtual grid */</span></code></pre></div>
 <p><code>MPI_Comm_split</code></p>
 <ul>
 <li>将通信器的进程划分为一个或多个子组</li>
@@ -1152,30 +1152,30 @@ MPI_Cart_create (MPI_COMM_WORLD, 2, size,
 <li>允许每个子组中的进程执行它们自己的集体通信</li>
 <li>需要按列分散和按行减少</li>
 </ul>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">int MPI_Comm_split (
-   MPI_Comm old_comm,
-      &#x2F;* In - Existing communicator *&#x2F;
-
-   int partition, &#x2F;* In - Partition number *&#x2F;
-
-   int new_rank,
-      &#x2F;* In - Ranking order of processes
-         in new communicator *&#x2F;
-
-   MPI_Comm *new_comm)
-      &#x2F;* Out - New communicator shared by
-         processes in same partition *&#x2F;</code></pre></div></figure>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">MPI_Comm_split</span> <span class="hljs-params">(</span>
+<span class="hljs-params">   MPI_Comm old_comm,</span>
+<span class="hljs-params">      <span class="hljs-comment">/* In - Existing communicator */</span></span>
+<span class="hljs-params"></span>
+<span class="hljs-params">   <span class="hljs-type">int</span> partition, <span class="hljs-comment">/* In - Partition number */</span></span>
+<span class="hljs-params"></span>
+<span class="hljs-params">   <span class="hljs-type">int</span> new_rank,</span>
+<span class="hljs-params">      <span class="hljs-comment">/* In - Ranking order of processes</span></span>
+<span class="hljs-comment"><span class="hljs-params">         in new communicator */</span></span>
+<span class="hljs-params"></span>
+<span class="hljs-params">   MPI_Comm *new_comm)</span>
+      <span class="hljs-comment">/* Out - New communicator shared by</span>
+<span class="hljs-comment">         processes in same partition */</span></code></pre></div>
 <h4 id="示例">示例</h4>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">MPI_Comm grid_comm; &#x2F;* 2-D process grid *&#x2F;
+<div class="code-wrapper"><pre><code class="hljs c">MPI_Comm grid_comm; <span class="hljs-comment">/* 2-D process grid */</span>
 
-MPI_Comm grid_coords[2];
-         &#x2F;* Location of process in grid *&#x2F;
+MPI_Comm grid_coords[<span class="hljs-number">2</span>];
+         <span class="hljs-comment">/* Location of process in grid */</span>
 
 MPI_Comm row_comm;
-               &#x2F;* Processes in same row *&#x2F;
+               <span class="hljs-comment">/* Processes in same row */</span>
 
-MPI_Comm_split (grid_comm, grid_coords[0],
-   grid_coords[1], &amp;row_comm);</code></pre></div></figure>
+MPI_Comm_split (grid_comm, grid_coords[<span class="hljs-number">0</span>],
+   grid_coords[<span class="hljs-number">1</span>], &amp;row_comm);</code></pre></div>
 <h4 id="运行表达式-1">运行表达式</h4>
 <p>计算时间：<code>x↑[n/√p]↑[n/√p]</code></p>
 <p>假设p是一个平方数：</p>
@@ -1595,10 +1595,6 @@ alt="125" />
   });
 </script>
 
-
-  <script  src="https://lib.baomitu.com/prism/1.27.0/components/prism-core.min.js" ></script>
-
-  <script  src="https://lib.baomitu.com/prism/1.27.0/plugins/autoloader/prism-autoloader.min.js" ></script>
 
   <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
 
