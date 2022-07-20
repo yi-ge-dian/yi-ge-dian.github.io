@@ -18,12 +18,12 @@
   <meta name="author" content="yi-ge-dian">
   <meta name="keywords" content="">
   
-    <meta name="description" content="串行算法 输入N。 输出0 到 N之间的所有素数。 埃拉托斯特尼筛法伪代码： 1. Create list of unmarked natural numbers 2, 3, …, n 2. k←2 3. Repeat 	(a) Mark all multiples of k between k^2 and n 	(b) k ←smallest unmarked number &gt; k">
+    <meta name="description" content="串行算法 输入N。 输出0 到 N之间的所有素数。 埃拉托斯特尼筛法伪代码： 1. Create list of unmarked natural numbers 2, 3, …, n 2. k←2 3. Repeat 	(a) Mark all multiples of k between k^2 and n 	(b) k ←smallest unmarked number &gt; k     un">
 <meta property="og:type" content="article">
 <meta property="og:title" content="第六章：埃拉托斯特尼筛法">
 <meta property="og:url" content="http://onepoint.link/2021/10/06/distributed-parallel-computing/6.%E5%9F%83%E6%8B%89%E6%89%98%E6%96%AF%E7%89%B9%E5%B0%BC%E7%AD%9B%E6%B3%95/index.html">
 <meta property="og:site_name" content="onepoint">
-<meta property="og:description" content="串行算法 输入N。 输出0 到 N之间的所有素数。 埃拉托斯特尼筛法伪代码： 1. Create list of unmarked natural numbers 2, 3, …, n 2. k←2 3. Repeat 	(a) Mark all multiples of k between k^2 and n 	(b) k ←smallest unmarked number &gt; k">
+<meta property="og:description" content="串行算法 输入N。 输出0 到 N之间的所有素数。 埃拉托斯特尼筛法伪代码： 1. Create list of unmarked natural numbers 2, 3, …, n 2. k←2 3. Repeat 	(a) Mark all multiples of k between k^2 and n 	(b) k ←smallest unmarked number &gt; k     un">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/parallel.jpeg">
 <meta property="article:published_time" content="2021-10-05T16:00:00.000Z">
@@ -231,7 +231,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          8.4k 字
+          8.3k 字
         
       </span>
     
@@ -242,7 +242,7 @@
         
         
         
-          71 分钟
+          70 分钟
         
       </span>
     
@@ -289,13 +289,13 @@
 <p>输入N。</p>
 <p>输出0 到 N之间的所有素数。</p>
 <p>埃拉托斯特尼筛法伪代码：</p>
-<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-number">1.</span> Create <span class="hljs-built_in">list</span> of unmarked natural numbers <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, …, n
-<span class="hljs-number">2.</span> k←<span class="hljs-number">2</span>
-<span class="hljs-number">3.</span> Repeat
-	(a) Mark all multiples of k between k^<span class="hljs-number">2</span> and <span class="hljs-title function_">n</span>
-	<span class="hljs-params">(b)</span> k ←smallest unmarked number &gt; k
-    until k2 &gt; n
-4. The unmarked numbers are primes</code></pre></div>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token number">1.</span> Create list of unmarked natural numbers <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">,</span> …<span class="token punctuation">,</span> n
+<span class="token number">2.</span> k←<span class="token number">2</span>
+<span class="token number">3.</span> <span class="token function">Repeat</span>
+	<span class="token punctuation">(</span>a<span class="token punctuation">)</span> Mark all multiples of k between k<span class="token operator">^</span><span class="token number">2</span> and <span class="token function">n</span>
+	<span class="token punctuation">(</span>b<span class="token punctuation">)</span> k ←smallest unmarked number <span class="token operator">></span> k
+    until k2 <span class="token operator">></span> n
+<span class="token number">4.</span> The unmarked numbers are primes</code></pre></div></figure>
 <p>上述算法的时间复杂度为Θ(n ln lnn);</p>
 <h2 id="并行性源头">并行性源头</h2>
 <p>区域分解</p>
@@ -306,14 +306,14 @@
 <p>每个数组的原始任务</p>
 <h3 id="制造并行">制造并行</h3>
 <p><code>Mark all multiples of k between k^2 and n</code>可以变为</p>
-<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-keyword">for</span> all j where k2≤j ≤ n <span class="hljs-keyword">do</span>
-   <span class="hljs-keyword">if</span> j mod k = <span class="hljs-number">0</span> then
-      mark j (it is not a prime)
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">for</span> all j where k2≤j ≤ n <span class="token keyword">do</span>
+   <span class="token keyword">if</span> j mod k <span class="token operator">=</span> <span class="token number">0</span> then
+      mark <span class="token function">j</span> <span class="token punctuation">(</span>it is not a prime<span class="token punctuation">)</span>
    endif
-endfor</code></pre></div>
+endfor</code></pre></div></figure>
 <p><code>smallest unmarked number &gt; k</code>可以变为</p>
-<div class="code-wrapper"><pre><code class="hljs c">Min-reduction (to find smallest unmarked number &gt; k)
-Broadcast (to get result to all tasks)</code></pre></div>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">Min<span class="token operator">-</span><span class="token function">reduction</span> <span class="token punctuation">(</span>to find smallest unmarked number <span class="token operator">></span> k<span class="token punctuation">)</span>
+<span class="token function">Broadcast</span> <span class="token punctuation">(</span>to get result to all tasks<span class="token punctuation">)</span></code></pre></div></figure>
 <h3 id="聚集的目标">聚集的目标</h3>
 <ul>
 <li>合并任务</li>
@@ -342,11 +342,11 @@ Broadcast (to get result to all tasks)</code></pre></div>
 </ul>
 <h3 id="方法">方法</h3>
 <h4 id="第一个方法">第一个方法</h4>
-<div class="code-wrapper"><pre><code class="hljs c">Let r = n mod p
-If r = <span class="hljs-number">0</span>, all blocks have same size
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">Let r <span class="token operator">=</span> n mod p
+If r <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">,</span> all blocks have same size
 Else
-	First r blocks have size n/p的向上取整
-	Remaining p-r blocks have size n/p的向下取整</code></pre></div>
+	First r blocks have size n<span class="token operator">/</span>p的向上取整
+	Remaining p<span class="token operator">-</span>r blocks have size n<span class="token operator">/</span>p的向下取整</code></pre></div></figure>
 <p>例子:</p>
 <p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/89.png" srcset="/img/loading.gif" lazyload alt="89" style="zoom:67%;" /></p>
 <p>计算：↑[...]:代表向上取整，↓[...]:代表向下取整</p>
@@ -391,28 +391,28 @@ Else
 <p>测试：说明块分解方法2如何在 5 个进程中划分 13 个元素。</p>
 <p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/91.png" srcset="/img/loading.gif" lazyload alt="91" style="zoom:67%;" /></p>
 <h3 id="块分解宏命令">块分解宏命令</h3>
-<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">define</span> BLOCK_LOW(id,p,n)  ((i)*(n)/(p))</span>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name function">BLOCK_LOW</span><span class="token expression"><span class="token punctuation">(</span>id<span class="token punctuation">,</span>p<span class="token punctuation">,</span>n<span class="token punctuation">)</span>  <span class="token punctuation">(</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span><span class="token operator">*</span><span class="token punctuation">(</span>n<span class="token punctuation">)</span><span class="token operator">/</span><span class="token punctuation">(</span>p<span class="token punctuation">)</span><span class="token punctuation">)</span></span></span>
 
-<span class="hljs-meta">#<span class="hljs-keyword">define</span> BLOCK_HIGH(id,p,n) \</span>
-<span class="hljs-meta">        (BLOCK_LOW((id)+1,p,n)-1)</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name function">BLOCK_HIGH</span><span class="token expression"><span class="token punctuation">(</span>id<span class="token punctuation">,</span>p<span class="token punctuation">,</span>n<span class="token punctuation">)</span> </span><span class="token punctuation">\</span>
+        <span class="token expression"><span class="token punctuation">(</span><span class="token function">BLOCK_LOW</span><span class="token punctuation">(</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span><span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">,</span>p<span class="token punctuation">,</span>n<span class="token punctuation">)</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span></span></span>
 
-<span class="hljs-meta">#<span class="hljs-keyword">define</span> BLOCK_SIZE(id,p,n) \</span>
-<span class="hljs-meta">        (BLOCK_LOW((id)+1)-BLOCK_LOW(id))</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name function">BLOCK_SIZE</span><span class="token expression"><span class="token punctuation">(</span>id<span class="token punctuation">,</span>p<span class="token punctuation">,</span>n<span class="token punctuation">)</span> </span><span class="token punctuation">\</span>
+        <span class="token expression"><span class="token punctuation">(</span><span class="token function">BLOCK_LOW</span><span class="token punctuation">(</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span><span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token operator">-</span><span class="token function">BLOCK_LOW</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span><span class="token punctuation">)</span></span></span>
 
-<span class="hljs-meta">#<span class="hljs-keyword">define</span> BLOCK_OWNER(index,p,n) \</span>
-<span class="hljs-meta">        (((p)*(index)+1)-1)/(n))</span></code></pre></div>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name function">BLOCK_OWNER</span><span class="token expression"><span class="token punctuation">(</span>index<span class="token punctuation">,</span>p<span class="token punctuation">,</span>n<span class="token punctuation">)</span> </span><span class="token punctuation">\</span>
+        <span class="token expression"><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">(</span>p<span class="token punctuation">)</span><span class="token operator">*</span><span class="token punctuation">(</span>index<span class="token punctuation">)</span><span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token operator">/</span><span class="token punctuation">(</span>n<span class="token punctuation">)</span><span class="token punctuation">)</span></span></span></code></pre></div></figure>
 <h3 id="本地与全局索引">本地与全局索引</h3>
 <p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/92.png" srcset="/img/loading.gif" lazyload alt="92" style="zoom: 67%;" /></p>
 <h3 id="循环元素">循环元素</h3>
 <p>串行：</p>
-<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; n; i++) &#123;
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">for</span> <span class="token punctuation">(</span>i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> n<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
    …
-&#125;</code></pre></div>
+<span class="token punctuation">&#125;</span></code></pre></div></figure>
 <p>并行：</p>
-<div class="code-wrapper"><pre><code class="hljs c">size = BLOCK_SIZE (id,p,n);
-<span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; size; i++) &#123;<span class="hljs-comment">//i:Index i on this process</span>
-   gi = i + BLOCK_LOW(id,p,n);<span class="hljs-comment">//gi:takes place of sequential program&#x27;s index</span>
-&#125;</code></pre></div>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">size <span class="token operator">=</span> <span class="token function">BLOCK_SIZE</span> <span class="token punctuation">(</span>id<span class="token punctuation">,</span>p<span class="token punctuation">,</span>n<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">for</span> <span class="token punctuation">(</span>i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> size<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span><span class="token comment">//i:Index i on this process</span>
+   gi <span class="token operator">=</span> i <span class="token operator">+</span> <span class="token function">BLOCK_LOW</span><span class="token punctuation">(</span>id<span class="token punctuation">,</span>p<span class="token punctuation">,</span>n<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//gi:takes place of sequential program's index</span>
+<span class="token punctuation">&#125;</span></code></pre></div></figure>
 <h3 id="分解影响实现">分解影响实现</h3>
 <ul>
 <li><p>用于筛选的最大素数为<code>√n</code></p>
@@ -431,18 +431,18 @@ Else
 </ul>
 <h3 id="快速标记">快速标记</h3>
 <p>块分解允许与序列算法相同的标记<code>:j, j+k, j+2k, j+3k，…</code>来代替</p>
-<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-keyword">for</span> all j in block
-		<span class="hljs-keyword">if</span> j mod k = <span class="hljs-number">0</span> then mark j (it is not a prime)</code></pre></div>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">for</span> all j in block
+		<span class="token keyword">if</span> j mod k <span class="token operator">=</span> <span class="token number">0</span> then mark <span class="token function">j</span> <span class="token punctuation">(</span>it is not a prime<span class="token punctuation">)</span></code></pre></div></figure>
 <h2 id="并行算法开发与分析">并行算法开发与分析</h2>
 <p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/93.png" srcset="/img/loading.gif" lazyload alt="93" style="zoom: 67%;" /></p>
 <h3 id="函数mpi_bcast">函数MPI_BCAST</h3>
-<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">MPI_Bcast</span> <span class="hljs-params">(</span>
-<span class="hljs-params">   <span class="hljs-type">void</span> *buffer, <span class="hljs-comment">/* Addr of 1st element */</span></span>
-<span class="hljs-params">   <span class="hljs-type">int</span> count,    <span class="hljs-comment">/* # elements to broadcast */</span></span>
-<span class="hljs-params">   MPI_Datatype datatype, <span class="hljs-comment">/* Type of elements */</span></span>
-<span class="hljs-params">   <span class="hljs-type">int</span> root,     <span class="hljs-comment">/* ID of root process */</span></span>
-<span class="hljs-params">   MPI_Comm comm)</span>  <span class="hljs-comment">/* Communicator */</span>
-   <span class="hljs-title function_">MPI_Bcast</span> <span class="hljs-params">(&amp;k, <span class="hljs-number">1</span>, MPI_INT, <span class="hljs-number">0</span>, MPI_COMM_WORLD)</span>;</code></pre></div>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">int</span> <span class="token function">MPI_Bcast</span> <span class="token punctuation">(</span>
+   <span class="token keyword">void</span> <span class="token operator">*</span>buffer<span class="token punctuation">,</span> <span class="token comment">/* Addr of 1st element */</span>
+   <span class="token keyword">int</span> count<span class="token punctuation">,</span>    <span class="token comment">/* # elements to broadcast */</span>
+   MPI_Datatype datatype<span class="token punctuation">,</span> <span class="token comment">/* Type of elements */</span>
+   <span class="token keyword">int</span> root<span class="token punctuation">,</span>     <span class="token comment">/* ID of root process */</span>
+   MPI_Comm comm<span class="token punctuation">)</span>  <span class="token comment">/* Communicator */</span>
+   <span class="token function">MPI_Bcast</span> <span class="token punctuation">(</span><span class="token operator">&amp;</span>k<span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> MPI_INT<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> MPI_COMM_WORLD<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre></div></figure>
 <h3 id="任务通道图">任务/通道图</h3>
 <p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/94.png" srcset="/img/loading.gif" lazyload alt="94" style="zoom: 50%;" /></p>
 <h3 id="分析">分析</h3>
@@ -451,72 +451,72 @@ Else
 通信一次的时间：<code>λ↑[log p]</code>
 期待的执行时间：<code>x nln ln n/p+(√n / ln √n)λ↑[log p]</code></p>
 <h2 id="mpi程序">MPI程序</h2>
-<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;mpi.h&gt;</span></span>
-<span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;math.h&gt;</span></span>
-<span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span>
-<span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;MyMPI.h&quot;</span></span>
-<span class="hljs-meta">#<span class="hljs-keyword">define</span> MIN(a,b)  ((a)&lt;(b)?(a):(b))</span>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;mpi.h></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;math.h></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">"MyMPI.h"</span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name function">MIN</span><span class="token expression"><span class="token punctuation">(</span>a<span class="token punctuation">,</span>b<span class="token punctuation">)</span>  <span class="token punctuation">(</span><span class="token punctuation">(</span>a<span class="token punctuation">)</span><span class="token operator">&lt;</span><span class="token punctuation">(</span>b<span class="token punctuation">)</span><span class="token operator">?</span><span class="token punctuation">(</span>a<span class="token punctuation">)</span><span class="token operator">:</span><span class="token punctuation">(</span>b<span class="token punctuation">)</span><span class="token punctuation">)</span></span></span>
 
-<span class="hljs-type">int</span> <span class="hljs-title function_">main</span> <span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span> *argv[])</span>
-&#123;
-   ...
-   MPI_Init (&amp;argc, &amp;argv);
-   MPI_Barrier(MPI_COMM_WORLD);
-   elapsed_time = -MPI_Wtime();
-   MPI_Comm_rank (MPI_COMM_WORLD, &amp;id);
-   MPI_Comm_size (MPI_COMM_WORLD, &amp;p);
-<span class="hljs-keyword">if</span> (argc != <span class="hljs-number">2</span>) &#123;
-      <span class="hljs-keyword">if</span> (!id) <span class="hljs-built_in">printf</span> (<span class="hljs-string">&quot;Command line: %s &lt;m&gt;\n&quot;</span>, argv[<span class="hljs-number">0</span>]);
-      MPI_Finalize(); <span class="hljs-built_in">exit</span> (<span class="hljs-number">1</span>);
-&#125;
-   n = atoi(argv[<span class="hljs-number">1</span>]);
-   low_value = <span class="hljs-number">2</span> + BLOCK_LOW(id,p,n<span class="hljs-number">-1</span>);
-   high_value = <span class="hljs-number">2</span> + BLOCK_HIGH(id,p,n<span class="hljs-number">-1</span>);
-   size = BLOCK_SIZE(id,p,n<span class="hljs-number">-1</span>);
-   proc0_size = (n<span class="hljs-number">-1</span>)/p;
-   <span class="hljs-keyword">if</span> ((<span class="hljs-number">2</span> + proc0_size) &lt; (<span class="hljs-type">int</span>) <span class="hljs-built_in">sqrt</span>((<span class="hljs-type">double</span>) n)) &#123;
-      <span class="hljs-keyword">if</span> (!id) <span class="hljs-built_in">printf</span> (<span class="hljs-string">&quot;Too many processes\n&quot;</span>);
-      MPI_Finalize();
-      <span class="hljs-built_in">exit</span> (<span class="hljs-number">1</span>);
-   &#125;
+<span class="token keyword">int</span> <span class="token function">main</span> <span class="token punctuation">(</span><span class="token keyword">int</span> argc<span class="token punctuation">,</span> <span class="token keyword">char</span> <span class="token operator">*</span>argv<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+   <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+   <span class="token function">MPI_Init</span> <span class="token punctuation">(</span><span class="token operator">&amp;</span>argc<span class="token punctuation">,</span> <span class="token operator">&amp;</span>argv<span class="token punctuation">)</span><span class="token punctuation">;</span>
+   <span class="token function">MPI_Barrier</span><span class="token punctuation">(</span>MPI_COMM_WORLD<span class="token punctuation">)</span><span class="token punctuation">;</span>
+   elapsed_time <span class="token operator">=</span> <span class="token operator">-</span><span class="token function">MPI_Wtime</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+   <span class="token function">MPI_Comm_rank</span> <span class="token punctuation">(</span>MPI_COMM_WORLD<span class="token punctuation">,</span> <span class="token operator">&amp;</span>id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+   <span class="token function">MPI_Comm_size</span> <span class="token punctuation">(</span>MPI_COMM_WORLD<span class="token punctuation">,</span> <span class="token operator">&amp;</span>p<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span>argc <span class="token operator">!=</span> <span class="token number">2</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>id<span class="token punctuation">)</span> <span class="token function">printf</span> <span class="token punctuation">(</span><span class="token string">"Command line: %s &lt;m>\n"</span><span class="token punctuation">,</span> argv<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token function">MPI_Finalize</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token function">exit</span> <span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+   n <span class="token operator">=</span> <span class="token function">atoi</span><span class="token punctuation">(</span>argv<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+   low_value <span class="token operator">=</span> <span class="token number">2</span> <span class="token operator">+</span> <span class="token function">BLOCK_LOW</span><span class="token punctuation">(</span>id<span class="token punctuation">,</span>p<span class="token punctuation">,</span>n<span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+   high_value <span class="token operator">=</span> <span class="token number">2</span> <span class="token operator">+</span> <span class="token function">BLOCK_HIGH</span><span class="token punctuation">(</span>id<span class="token punctuation">,</span>p<span class="token punctuation">,</span>n<span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+   size <span class="token operator">=</span> <span class="token function">BLOCK_SIZE</span><span class="token punctuation">(</span>id<span class="token punctuation">,</span>p<span class="token punctuation">,</span>n<span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+   proc0_size <span class="token operator">=</span> <span class="token punctuation">(</span>n<span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token operator">/</span>p<span class="token punctuation">;</span>
+   <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token number">2</span> <span class="token operator">+</span> proc0_size<span class="token punctuation">)</span> <span class="token operator">&lt;</span> <span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">)</span> <span class="token function">sqrt</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">double</span><span class="token punctuation">)</span> n<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>id<span class="token punctuation">)</span> <span class="token function">printf</span> <span class="token punctuation">(</span><span class="token string">"Too many processes\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token function">MPI_Finalize</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token function">exit</span> <span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+   <span class="token punctuation">&#125;</span>
 
-   marked = (<span class="hljs-type">char</span> *) <span class="hljs-built_in">malloc</span> (size);
-   <span class="hljs-keyword">if</span> (marked == <span class="hljs-literal">NULL</span>) &#123;
-      <span class="hljs-built_in">printf</span> (<span class="hljs-string">&quot;Cannot allocate enough memory\n&quot;</span>);
-      MPI_Finalize();
-      <span class="hljs-built_in">exit</span> (<span class="hljs-number">1</span>);
-   &#125;
-   <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; size; i++) marked[i] = <span class="hljs-number">0</span>;
-   <span class="hljs-keyword">if</span> (!id) index = <span class="hljs-number">0</span>;
-   prime = <span class="hljs-number">2</span>;
-   <span class="hljs-keyword">do</span> &#123;
-      <span class="hljs-keyword">if</span> (prime * prime &gt; low_value)
-         first = prime * prime - low_value;
-      <span class="hljs-keyword">else</span> &#123;
-         <span class="hljs-keyword">if</span> (!(low_value % prime)) first = <span class="hljs-number">0</span>;
-         <span class="hljs-keyword">else</span> first = prime - (low_value % prime);
-      &#125;
-      <span class="hljs-keyword">for</span> (i = first; i &lt; size; i += prime) marked[i] = <span class="hljs-number">1</span>;
-      <span class="hljs-keyword">if</span> (!id) &#123;
-         <span class="hljs-keyword">while</span> (marked[++index]);<span class="hljs-comment">/*find the smallest unmarked*/</span>
-         prime = index + <span class="hljs-number">2</span>;
-      &#125;
-      MPI_Bcast (&amp;prime,  <span class="hljs-number">1</span>, MPI_INT, <span class="hljs-number">0</span>, MPI_COMM_WORLD);
-   &#125; <span class="hljs-keyword">while</span> (prime * prime &lt;= n);
-   count = <span class="hljs-number">0</span>;
-   <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; size; i++)
-      <span class="hljs-keyword">if</span> (!marked[i]) count++;
-   MPI_Reduce (&amp;count, &amp;global_count, <span class="hljs-number">1</span>, MPI_INT, MPI_SUM,
-      <span class="hljs-number">0</span>, MPI_COMM_WORLD);
-   elapsed_time += MPI_Wtime();
-   <span class="hljs-keyword">if</span> (!id) &#123;
-      <span class="hljs-built_in">printf</span> (<span class="hljs-string">&quot;%d primes are less than or equal to %d\n&quot;</span>,
-         global_count, n);
-      <span class="hljs-built_in">printf</span> (<span class="hljs-string">&quot;Total elapsed time: %10.6f\n&quot;</span>, elapsed_time);
-   &#125;
-   MPI_Finalize ();
-   <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
-&#125;</code></pre></div>
+   marked <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span> <span class="token function">malloc</span> <span class="token punctuation">(</span>size<span class="token punctuation">)</span><span class="token punctuation">;</span>
+   <span class="token keyword">if</span> <span class="token punctuation">(</span>marked <span class="token operator">==</span> <span class="token constant">NULL</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token function">printf</span> <span class="token punctuation">(</span><span class="token string">"Cannot allocate enough memory\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token function">MPI_Finalize</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token function">exit</span> <span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+   <span class="token punctuation">&#125;</span>
+   <span class="token keyword">for</span> <span class="token punctuation">(</span>i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> size<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> marked<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+   <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>id<span class="token punctuation">)</span> index <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+   prime <span class="token operator">=</span> <span class="token number">2</span><span class="token punctuation">;</span>
+   <span class="token keyword">do</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>prime <span class="token operator">*</span> prime <span class="token operator">></span> low_value<span class="token punctuation">)</span>
+         first <span class="token operator">=</span> prime <span class="token operator">*</span> prime <span class="token operator">-</span> low_value<span class="token punctuation">;</span>
+      <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+         <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token punctuation">(</span>low_value <span class="token operator">%</span> prime<span class="token punctuation">)</span><span class="token punctuation">)</span> first <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+         <span class="token keyword">else</span> first <span class="token operator">=</span> prime <span class="token operator">-</span> <span class="token punctuation">(</span>low_value <span class="token operator">%</span> prime<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">&#125;</span>
+      <span class="token keyword">for</span> <span class="token punctuation">(</span>i <span class="token operator">=</span> first<span class="token punctuation">;</span> i <span class="token operator">&lt;</span> size<span class="token punctuation">;</span> i <span class="token operator">+=</span> prime<span class="token punctuation">)</span> marked<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>id<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+         <span class="token keyword">while</span> <span class="token punctuation">(</span>marked<span class="token punctuation">[</span><span class="token operator">++</span>index<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">/*find the smallest unmarked*/</span>
+         prime <span class="token operator">=</span> index <span class="token operator">+</span> <span class="token number">2</span><span class="token punctuation">;</span>
+      <span class="token punctuation">&#125;</span>
+      <span class="token function">MPI_Bcast</span> <span class="token punctuation">(</span><span class="token operator">&amp;</span>prime<span class="token punctuation">,</span>  <span class="token number">1</span><span class="token punctuation">,</span> MPI_INT<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> MPI_COMM_WORLD<span class="token punctuation">)</span><span class="token punctuation">;</span>
+   <span class="token punctuation">&#125;</span> <span class="token keyword">while</span> <span class="token punctuation">(</span>prime <span class="token operator">*</span> prime <span class="token operator">&lt;=</span> n<span class="token punctuation">)</span><span class="token punctuation">;</span>
+   count <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+   <span class="token keyword">for</span> <span class="token punctuation">(</span>i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> size<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>marked<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">)</span> count<span class="token operator">++</span><span class="token punctuation">;</span>
+   <span class="token function">MPI_Reduce</span> <span class="token punctuation">(</span><span class="token operator">&amp;</span>count<span class="token punctuation">,</span> <span class="token operator">&amp;</span>global_count<span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> MPI_INT<span class="token punctuation">,</span> MPI_SUM<span class="token punctuation">,</span>
+      <span class="token number">0</span><span class="token punctuation">,</span> MPI_COMM_WORLD<span class="token punctuation">)</span><span class="token punctuation">;</span>
+   elapsed_time <span class="token operator">+=</span> <span class="token function">MPI_Wtime</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+   <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>id<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token function">printf</span> <span class="token punctuation">(</span><span class="token string">"%d primes are less than or equal to %d\n"</span><span class="token punctuation">,</span>
+         global_count<span class="token punctuation">,</span> n<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token function">printf</span> <span class="token punctuation">(</span><span class="token string">"Total elapsed time: %10.6f\n"</span><span class="token punctuation">,</span> elapsed_time<span class="token punctuation">)</span><span class="token punctuation">;</span>
+   <span class="token punctuation">&#125;</span>
+   <span class="token function">MPI_Finalize</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+   <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre></div></figure>
 <h2 id="基准测试">基准测试</h2>
 <ul>
 <li>执行顺序方法：决定x=85.47 nanosec</li>
@@ -581,197 +581,197 @@ Else
 <li>将计算次数减半</li>
 <li>为较大的n值可以进行自由的存储</li>
 </ul>
-<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">int</span> N = (n - <span class="hljs-number">1</span>) / <span class="hljs-number">2</span>;
-low_index = id * (N / p) + MIN(id, N % p); <span class="hljs-comment">// 进程的第一个数的索引</span>
-high_index = (id + <span class="hljs-number">1</span>) * (N / p) + MIN(id + <span class="hljs-number">1</span>, N % p) - <span class="hljs-number">1</span>; <span class="hljs-comment">// 进程的最后一个数的索引</span>
-low_value = low_index * <span class="hljs-number">2</span> + <span class="hljs-number">3</span>; <span class="hljs-comment">//进程的第一个数</span>
-high_value = (high_index + <span class="hljs-number">1</span>) * <span class="hljs-number">2</span> + <span class="hljs-number">1</span>;<span class="hljs-comment">//进程的最后一个数</span>
-size = (high_value - low_value) / <span class="hljs-number">2</span> + <span class="hljs-number">1</span>;    <span class="hljs-comment">//进程处理的数组大小</span>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">int</span> N <span class="token operator">=</span> <span class="token punctuation">(</span>n <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">/</span> <span class="token number">2</span><span class="token punctuation">;</span>
+low_index <span class="token operator">=</span> id <span class="token operator">*</span> <span class="token punctuation">(</span>N <span class="token operator">/</span> p<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token function">MIN</span><span class="token punctuation">(</span>id<span class="token punctuation">,</span> N <span class="token operator">%</span> p<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 进程的第一个数的索引</span>
+high_index <span class="token operator">=</span> <span class="token punctuation">(</span>id <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">*</span> <span class="token punctuation">(</span>N <span class="token operator">/</span> p<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token function">MIN</span><span class="token punctuation">(</span>id <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">,</span> N <span class="token operator">%</span> p<span class="token punctuation">)</span> <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">;</span> <span class="token comment">// 进程的最后一个数的索引</span>
+low_value <span class="token operator">=</span> low_index <span class="token operator">*</span> <span class="token number">2</span> <span class="token operator">+</span> <span class="token number">3</span><span class="token punctuation">;</span> <span class="token comment">//进程的第一个数</span>
+high_value <span class="token operator">=</span> <span class="token punctuation">(</span>high_index <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">*</span> <span class="token number">2</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">;</span><span class="token comment">//进程的最后一个数</span>
+size <span class="token operator">=</span> <span class="token punctuation">(</span>high_value <span class="token operator">-</span> low_value<span class="token punctuation">)</span> <span class="token operator">/</span> <span class="token number">2</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">;</span>    <span class="token comment">//进程处理的数组大小</span>
    
-<span class="hljs-keyword">do</span> &#123;
-   <span class="hljs-comment">/*确定该进程中素数的第一个倍数的下标 */</span>
-   <span class="hljs-comment">// 如果该素数n*n&gt;low_value，n*(n-i)都被标记了</span>
-   <span class="hljs-comment">// 即n*n为该进程中的第一个素数</span>
-   <span class="hljs-comment">// 其下标为n*n-low_value，并且由于数组大小减半所以除以2</span>
-   <span class="hljs-keyword">if</span> (prime * prime &gt; low_value) &#123;
-   	   first = (prime * prime - low_value) / <span class="hljs-number">2</span>;
-   &#125; <span class="hljs-keyword">else</span> &#123;
-       <span class="hljs-comment">// 若最小值low_value为该素数的倍数</span>
-       <span class="hljs-comment">// 则第一个倍数为low_value，即其下标为0</span>
-       <span class="hljs-keyword">if</span> (!(low_value % prime)) first = <span class="hljs-number">0</span>;
-       <span class="hljs-comment">// 若最小值low_value不是该素数的倍数</span>
-       <span class="hljs-comment">// 但是其余数为偶数，那么第一个非素数的索引为该素数剪去求余除以2</span>
-       <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (low_value % prime % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>) first = prime - ((low_value % prime) / <span class="hljs-number">2</span>);
-       <span class="hljs-comment">// 若最小值low_value不是该素数的倍数</span>
-       <span class="hljs-comment">// 那么第一个倍数的下标为该素数减去余数的值，并且由于数组大小减半所以除以2</span>
-       <span class="hljs-keyword">else</span> first = (prime - (low_value % prime)) / <span class="hljs-number">2</span>;
-   &#125;
-    <span class="hljs-comment">// 从第一个素数开始，标记该素数的倍数为非素数</span>
-    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = first; i &lt; size; i += prime) marked[i] = <span class="hljs-number">1</span>;
+<span class="token keyword">do</span> <span class="token punctuation">&#123;</span>
+   <span class="token comment">/*确定该进程中素数的第一个倍数的下标 */</span>
+   <span class="token comment">// 如果该素数n*n>low_value，n*(n-i)都被标记了</span>
+   <span class="token comment">// 即n*n为该进程中的第一个素数</span>
+   <span class="token comment">// 其下标为n*n-low_value，并且由于数组大小减半所以除以2</span>
+   <span class="token keyword">if</span> <span class="token punctuation">(</span>prime <span class="token operator">*</span> prime <span class="token operator">></span> low_value<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+   	   first <span class="token operator">=</span> <span class="token punctuation">(</span>prime <span class="token operator">*</span> prime <span class="token operator">-</span> low_value<span class="token punctuation">)</span> <span class="token operator">/</span> <span class="token number">2</span><span class="token punctuation">;</span>
+   <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+       <span class="token comment">// 若最小值low_value为该素数的倍数</span>
+       <span class="token comment">// 则第一个倍数为low_value，即其下标为0</span>
+       <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token punctuation">(</span>low_value <span class="token operator">%</span> prime<span class="token punctuation">)</span><span class="token punctuation">)</span> first <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+       <span class="token comment">// 若最小值low_value不是该素数的倍数</span>
+       <span class="token comment">// 但是其余数为偶数，那么第一个非素数的索引为该素数剪去求余除以2</span>
+       <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>low_value <span class="token operator">%</span> prime <span class="token operator">%</span> <span class="token number">2</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> first <span class="token operator">=</span> prime <span class="token operator">-</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>low_value <span class="token operator">%</span> prime<span class="token punctuation">)</span> <span class="token operator">/</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+       <span class="token comment">// 若最小值low_value不是该素数的倍数</span>
+       <span class="token comment">// 那么第一个倍数的下标为该素数减去余数的值，并且由于数组大小减半所以除以2</span>
+       <span class="token keyword">else</span> first <span class="token operator">=</span> <span class="token punctuation">(</span>prime <span class="token operator">-</span> <span class="token punctuation">(</span>low_value <span class="token operator">%</span> prime<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">/</span> <span class="token number">2</span><span class="token punctuation">;</span>
+   <span class="token punctuation">&#125;</span>
+    <span class="token comment">// 从第一个素数开始，标记该素数的倍数为非素数</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> first<span class="token punctuation">;</span> i <span class="token operator">&lt;</span> size<span class="token punctuation">;</span> i <span class="token operator">+=</span> prime<span class="token punctuation">)</span> marked<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
 
-    <span class="hljs-comment">// 只有id=0的进程才调用，用于找到下一素数的位置</span>
-    <span class="hljs-keyword">if</span> (!id) &#123;
-        <span class="hljs-keyword">while</span> (marked[++index]);
-        prime = index * <span class="hljs-number">2</span> + <span class="hljs-number">3</span>; <span class="hljs-comment">// 起始加偏移</span>
-    &#125;
-    <span class="hljs-comment">// 只有id=0的进程才调用，用于将下一个素数广播出去</span>
-    <span class="hljs-keyword">if</span> (p &gt; <span class="hljs-number">1</span>) &#123;
-        MPI_Bcast(&amp;prime, <span class="hljs-number">1</span>, MPI_INT, <span class="hljs-number">0</span>, MPI_COMM_WORLD);
-    &#125;
-&#125; <span class="hljs-keyword">while</span> (prime * prime &lt;= n);</code></pre></div>
+    <span class="token comment">// 只有id=0的进程才调用，用于找到下一素数的位置</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>id<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">while</span> <span class="token punctuation">(</span>marked<span class="token punctuation">[</span><span class="token operator">++</span>index<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        prime <span class="token operator">=</span> index <span class="token operator">*</span> <span class="token number">2</span> <span class="token operator">+</span> <span class="token number">3</span><span class="token punctuation">;</span> <span class="token comment">// 起始加偏移</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token comment">// 只有id=0的进程才调用，用于将下一个素数广播出去</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>p <span class="token operator">></span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">MPI_Bcast</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>prime<span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> MPI_INT<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> MPI_COMM_WORLD<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span> <span class="token keyword">while</span> <span class="token punctuation">(</span>prime <span class="token operator">*</span> prime <span class="token operator">&lt;=</span> n<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre></div></figure>
 <p>每个过程都能找到自己的筛选的素数</p>
 <ul>
 <li>将素数的计算赋值到√n</li>
 <li>消除通信</li>
 </ul>
-<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-comment">/* 小数组 */</span>
-<span class="hljs-type">char</span> *sub_marked;       <span class="hljs-comment">/* sub_mark array */</span>
-<span class="hljs-type">int</span> sub_low_index;      <span class="hljs-comment">/* Lowest index on sub_array */</span>
-<span class="hljs-type">int</span> sub_low_value;      <span class="hljs-comment">/* Lowest array on sub_array */</span>
-<span class="hljs-type">int</span> sub_high_index;     <span class="hljs-comment">/* Highest index on sub_array */</span>
-<span class="hljs-type">int</span> sub_high_value;     <span class="hljs-comment">/* Highest index on sub_array */</span>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">/* 小数组 */</span>
+<span class="token keyword">char</span> <span class="token operator">*</span>sub_marked<span class="token punctuation">;</span>       <span class="token comment">/* sub_mark array */</span>
+<span class="token keyword">int</span> sub_low_index<span class="token punctuation">;</span>      <span class="token comment">/* Lowest index on sub_array */</span>
+<span class="token keyword">int</span> sub_low_value<span class="token punctuation">;</span>      <span class="token comment">/* Lowest array on sub_array */</span>
+<span class="token keyword">int</span> sub_high_index<span class="token punctuation">;</span>     <span class="token comment">/* Highest index on sub_array */</span>
+<span class="token keyword">int</span> sub_high_value<span class="token punctuation">;</span>     <span class="token comment">/* Highest index on sub_array */</span>
 
-<span class="hljs-type">int</span> sub_n = (<span class="hljs-type">int</span>) <span class="hljs-built_in">sqrt</span>((<span class="hljs-type">double</span>) n);
-<span class="hljs-type">int</span> sub_N = (sub_n - <span class="hljs-number">1</span>) / <span class="hljs-number">2</span>;
+<span class="token keyword">int</span> sub_n <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">)</span> <span class="token function">sqrt</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">double</span><span class="token punctuation">)</span> n<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">int</span> sub_N <span class="token operator">=</span> <span class="token punctuation">(</span>sub_n <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">/</span> <span class="token number">2</span><span class="token punctuation">;</span>
 
-sub_low_index = <span class="hljs-number">0</span> * (sub_N / p) + MIN(<span class="hljs-number">0</span>, sub_N % p); <span class="hljs-comment">// 进程的第一个数的索引</span>
-sub_high_index = <span class="hljs-number">1</span> * (sub_N / p) + MIN(<span class="hljs-number">1</span>, sub_N % p) - <span class="hljs-number">1</span>; <span class="hljs-comment">// 进程的最后一个数的索引</span>
-sub_low_value = sub_low_index * <span class="hljs-number">2</span> + <span class="hljs-number">3</span>; <span class="hljs-comment">//进程的第一个数</span>
-sub_high_value = (sub_high_index + <span class="hljs-number">1</span>) * <span class="hljs-number">2</span> + <span class="hljs-number">1</span>;<span class="hljs-comment">//进程的最后一个数</span>
+sub_low_index <span class="token operator">=</span> <span class="token number">0</span> <span class="token operator">*</span> <span class="token punctuation">(</span>sub_N <span class="token operator">/</span> p<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token function">MIN</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> sub_N <span class="token operator">%</span> p<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 进程的第一个数的索引</span>
+sub_high_index <span class="token operator">=</span> <span class="token number">1</span> <span class="token operator">*</span> <span class="token punctuation">(</span>sub_N <span class="token operator">/</span> p<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token function">MIN</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> sub_N <span class="token operator">%</span> p<span class="token punctuation">)</span> <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">;</span> <span class="token comment">// 进程的最后一个数的索引</span>
+sub_low_value <span class="token operator">=</span> sub_low_index <span class="token operator">*</span> <span class="token number">2</span> <span class="token operator">+</span> <span class="token number">3</span><span class="token punctuation">;</span> <span class="token comment">//进程的第一个数</span>
+sub_high_value <span class="token operator">=</span> <span class="token punctuation">(</span>sub_high_index <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">*</span> <span class="token number">2</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">;</span><span class="token comment">//进程的最后一个数</span>
 
-sub_marked = (<span class="hljs-type">char</span> *) <span class="hljs-built_in">malloc</span>(sub_n);
-<span class="hljs-keyword">if</span> (sub_marked == nullptr) &#123;
-    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Cannot allocate enough memory \n&quot;</span>);
-    MPI_Finalize();
-    <span class="hljs-built_in">exit</span>(<span class="hljs-number">1</span>);
-&#125;
+sub_marked <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span> <span class="token function">malloc</span><span class="token punctuation">(</span>sub_n<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span>sub_marked <span class="token operator">==</span> nullptr<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"Cannot allocate enough memory \n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">MPI_Finalize</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">exit</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
 
-<span class="hljs-comment">// 先假定所有的整数都是素数</span>
-<span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; sub_n; i++) sub_marked[i] = <span class="hljs-number">0</span>;
+<span class="token comment">// 先假定所有的整数都是素数</span>
+<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> sub_n<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> sub_marked<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
 
-<span class="hljs-comment">// 索引初始化为0</span>
-index = <span class="hljs-number">0</span>;
+<span class="token comment">// 索引初始化为0</span>
+index <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
 
-prime = <span class="hljs-number">3</span>;
-<span class="hljs-keyword">do</span> &#123;
-    <span class="hljs-comment">// 从小数组开始标只会命中第一个条件</span>
-    first = (prime * prime - sub_low_value) / <span class="hljs-number">2</span>;
-    <span class="hljs-comment">// 从第一个素数开始，标记该素数的倍数为非素数</span>
-    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = first; i &lt; sub_n; i += prime) &#123;
-    	sub_marked[i] = <span class="hljs-number">1</span>;
-	&#125;
-    <span class="hljs-keyword">while</span> (sub_marked[++index]);
-    prime = index * <span class="hljs-number">2</span> + <span class="hljs-number">3</span>; <span class="hljs-comment">// 起始加偏移</span>
-&#125; <span class="hljs-keyword">while</span> (prime * prime &lt;= sub_n);
+prime <span class="token operator">=</span> <span class="token number">3</span><span class="token punctuation">;</span>
+<span class="token keyword">do</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// 从小数组开始标只会命中第一个条件</span>
+    first <span class="token operator">=</span> <span class="token punctuation">(</span>prime <span class="token operator">*</span> prime <span class="token operator">-</span> sub_low_value<span class="token punctuation">)</span> <span class="token operator">/</span> <span class="token number">2</span><span class="token punctuation">;</span>
+    <span class="token comment">// 从第一个素数开始，标记该素数的倍数为非素数</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> first<span class="token punctuation">;</span> i <span class="token operator">&lt;</span> sub_n<span class="token punctuation">;</span> i <span class="token operator">+=</span> prime<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    	sub_marked<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+	<span class="token punctuation">&#125;</span>
+    <span class="token keyword">while</span> <span class="token punctuation">(</span>sub_marked<span class="token punctuation">[</span><span class="token operator">++</span>index<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    prime <span class="token operator">=</span> index <span class="token operator">*</span> <span class="token number">2</span> <span class="token operator">+</span> <span class="token number">3</span><span class="token punctuation">;</span> <span class="token comment">// 起始加偏移</span>
+<span class="token punctuation">&#125;</span> <span class="token keyword">while</span> <span class="token punctuation">(</span>prime <span class="token operator">*</span> prime <span class="token operator">&lt;=</span> sub_n<span class="token punctuation">)</span><span class="token punctuation">;</span>
 
 
-<span class="hljs-comment">/* 大数组 */</span>
-<span class="hljs-keyword">do</span> &#123;
+<span class="token comment">/* 大数组 */</span>
+<span class="token keyword">do</span> <span class="token punctuation">&#123;</span>
     
-	...
-    <span class="hljs-keyword">while</span> (sub_marked[++index]);
-    ...
+	<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+    <span class="token keyword">while</span> <span class="token punctuation">(</span>sub_marked<span class="token punctuation">[</span><span class="token operator">++</span>index<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
         
-    <span class="hljs-comment">// if (p &gt; 1) &#123;</span>
-    <span class="hljs-comment">//     MPI_Bcast(&amp;prime, 1, MPI_INT, 0, MPI_COMM_WORLD);</span>
-    <span class="hljs-comment">// &#125;</span>
-&#125; <span class="hljs-keyword">while</span> (prime * prime &lt;= n);</code></pre></div>
+    <span class="token comment">// if (p > 1) &#123;</span>
+    <span class="token comment">//     MPI_Bcast(&amp;prime, 1, MPI_INT, 0, MPI_COMM_WORLD);</span>
+    <span class="token comment">// &#125;</span>
+<span class="token punctuation">&#125;</span> <span class="token keyword">while</span> <span class="token punctuation">(</span>prime <span class="token operator">*</span> prime <span class="token operator">&lt;=</span> n<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre></div></figure>
 <p>重组循环</p>
 <ul>
 <li>增加缓存命中率</li>
 </ul>
 <p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/95.png" srcset="/img/loading.gif" lazyload alt="95" style="zoom: 67%;" /></p>
-<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">int</span> sub_n = (<span class="hljs-type">int</span>) <span class="hljs-built_in">sqrt</span>((<span class="hljs-type">double</span>) n);
-   <span class="hljs-type">int</span> sub_N = (sub_n - <span class="hljs-number">1</span>) / <span class="hljs-number">2</span>;
-   sub_low_index = <span class="hljs-number">0</span>; 
-   sub_high_index = sub_N / p - <span class="hljs-number">1</span>;
-   sub_low_value = sub_low_index * <span class="hljs-number">2</span> + <span class="hljs-number">3</span>; 
-   sub_high_value = (sub_high_index + <span class="hljs-number">1</span>) * <span class="hljs-number">2</span> + <span class="hljs-number">1</span>;
-   sub_marked = (<span class="hljs-type">char</span> *) <span class="hljs-built_in">malloc</span>(sub_n);
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">int</span> sub_n <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">)</span> <span class="token function">sqrt</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">double</span><span class="token punctuation">)</span> n<span class="token punctuation">)</span><span class="token punctuation">;</span>
+   <span class="token keyword">int</span> sub_N <span class="token operator">=</span> <span class="token punctuation">(</span>sub_n <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">/</span> <span class="token number">2</span><span class="token punctuation">;</span>
+   sub_low_index <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> 
+   sub_high_index <span class="token operator">=</span> sub_N <span class="token operator">/</span> p <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">;</span>
+   sub_low_value <span class="token operator">=</span> sub_low_index <span class="token operator">*</span> <span class="token number">2</span> <span class="token operator">+</span> <span class="token number">3</span><span class="token punctuation">;</span> 
+   sub_high_value <span class="token operator">=</span> <span class="token punctuation">(</span>sub_high_index <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">*</span> <span class="token number">2</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">;</span>
+   sub_marked <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span> <span class="token function">malloc</span><span class="token punctuation">(</span>sub_n<span class="token punctuation">)</span><span class="token punctuation">;</span>
    
-   <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; sub_n; i++) sub_marked[i] = <span class="hljs-number">0</span>;
-   index = <span class="hljs-number">0</span>;
-   prime = <span class="hljs-number">3</span>;
-   <span class="hljs-keyword">do</span> &#123;
-       first = (prime * prime - sub_low_value) / <span class="hljs-number">2</span>;
+   <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> sub_n<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> sub_marked<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+   index <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+   prime <span class="token operator">=</span> <span class="token number">3</span><span class="token punctuation">;</span>
+   <span class="token keyword">do</span> <span class="token punctuation">&#123;</span>
+       first <span class="token operator">=</span> <span class="token punctuation">(</span>prime <span class="token operator">*</span> prime <span class="token operator">-</span> sub_low_value<span class="token punctuation">)</span> <span class="token operator">/</span> <span class="token number">2</span><span class="token punctuation">;</span>
        
-       <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = first; i &lt; sub_n; i += prime) &#123;
-           sub_marked[i] = <span class="hljs-number">1</span>;
+       <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> first<span class="token punctuation">;</span> i <span class="token operator">&lt;</span> sub_n<span class="token punctuation">;</span> i <span class="token operator">+=</span> prime<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+           sub_marked<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
 
-       &#125;
-       <span class="hljs-keyword">while</span> (sub_marked[++index]);
-       prime = index * <span class="hljs-number">2</span> + <span class="hljs-number">3</span>; 
-   &#125; <span class="hljs-keyword">while</span> (prime * prime &lt;= sub_n);
+       <span class="token punctuation">&#125;</span>
+       <span class="token keyword">while</span> <span class="token punctuation">(</span>sub_marked<span class="token punctuation">[</span><span class="token operator">++</span>index<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+       prime <span class="token operator">=</span> index <span class="token operator">*</span> <span class="token number">2</span> <span class="token operator">+</span> <span class="token number">3</span><span class="token punctuation">;</span> 
+   <span class="token punctuation">&#125;</span> <span class="token keyword">while</span> <span class="token punctuation">(</span>prime <span class="token operator">*</span> prime <span class="token operator">&lt;=</span> sub_n<span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-   <span class="hljs-comment">// step 2: build &#x27;marked&#x27; array with blocks</span>
-   <span class="hljs-type">int</span> N = (n - <span class="hljs-number">1</span>) / <span class="hljs-number">2</span>;
-   low_index = id * N / p;            
-   high_index = (id + <span class="hljs-number">1</span>) * N / p - <span class="hljs-number">1</span>; 
+   <span class="token comment">// step 2: build 'marked' array with blocks</span>
+   <span class="token keyword">int</span> N <span class="token operator">=</span> <span class="token punctuation">(</span>n <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">/</span> <span class="token number">2</span><span class="token punctuation">;</span>
+   low_index <span class="token operator">=</span> id <span class="token operator">*</span> N <span class="token operator">/</span> p<span class="token punctuation">;</span>            
+   high_index <span class="token operator">=</span> <span class="token punctuation">(</span>id <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">*</span> N <span class="token operator">/</span> p <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">;</span> 
 
-   low_value = low_index * <span class="hljs-number">2</span> + <span class="hljs-number">3</span>; 
-   high_value = (high_index + <span class="hljs-number">1</span>) * <span class="hljs-number">2</span> + <span class="hljs-number">1</span>;
-   size = (high_value - low_value) / <span class="hljs-number">2</span> + <span class="hljs-number">1</span>;   
+   low_value <span class="token operator">=</span> low_index <span class="token operator">*</span> <span class="token number">2</span> <span class="token operator">+</span> <span class="token number">3</span><span class="token punctuation">;</span> 
+   high_value <span class="token operator">=</span> <span class="token punctuation">(</span>high_index <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">*</span> <span class="token number">2</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">;</span>
+   size <span class="token operator">=</span> <span class="token punctuation">(</span>high_value <span class="token operator">-</span> low_value<span class="token punctuation">)</span> <span class="token operator">/</span> <span class="token number">2</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">;</span>   
 
-   <span class="hljs-type">int</span> CACHE_size = atoi(argv[<span class="hljs-number">2</span>]);
+   <span class="token keyword">int</span> CACHE_size <span class="token operator">=</span> <span class="token function">atoi</span><span class="token punctuation">(</span>argv<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-   <span class="hljs-type">int</span> CACHE_int = CACHE_size / <span class="hljs-number">4</span>;
+   <span class="token keyword">int</span> CACHE_int <span class="token operator">=</span> CACHE_size <span class="token operator">/</span> <span class="token number">4</span><span class="token punctuation">;</span>
 
-   <span class="hljs-type">int</span> Block_size = CACHE_int / p ;
-   <span class="hljs-type">int</span> Block_num = size / Block_size;
-   <span class="hljs-type">int</span> Block_remain = size % Block_size;
-   <span class="hljs-type">int</span> Block_id = <span class="hljs-number">0</span>;
-   <span class="hljs-type">int</span> Block_N = Block_size - <span class="hljs-number">1</span>;
-   <span class="hljs-type">int</span> Block_low_index = Block_id * Block_N + low_index;
-   <span class="hljs-type">int</span> Block_high_index = (Block_id + <span class="hljs-number">1</span>) * Block_N - <span class="hljs-number">1</span> + low_index;
-   <span class="hljs-type">int</span> Block_low_value = Block_low_index * <span class="hljs-number">2</span> + <span class="hljs-number">3</span>;
-   <span class="hljs-type">int</span> Block_high_value = (Block_high_index + <span class="hljs-number">1</span>) * <span class="hljs-number">2</span> + <span class="hljs-number">1</span>;
-   <span class="hljs-type">int</span> Block_count;
+   <span class="token keyword">int</span> Block_size <span class="token operator">=</span> CACHE_int <span class="token operator">/</span> p <span class="token punctuation">;</span>
+   <span class="token keyword">int</span> Block_num <span class="token operator">=</span> size <span class="token operator">/</span> Block_size<span class="token punctuation">;</span>
+   <span class="token keyword">int</span> Block_remain <span class="token operator">=</span> size <span class="token operator">%</span> Block_size<span class="token punctuation">;</span>
+   <span class="token keyword">int</span> Block_id <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+   <span class="token keyword">int</span> Block_N <span class="token operator">=</span> Block_size <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">;</span>
+   <span class="token keyword">int</span> Block_low_index <span class="token operator">=</span> Block_id <span class="token operator">*</span> Block_N <span class="token operator">+</span> low_index<span class="token punctuation">;</span>
+   <span class="token keyword">int</span> Block_high_index <span class="token operator">=</span> <span class="token punctuation">(</span>Block_id <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">*</span> Block_N <span class="token operator">-</span> <span class="token number">1</span> <span class="token operator">+</span> low_index<span class="token punctuation">;</span>
+   <span class="token keyword">int</span> Block_low_value <span class="token operator">=</span> Block_low_index <span class="token operator">*</span> <span class="token number">2</span> <span class="token operator">+</span> <span class="token number">3</span><span class="token punctuation">;</span>
+   <span class="token keyword">int</span> Block_high_value <span class="token operator">=</span> <span class="token punctuation">(</span>Block_high_index <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">*</span> <span class="token number">2</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">;</span>
+   <span class="token keyword">int</span> Block_count<span class="token punctuation">;</span>
 
-   <span class="hljs-comment">// allocate this process &#x27;s share of the array</span>
-   <span class="hljs-keyword">if</span>(Block_num==<span class="hljs-number">0</span>) Block_size=size;
-   marked = (<span class="hljs-type">char</span> *) <span class="hljs-built_in">malloc</span>(Block_size);
-   count = <span class="hljs-number">0</span>;
-   <span class="hljs-keyword">while</span> (Block_id &lt;= Block_num) &#123;
-       index = <span class="hljs-number">0</span>;
-       prime = <span class="hljs-number">3</span>;
-       Block_count = <span class="hljs-number">0</span>;
-       <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; Block_size; i++) marked[i] = <span class="hljs-number">0</span>;
-       <span class="hljs-keyword">do</span> &#123;
-           <span class="hljs-keyword">if</span> (prime * prime &gt; Block_low_value) &#123;
-               first = (prime * prime - Block_low_value) / <span class="hljs-number">2</span>;
-           &#125; <span class="hljs-keyword">else</span> &#123;
-               <span class="hljs-keyword">if</span> (!(Block_low_value % prime)) first = <span class="hljs-number">0</span>;
-               <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (Block_low_value % prime % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>) first = prime - ((Block_low_value % prime) / <span class="hljs-number">2</span>);
-               <span class="hljs-keyword">else</span> first = (prime - (Block_low_value % prime)) / <span class="hljs-number">2</span>;
-           &#125;
+   <span class="token comment">// allocate this process 's share of the array</span>
+   <span class="token keyword">if</span><span class="token punctuation">(</span>Block_num<span class="token operator">==</span><span class="token number">0</span><span class="token punctuation">)</span> Block_size<span class="token operator">=</span>size<span class="token punctuation">;</span>
+   marked <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span> <span class="token function">malloc</span><span class="token punctuation">(</span>Block_size<span class="token punctuation">)</span><span class="token punctuation">;</span>
+   count <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+   <span class="token keyword">while</span> <span class="token punctuation">(</span>Block_id <span class="token operator">&lt;=</span> Block_num<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+       index <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+       prime <span class="token operator">=</span> <span class="token number">3</span><span class="token punctuation">;</span>
+       Block_count <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+       <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> Block_size<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> marked<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+       <span class="token keyword">do</span> <span class="token punctuation">&#123;</span>
+           <span class="token keyword">if</span> <span class="token punctuation">(</span>prime <span class="token operator">*</span> prime <span class="token operator">></span> Block_low_value<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+               first <span class="token operator">=</span> <span class="token punctuation">(</span>prime <span class="token operator">*</span> prime <span class="token operator">-</span> Block_low_value<span class="token punctuation">)</span> <span class="token operator">/</span> <span class="token number">2</span><span class="token punctuation">;</span>
+           <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+               <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token punctuation">(</span>Block_low_value <span class="token operator">%</span> prime<span class="token punctuation">)</span><span class="token punctuation">)</span> first <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+               <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>Block_low_value <span class="token operator">%</span> prime <span class="token operator">%</span> <span class="token number">2</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> first <span class="token operator">=</span> prime <span class="token operator">-</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>Block_low_value <span class="token operator">%</span> prime<span class="token punctuation">)</span> <span class="token operator">/</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+               <span class="token keyword">else</span> first <span class="token operator">=</span> <span class="token punctuation">(</span>prime <span class="token operator">-</span> <span class="token punctuation">(</span>Block_low_value <span class="token operator">%</span> prime<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">/</span> <span class="token number">2</span><span class="token punctuation">;</span>
+           <span class="token punctuation">&#125;</span>
 
-           <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = first; i &lt; Block_size; i += prime) &#123;
-               marked[i] = <span class="hljs-number">1</span>;
-           &#125;
+           <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> first<span class="token punctuation">;</span> i <span class="token operator">&lt;</span> Block_size<span class="token punctuation">;</span> i <span class="token operator">+=</span> prime<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+               marked<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+           <span class="token punctuation">&#125;</span>
 
-           <span class="hljs-keyword">while</span> (sub_marked[++index]);
+           <span class="token keyword">while</span> <span class="token punctuation">(</span>sub_marked<span class="token punctuation">[</span><span class="token operator">++</span>index<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-           prime = index * <span class="hljs-number">2</span> + <span class="hljs-number">3</span>; 
+           prime <span class="token operator">=</span> index <span class="token operator">*</span> <span class="token number">2</span> <span class="token operator">+</span> <span class="token number">3</span><span class="token punctuation">;</span> 
 
-       &#125; <span class="hljs-keyword">while</span> (prime * prime &lt;= Block_high_value);
-       <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; Block_size; i++) &#123;
-           <span class="hljs-keyword">if</span> (marked[i] == <span class="hljs-number">0</span>) &#123;
-               Block_count++;
-           &#125;
-       &#125;
-       count += Block_count;
-       Block_id++;
-       Block_low_index = Block_id * Block_N + Block_id + low_index;
-       Block_high_index = (Block_id + <span class="hljs-number">1</span>) * Block_N + (Block_id + <span class="hljs-number">1</span>)- <span class="hljs-number">1</span> + low_index;
-       Block_low_value = Block_low_index * <span class="hljs-number">2</span> + <span class="hljs-number">3</span>;
-       <span class="hljs-keyword">if</span> (Block_id == Block_num) &#123;
-           Block_high_value = high_value;
-           Block_high_index = high_index;
-           Block_size = (Block_high_value - Block_low_value) / <span class="hljs-number">2</span> + <span class="hljs-number">1</span>;
-       &#125; <span class="hljs-keyword">else</span> &#123;
-           Block_high_value = (Block_high_index + <span class="hljs-number">1</span>) * <span class="hljs-number">2</span> + <span class="hljs-number">1</span>;
-       &#125;
-   &#125;</code></pre></div>
+       <span class="token punctuation">&#125;</span> <span class="token keyword">while</span> <span class="token punctuation">(</span>prime <span class="token operator">*</span> prime <span class="token operator">&lt;=</span> Block_high_value<span class="token punctuation">)</span><span class="token punctuation">;</span>
+       <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> Block_size<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+           <span class="token keyword">if</span> <span class="token punctuation">(</span>marked<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+               Block_count<span class="token operator">++</span><span class="token punctuation">;</span>
+           <span class="token punctuation">&#125;</span>
+       <span class="token punctuation">&#125;</span>
+       count <span class="token operator">+=</span> Block_count<span class="token punctuation">;</span>
+       Block_id<span class="token operator">++</span><span class="token punctuation">;</span>
+       Block_low_index <span class="token operator">=</span> Block_id <span class="token operator">*</span> Block_N <span class="token operator">+</span> Block_id <span class="token operator">+</span> low_index<span class="token punctuation">;</span>
+       Block_high_index <span class="token operator">=</span> <span class="token punctuation">(</span>Block_id <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">*</span> Block_N <span class="token operator">+</span> <span class="token punctuation">(</span>Block_id <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token operator">-</span> <span class="token number">1</span> <span class="token operator">+</span> low_index<span class="token punctuation">;</span>
+       Block_low_value <span class="token operator">=</span> Block_low_index <span class="token operator">*</span> <span class="token number">2</span> <span class="token operator">+</span> <span class="token number">3</span><span class="token punctuation">;</span>
+       <span class="token keyword">if</span> <span class="token punctuation">(</span>Block_id <span class="token operator">==</span> Block_num<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+           Block_high_value <span class="token operator">=</span> high_value<span class="token punctuation">;</span>
+           Block_high_index <span class="token operator">=</span> high_index<span class="token punctuation">;</span>
+           Block_size <span class="token operator">=</span> <span class="token punctuation">(</span>Block_high_value <span class="token operator">-</span> Block_low_value<span class="token punctuation">)</span> <span class="token operator">/</span> <span class="token number">2</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">;</span>
+       <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+           Block_high_value <span class="token operator">=</span> <span class="token punctuation">(</span>Block_high_index <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">*</span> <span class="token number">2</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">;</span>
+       <span class="token punctuation">&#125;</span>
+   <span class="token punctuation">&#125;</span></code></pre></div></figure>
 <h3 id="比较四个版本">比较四个版本</h3>
 <table>
 <thead>

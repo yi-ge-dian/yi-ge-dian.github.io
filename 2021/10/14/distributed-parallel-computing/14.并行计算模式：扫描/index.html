@@ -303,13 +303,13 @@
 <h3 id="scan的典型应用">Scan的典型应用</h3>
 <p>Scan是一个简单并且有用的并行构筑模块</p>
 <p>将顺序递归转换为:</p>
-<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> j=<span class="hljs-number">1</span>;j&lt;n;j++)
-	output[j]=output[j<span class="hljs-number">-1</span>]+f(j);</code></pre></div>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">int</span> j<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">;</span>j<span class="token operator">&lt;</span>n<span class="token punctuation">;</span>j<span class="token operator">++</span><span class="token punctuation">)</span>
+	output<span class="token punctuation">[</span>j<span class="token punctuation">]</span><span class="token operator">=</span>output<span class="token punctuation">[</span>j<span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token operator">+</span><span class="token function">f</span><span class="token punctuation">(</span>j<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre></div></figure>
 <p>进入并行</p>
-<div class="code-wrapper"><pre><code class="hljs c">forall(j)&#123;
-	temp[j]=f(j)
-&#125;;
-scan(out, temp);</code></pre></div>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token function">forall</span><span class="token punctuation">(</span>j<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+	temp<span class="token punctuation">[</span>j<span class="token punctuation">]</span><span class="token operator">=</span><span class="token function">f</span><span class="token punctuation">(</span>j<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+<span class="token function">scan</span><span class="token punctuation">(</span>out<span class="token punctuation">,</span> temp<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre></div></figure>
 <ul>
 <li>受益的并行算法：</li>
 </ul>
@@ -324,21 +324,21 @@ memory to parallel threads Allocating memory bugger space for
 communication channels…</p>
 <h3 id="全面顺序扫描算法">全面顺序扫描算法</h3>
 <p>给定一个序列：<code>[x0, x1, x2, ... ]</code>，计算输出<code>[y0, y1, y2, ... ]</code>，例如</p>
-<div class="code-wrapper"><pre><code class="hljs c">y0 = x0
-y1 = x0 + x1
-y2 = x0 + x1+ x2....</code></pre></div>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">y0 <span class="token operator">=</span> x0
+y1 <span class="token operator">=</span> x0 <span class="token operator">+</span> x1
+y2 <span class="token operator">=</span> x0 <span class="token operator">+</span> x1<span class="token operator">+</span> x2<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span></code></pre></div></figure>
 <p>使用递归的定义：<code>yi = yi − 1 + xi</code></p>
 <h4 id="高效的c实现">高效的C实现</h4>
-<div class="code-wrapper"><pre><code class="hljs c">y[<span class="hljs-number">0</span>]=x[<span class="hljs-number">0</span>]
-<span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i=<span class="hljs-number">1</span>; i &lt; max_i; i++)
-	y[i]=y[i<span class="hljs-number">-1</span>]+x[i]</code></pre></div>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">y<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token operator">=</span>x<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span>
+<span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">int</span> i<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> max_i<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span>
+	y<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token operator">=</span>y<span class="token punctuation">[</span>i<span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token operator">+</span>x<span class="token punctuation">[</span>i<span class="token punctuation">]</span></code></pre></div></figure>
 <p>Computationally efficient：计算效率高，只是比顺序规约稍微贵一点
 N个元素需要N次加法运算，O(N)</p>
 <h4 id="简单的全面并行扫描">简单的全面并行扫描</h4>
 <p>给每个y的计算分配一个thread(线程)，让每个thread将计算这个y所需要的x相加</p>
-<div class="code-wrapper"><pre><code class="hljs c">y0 = x0
-y1 = x0 + x1
-y2 = x0 + x1+ x2....</code></pre></div>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">y0 <span class="token operator">=</span> x0
+y1 <span class="token operator">=</span> x0 <span class="token operator">+</span> x1
+y2 <span class="token operator">=</span> x0 <span class="token operator">+</span> x1<span class="token operator">+</span> x2<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span></code></pre></div></figure>
 <blockquote>
 <p>并行计算在不考虑性能的时候十分简单</p>
 </blockquote>
@@ -367,20 +367,20 @@ alt="201" />
 <li>所有线程执行加法和写输出操作</li>
 </ul>
 <h2 id="低效的并行扫描内核">低效的并行扫描内核</h2>
-<div class="code-wrapper"><pre><code class="hljs c">__global__ <span class="hljs-type">void</span> <span class="hljs-title function_">work_inefficient_scan_kernel</span><span class="hljs-params">(<span class="hljs-type">float</span> *X, <span class="hljs-type">float</span> *Y, <span class="hljs-type">int</span> InputSize)</span> &#123;
-    __shared__ <span class="hljs-type">float</span> XY[SECTION_SIZE];
-    <span class="hljs-type">int</span> i = blockIdx.x * blockDim.x + threadIdx.x;
-    <span class="hljs-keyword">if</span> (i &lt; InputSize) &#123;XY[threadIdx.x] = X[i];&#125;
-        <span class="hljs-comment">// the code below performs iterative scan on XY</span>
-        <span class="hljs-keyword">for</span> (<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> stride = <span class="hljs-number">1</span>; stride &lt;= threadIdx.x; stride *= <span class="hljs-number">2</span>) &#123;
-        __syncthreads();
-            <span class="hljs-type">float</span> in1 = XY[threadIdx.x - stride];
-            __syncthreads();
-            XY[threadIdx.x] += in1;
-        &#125;
-      __ <span class="hljs-title function_">syncthreads</span><span class="hljs-params">()</span>;
-      If (i &lt; InputSize) &#123;Y[i] = XY[threadIdx.x];&#125;
-&#125;</code></pre></div>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">__global__ <span class="token keyword">void</span> <span class="token function">work_inefficient_scan_kernel</span><span class="token punctuation">(</span><span class="token keyword">float</span> <span class="token operator">*</span>X<span class="token punctuation">,</span> <span class="token keyword">float</span> <span class="token operator">*</span>Y<span class="token punctuation">,</span> <span class="token keyword">int</span> InputSize<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    __shared__ <span class="token keyword">float</span> XY<span class="token punctuation">[</span>SECTION_SIZE<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token keyword">int</span> i <span class="token operator">=</span> blockIdx<span class="token punctuation">.</span>x <span class="token operator">*</span> blockDim<span class="token punctuation">.</span>x <span class="token operator">+</span> threadIdx<span class="token punctuation">.</span>x<span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>i <span class="token operator">&lt;</span> InputSize<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>XY<span class="token punctuation">[</span>threadIdx<span class="token punctuation">.</span>x<span class="token punctuation">]</span> <span class="token operator">=</span> X<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token punctuation">&#125;</span>
+        <span class="token comment">// the code below performs iterative scan on XY</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">unsigned</span> <span class="token keyword">int</span> stride <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span> stride <span class="token operator">&lt;=</span> threadIdx<span class="token punctuation">.</span>x<span class="token punctuation">;</span> stride <span class="token operator">*=</span> <span class="token number">2</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">__syncthreads</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">float</span> in1 <span class="token operator">=</span> XY<span class="token punctuation">[</span>threadIdx<span class="token punctuation">.</span>x <span class="token operator">-</span> stride<span class="token punctuation">]</span><span class="token punctuation">;</span>
+            <span class="token function">__syncthreads</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            XY<span class="token punctuation">[</span>threadIdx<span class="token punctuation">.</span>x<span class="token punctuation">]</span> <span class="token operator">+=</span> in1<span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+      __ <span class="token function">syncthreads</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token function">If</span> <span class="token punctuation">(</span>i <span class="token operator">&lt;</span> InputSize<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>Y<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> XY<span class="token punctuation">[</span>threadIdx<span class="token punctuation">.</span>x<span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre></div></figure>
 <h3 id="高效工作的考虑">高效工作的考虑</h3>
 <p>Scan 操作log(n)次并行迭代</p>
 <ul>
@@ -419,13 +419,13 @@ alt="202" />
 <figcaption aria-hidden="true">202</figcaption>
 </figure>
 <h3 id="规约阶段内核代码">规约阶段内核代码</h3>
-<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-comment">// XY[2*BLOCK_SIZE] is in shared memory</span>
-<span class="hljs-keyword">for</span> (<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> stride = <span class="hljs-number">1</span>;stride &lt;= BLOCK_SIZE; stride *= <span class="hljs-number">2</span>) &#123;
-    <span class="hljs-type">int</span> index = (threadIdx.x+<span class="hljs-number">1</span>)*stride*<span class="hljs-number">2</span> - <span class="hljs-number">1</span>;
-    <span class="hljs-keyword">if</span>(index &lt; <span class="hljs-number">2</span>*BLOCK_SIZE)
-        XY[index] += XY[index-stride];
-    __syncthreads();
-&#125;</code></pre></div>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">// XY[2*BLOCK_SIZE] is in shared memory</span>
+<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">unsigned</span> <span class="token keyword">int</span> stride <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>stride <span class="token operator">&lt;=</span> BLOCK_SIZE<span class="token punctuation">;</span> stride <span class="token operator">*=</span> <span class="token number">2</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">int</span> index <span class="token operator">=</span> <span class="token punctuation">(</span>threadIdx<span class="token punctuation">.</span>x<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token operator">*</span>stride<span class="token operator">*</span><span class="token number">2</span> <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span>index <span class="token operator">&lt;</span> <span class="token number">2</span><span class="token operator">*</span>BLOCK_SIZE<span class="token punctuation">)</span>
+        XY<span class="token punctuation">[</span>index<span class="token punctuation">]</span> <span class="token operator">+=</span> XY<span class="token punctuation">[</span>index<span class="token operator">-</span>stride<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token function">__syncthreads</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre></div></figure>
 <blockquote>
 <p>threadIdx.x+1 = 1, 2, 3, 4…. stride = 1, index = 1, 3, 5, 7, …</p>
 </blockquote>
@@ -436,15 +436,15 @@ alt="203" />
 <figcaption aria-hidden="true">203</figcaption>
 </figure>
 <h3 id="反向规约内核代码">反向规约内核代码</h3>
-<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-keyword">for</span> (<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> stride = BLOCK_SIZE/<span class="hljs-number">2</span>; stride &gt; <span class="hljs-number">0</span>; stride /= <span class="hljs-number">2</span>) &#123;
-    __syncthreads();
-    <span class="hljs-type">int</span> index = (threadIdx.x+<span class="hljs-number">1</span>)*stride*<span class="hljs-number">2</span> - <span class="hljs-number">1</span>;
-    <span class="hljs-keyword">if</span>(index+stride &lt; <span class="hljs-number">2</span>*BLOCK_SIZE) &#123;
-      	XY[index + stride] += XY[index];
-     &#125;
-  &#125;
-   __syncthreads();
-  <span class="hljs-keyword">if</span> (i &lt; InputSize) Y[i] = XY[threadIdx.x];</code></pre></div>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">unsigned</span> <span class="token keyword">int</span> stride <span class="token operator">=</span> BLOCK_SIZE<span class="token operator">/</span><span class="token number">2</span><span class="token punctuation">;</span> stride <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">;</span> stride <span class="token operator">/=</span> <span class="token number">2</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token function">__syncthreads</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">int</span> index <span class="token operator">=</span> <span class="token punctuation">(</span>threadIdx<span class="token punctuation">.</span>x<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token operator">*</span>stride<span class="token operator">*</span><span class="token number">2</span> <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span>index<span class="token operator">+</span>stride <span class="token operator">&lt;</span> <span class="token number">2</span><span class="token operator">*</span>BLOCK_SIZE<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      	XY<span class="token punctuation">[</span>index <span class="token operator">+</span> stride<span class="token punctuation">]</span> <span class="token operator">+=</span> XY<span class="token punctuation">[</span>index<span class="token punctuation">]</span><span class="token punctuation">;</span>
+     <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+   <span class="token function">__syncthreads</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>i <span class="token operator">&lt;</span> InputSize<span class="token punctuation">)</span> Y<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> XY<span class="token punctuation">[</span>threadIdx<span class="token punctuation">.</span>x<span class="token punctuation">]</span><span class="token punctuation">;</span></code></pre></div></figure>
 <blockquote>
 <p>First iteration for 16-element section threadIdx.x = 0 stride =
 BLOCK_SIZE/2 = 8/2 = 4 index = 8-1 = 7</p>

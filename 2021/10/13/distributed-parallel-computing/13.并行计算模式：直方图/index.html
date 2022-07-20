@@ -342,9 +342,9 @@ alt="194" />
 <h2 id="数据竞争条件">数据竞争条件</h2>
 <h3 id="并行线程执行中的数据竞争">并行线程执行中的数据竞争</h3>
 <p>thread1和thread2都要执行下面代码</p>
-<div class="code-wrapper"><pre><code class="hljs c">Old←Mem[x]
-New←Old + <span class="hljs-number">1</span>
-Mem[x]←New</code></pre></div>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">Old←Mem<span class="token punctuation">[</span>x<span class="token punctuation">]</span>
+New←Old <span class="token operator">+</span> <span class="token number">1</span>
+Mem<span class="token punctuation">[</span>x<span class="token punctuation">]</span>←New</code></pre></div></figure>
 <p>Old 和 New 是每个线程寄存器变量。</p>
 <p>问题 1：如果 Mem[x] 最初为 0，那么在线程 1 和 2 完成后，Mem[x]
 的值是多少？ 问题 2：每个线程在它们的 Old 变量中得到什么？</p>
@@ -565,30 +565,30 @@ and swap)</li>
 <li>从全局或共享内存中的地址所指向的位置读取32位的字old，计算(old+val)，并将结果存储到相同的地址，函数返回old。</li>
 </ul>
 <p>CUDA中的更多原子加法：</p>
-<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-comment">//Unsigned 32-bit integer atomic add</span>
-<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> <span class="hljs-title function_">atomicAdd</span><span class="hljs-params">(<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span>* address,<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> val)</span>; 
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">//Unsigned 32-bit integer atomic add</span>
+<span class="token keyword">unsigned</span> <span class="token keyword">int</span> <span class="token function">atomicAdd</span><span class="token punctuation">(</span><span class="token keyword">unsigned</span> <span class="token keyword">int</span><span class="token operator">*</span> address<span class="token punctuation">,</span><span class="token keyword">unsigned</span> <span class="token keyword">int</span> val<span class="token punctuation">)</span><span class="token punctuation">;</span> 
 
-<span class="hljs-comment">//Unsigned 64-bit integer atomic add</span>
-<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> <span class="hljs-type">long</span> <span class="hljs-type">int</span> <span class="hljs-title function_">atomicAdd</span><span class="hljs-params">(<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> <span class="hljs-type">long</span> <span class="hljs-type">int</span>* address, <span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> <span class="hljs-type">long</span> <span class="hljs-type">int</span> val)</span>; 
+<span class="token comment">//Unsigned 64-bit integer atomic add</span>
+<span class="token keyword">unsigned</span> <span class="token keyword">long</span> <span class="token keyword">long</span> <span class="token keyword">int</span> <span class="token function">atomicAdd</span><span class="token punctuation">(</span><span class="token keyword">unsigned</span> <span class="token keyword">long</span> <span class="token keyword">long</span> <span class="token keyword">int</span><span class="token operator">*</span> address<span class="token punctuation">,</span> <span class="token keyword">unsigned</span> <span class="token keyword">long</span> <span class="token keyword">long</span> <span class="token keyword">int</span> val<span class="token punctuation">)</span><span class="token punctuation">;</span> 
 
-<span class="hljs-comment">//Single-precision floating-point atomic add (capability &gt; 2.0)</span>
-<span class="hljs-type">float</span> <span class="hljs-title function_">atomicAdd</span><span class="hljs-params">(<span class="hljs-type">float</span>* address, <span class="hljs-type">float</span> val)</span>;</code></pre></div>
+<span class="token comment">//Single-precision floating-point atomic add (capability > 2.0)</span>
+<span class="token keyword">float</span> <span class="token function">atomicAdd</span><span class="token punctuation">(</span><span class="token keyword">float</span><span class="token operator">*</span> address<span class="token punctuation">,</span> <span class="token keyword">float</span> val<span class="token punctuation">)</span><span class="token punctuation">;</span> </code></pre></div></figure>
 <h3 id="一个基本的直方图内核">一个基本的直方图内核</h3>
 <p>内核接收一个指向字节值输入缓冲区的指针 每个线程以步幅模式处理输入</p>
-<div class="code-wrapper"><pre><code class="hljs c">__global__ <span class="hljs-type">void</span> <span class="hljs-title function_">histo_kernel</span><span class="hljs-params">(<span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> *buffer,<span class="hljs-type">long</span> size, <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> *histo)</span> 
-&#123;
-   <span class="hljs-type">int</span> i = threadIdx.x + blockIdx.x * blockDim.x;
-   <span class="hljs-comment">// stride is total number of threads</span>
-   <span class="hljs-type">int</span> stride = blockDim.x * gridDim.x;
-   <span class="hljs-comment">// All threads handle blockDim.x * gridDim.x</span>
-   <span class="hljs-comment">// consecutive elements</span>
-   <span class="hljs-keyword">while</span> (i &lt; size) &#123;
-      <span class="hljs-type">int</span> alphabet_position = buffer[i] – “a”;
-      <span class="hljs-keyword">if</span> (alphabet_position &gt;= <span class="hljs-number">0</span> &amp;&amp; alpha_position &lt; <span class="hljs-number">26</span>) 		
-		atomicAdd(&amp;(histo[alphabet_position/<span class="hljs-number">4</span>]), <span class="hljs-number">1</span>);
-        i += stride;
-   &#125;
-&#125;</code></pre></div>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">__global__ <span class="token keyword">void</span> <span class="token function">histo_kernel</span><span class="token punctuation">(</span><span class="token keyword">unsigned</span> <span class="token keyword">char</span> <span class="token operator">*</span>buffer<span class="token punctuation">,</span><span class="token keyword">long</span> size<span class="token punctuation">,</span> <span class="token keyword">unsigned</span> <span class="token keyword">int</span> <span class="token operator">*</span>histo<span class="token punctuation">)</span> 
+<span class="token punctuation">&#123;</span>
+   <span class="token keyword">int</span> i <span class="token operator">=</span> threadIdx<span class="token punctuation">.</span>x <span class="token operator">+</span> blockIdx<span class="token punctuation">.</span>x <span class="token operator">*</span> blockDim<span class="token punctuation">.</span>x<span class="token punctuation">;</span>
+   <span class="token comment">// stride is total number of threads</span>
+   <span class="token keyword">int</span> stride <span class="token operator">=</span> blockDim<span class="token punctuation">.</span>x <span class="token operator">*</span> gridDim<span class="token punctuation">.</span>x<span class="token punctuation">;</span>
+   <span class="token comment">// All threads handle blockDim.x * gridDim.x</span>
+   <span class="token comment">// consecutive elements</span>
+   <span class="token keyword">while</span> <span class="token punctuation">(</span>i <span class="token operator">&lt;</span> size<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">int</span> alphabet_position <span class="token operator">=</span> buffer<span class="token punctuation">[</span>i<span class="token punctuation">]</span> – “a”<span class="token punctuation">;</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>alphabet_position <span class="token operator">>=</span> <span class="token number">0</span> <span class="token operator">&amp;&amp;</span> alpha_position <span class="token operator">&lt;</span> <span class="token number">26</span><span class="token punctuation">)</span> 		
+		<span class="token function">atomicAdd</span><span class="token punctuation">(</span><span class="token operator">&amp;</span><span class="token punctuation">(</span>histo<span class="token punctuation">[</span>alphabet_position<span class="token operator">/</span><span class="token number">4</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        i <span class="token operator">+=</span> stride<span class="token punctuation">;</span>
+   <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre></div></figure>
 <h2 id="私有化直方图内核">私有化直方图内核</h2>
 <h3 id="全局内存-dram-上的原子操作">全局内存 (DRAM) 上的原子操作</h3>
 <p>1.DRAM 位置上的原子操作从读取开始，其延迟为数百个周期
@@ -666,28 +666,28 @@ alt="200" />
 </ul>
 <p><strong>共享内存原子需要私有化</strong></p>
 <p>给每个线程块创建私有的<code>histo[]</code>数组副本</p>
-<div class="code-wrapper"><pre><code class="hljs c">__global__ <span class="hljs-type">void</span> <span class="hljs-title function_">histo_kernel</span><span class="hljs-params">(<span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> *buffer,<span class="hljs-type">long</span> size, <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> *histo)</span> 
-&#123;
-    __shared__ <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> histo_private[<span class="hljs-number">7</span>];
-    <span class="hljs-comment">/*Build Private Histogram*/</span>
-    <span class="hljs-type">int</span> i = threadIdx.x + blockIdx.x * blockDim.x;
-	<span class="hljs-comment">// stride is total number of threads</span>
-    <span class="hljs-type">int</span> stride = blockDim.x * gridDim.x;
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">__global__ <span class="token keyword">void</span> <span class="token function">histo_kernel</span><span class="token punctuation">(</span><span class="token keyword">unsigned</span> <span class="token keyword">char</span> <span class="token operator">*</span>buffer<span class="token punctuation">,</span><span class="token keyword">long</span> size<span class="token punctuation">,</span> <span class="token keyword">unsigned</span> <span class="token keyword">int</span> <span class="token operator">*</span>histo<span class="token punctuation">)</span> 
+<span class="token punctuation">&#123;</span>
+    __shared__ <span class="token keyword">unsigned</span> <span class="token keyword">int</span> histo_private<span class="token punctuation">[</span><span class="token number">7</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token comment">/*Build Private Histogram*/</span>
+    <span class="token keyword">int</span> i <span class="token operator">=</span> threadIdx<span class="token punctuation">.</span>x <span class="token operator">+</span> blockIdx<span class="token punctuation">.</span>x <span class="token operator">*</span> blockDim<span class="token punctuation">.</span>x<span class="token punctuation">;</span>
+	<span class="token comment">// stride is total number of threads</span>
+    <span class="token keyword">int</span> stride <span class="token operator">=</span> blockDim<span class="token punctuation">.</span>x <span class="token operator">*</span> gridDim<span class="token punctuation">.</span>x<span class="token punctuation">;</span>
     
-    <span class="hljs-type">int</span> alphabet_position = <span class="hljs-number">0</span>;
-    <span class="hljs-keyword">while</span> (i &lt; size) &#123;
-       alphabet_position = buffer[i] – “a”;       
-       <span class="hljs-keyword">if</span> (alphabet_position &gt;= <span class="hljs-number">0</span> &amp;&amp; alpha_position &lt; <span class="hljs-number">26</span>)      				 atomicAdd(&amp;(private_histo[alphabet_position/<span class="hljs-number">4</span>]), <span class="hljs-number">1</span>); 
-  	   i += stride;
-  &#125;
-   <span class="hljs-comment">/*Build Final Histogram*/</span>
-   <span class="hljs-comment">// wait for all other threads in the block to finish</span>
-  __syncthreads();
+    <span class="token keyword">int</span> alphabet_position <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token keyword">while</span> <span class="token punctuation">(</span>i <span class="token operator">&lt;</span> size<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+       alphabet_position <span class="token operator">=</span> buffer<span class="token punctuation">[</span>i<span class="token punctuation">]</span> – “a”<span class="token punctuation">;</span>       
+       <span class="token keyword">if</span> <span class="token punctuation">(</span>alphabet_position <span class="token operator">>=</span> <span class="token number">0</span> <span class="token operator">&amp;&amp;</span> alpha_position <span class="token operator">&lt;</span> <span class="token number">26</span><span class="token punctuation">)</span>      				 <span class="token function">atomicAdd</span><span class="token punctuation">(</span><span class="token operator">&amp;</span><span class="token punctuation">(</span>private_histo<span class="token punctuation">[</span>alphabet_position<span class="token operator">/</span><span class="token number">4</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span> 
+  	   i <span class="token operator">+=</span> stride<span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+   <span class="token comment">/*Build Final Histogram*/</span>
+   <span class="token comment">// wait for all other threads in the block to finish</span>
+  <span class="token function">__syncthreads</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-  <span class="hljs-keyword">if</span> (threadIdx.x &lt; <span class="hljs-number">7</span>) &#123;
-         atomicAdd(&amp;(histo[threadIdx.x]), private_histo[threadIdx.x] );
-  &#125;
-&#125;</code></pre></div>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>threadIdx<span class="token punctuation">.</span>x <span class="token operator">&lt;</span> <span class="token number">7</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+         <span class="token function">atomicAdd</span><span class="token punctuation">(</span><span class="token operator">&amp;</span><span class="token punctuation">(</span>histo<span class="token punctuation">[</span>threadIdx<span class="token punctuation">.</span>x<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">,</span> private_histo<span class="token punctuation">[</span>threadIdx<span class="token punctuation">.</span>x<span class="token punctuation">]</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre></div></figure>
 <h3 id="更多关于私有化">更多关于私有化</h3>
 <p>私有化是用于并行化应用程序的强大且常用的技术
 私有直方图大小需要很小</p>
