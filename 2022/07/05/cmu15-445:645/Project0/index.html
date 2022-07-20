@@ -232,7 +232,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          4.6k 字
+          4.2k 字
         
       </span>
     
@@ -243,7 +243,7 @@
         
         
         
-          39 分钟
+          35 分钟
         
       </span>
     
@@ -338,105 +338,105 @@ alt="image-20220710140657041" />书写完成后要进行格式检测（一个比
 <h2 id="project-solution">Project Solution</h2>
 <h3 id="matrix">Matrix</h3>
 <p>构造函数</p>
-<figure><div class="code-wrapper"><pre class="language-c++" data-language="c++"><code class="language-c++">Matrix(int rows, int cols) &#123;
-   this-&gt;rows_&#x3D;rows;
-   this-&gt;cols_&#x3D;cols;
-   this-&gt;linear_&#x3D;new T[rows*cols];
- &#125;</code></pre></div></figure>
+<figure><div class="code-wrapper"><pre class="language-cpp" data-language="cpp"><code class="language-cpp"><span class="token function">Matrix</span><span class="token punctuation">(</span><span class="token keyword">int</span> rows<span class="token punctuation">,</span> <span class="token keyword">int</span> cols<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+   <span class="token keyword">this</span><span class="token operator">-></span>rows_<span class="token operator">=</span>rows<span class="token punctuation">;</span>
+   <span class="token keyword">this</span><span class="token operator">-></span>cols_<span class="token operator">=</span>cols<span class="token punctuation">;</span>
+   <span class="token keyword">this</span><span class="token operator">-></span>linear_<span class="token operator">=</span><span class="token keyword">new</span> T<span class="token punctuation">[</span>rows<span class="token operator">*</span>cols<span class="token punctuation">]</span><span class="token punctuation">;</span>
+ <span class="token punctuation">&#125;</span></code></pre></div></figure>
 <p>析构函数</p>
-<figure><div class="code-wrapper"><pre class="language-c++" data-language="c++"><code class="language-c++">virtual ~Matrix() &#123;
-  delete  []linear_;
-&#125;</code></pre></div></figure>
+<figure><div class="code-wrapper"><pre class="language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">virtual</span> <span class="token operator">~</span><span class="token function">Matrix</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">delete</span>  <span class="token punctuation">[</span><span class="token punctuation">]</span>linear_<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre></div></figure>
 <h3 id="rowmatrix">RowMatrix</h3>
 <p>构造函数，按照行建立矩阵。</p>
-<figure><div class="code-wrapper"><pre class="language-c++" data-language="c++"><code class="language-c++">RowMatrix(int rows, int cols) : Matrix&lt;T&gt;(rows, cols) &#123;
-  this-&gt;data_&#x3D;new T*[rows];
-  for (int i &#x3D; 0; i &lt; rows; ++i) &#123;
-    this-&gt;data_[i] &#x3D; Matrix&lt;T&gt;::linear_+ i * cols;
-  &#125;
-&#125;</code></pre></div></figure>
+<figure><div class="code-wrapper"><pre class="language-cpp" data-language="cpp"><code class="language-cpp"><span class="token function">RowMatrix</span><span class="token punctuation">(</span><span class="token keyword">int</span> rows<span class="token punctuation">,</span> <span class="token keyword">int</span> cols<span class="token punctuation">)</span> <span class="token operator">:</span> <span class="token generic-function"><span class="token function">Matrix</span><span class="token generic class-name"><span class="token operator">&lt;</span>T<span class="token operator">></span></span></span><span class="token punctuation">(</span>rows<span class="token punctuation">,</span> cols<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">this</span><span class="token operator">-></span>data_<span class="token operator">=</span><span class="token keyword">new</span> T<span class="token operator">*</span><span class="token punctuation">[</span>rows<span class="token punctuation">]</span><span class="token punctuation">;</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> rows<span class="token punctuation">;</span> <span class="token operator">++</span>i<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">this</span><span class="token operator">-></span>data_<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> Matrix<span class="token operator">&lt;</span>T<span class="token operator">></span><span class="token double-colon punctuation">::</span>linear_<span class="token operator">+</span> i <span class="token operator">*</span> cols<span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre></div></figure>
 <p>获得行数和列数</p>
-<figure><div class="code-wrapper"><pre class="language-c++" data-language="c++"><code class="language-c++">auto GetRowCount() const -&gt; int override &#123; return this-&gt;rows_; &#125;
-auto GetColumnCount() const -&gt; int override &#123; return this-&gt;cols_; &#125;</code></pre></div></figure>
+<figure><div class="code-wrapper"><pre class="language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">auto</span> <span class="token function">GetRowCount</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">const</span> <span class="token operator">-></span> <span class="token keyword">int</span> <span class="token keyword">override</span> <span class="token punctuation">&#123;</span> <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token operator">-></span>rows_<span class="token punctuation">;</span> <span class="token punctuation">&#125;</span>
+<span class="token keyword">auto</span> <span class="token function">GetColumnCount</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">const</span> <span class="token operator">-></span> <span class="token keyword">int</span> <span class="token keyword">override</span> <span class="token punctuation">&#123;</span> <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token operator">-></span>cols_<span class="token punctuation">;</span> <span class="token punctuation">&#125;</span></code></pre></div></figure>
 <p>获得第 i 行 j 列的值</p>
-<figure><div class="code-wrapper"><pre class="language-c++" data-language="c++"><code class="language-c++">auto GetElement(int i, int j) const -&gt; T override &#123;
-  if (i &gt;&#x3D; this-&gt;rows_ || j &gt;&#x3D; this-&gt;cols_ || i&lt;0 || j&lt;0)&#123;
-    throw Exception(ExceptionType::OUT_OF_RANGE,&quot;index is out of range&quot;);
-  &#125;
-  return data_[i][j];
-&#125;</code></pre></div></figure>
+<figure><div class="code-wrapper"><pre class="language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">auto</span> <span class="token function">GetElement</span><span class="token punctuation">(</span><span class="token keyword">int</span> i<span class="token punctuation">,</span> <span class="token keyword">int</span> j<span class="token punctuation">)</span> <span class="token keyword">const</span> <span class="token operator">-></span> T <span class="token keyword">override</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>i <span class="token operator">>=</span> <span class="token keyword">this</span><span class="token operator">-></span>rows_ <span class="token operator">||</span> j <span class="token operator">>=</span> <span class="token keyword">this</span><span class="token operator">-></span>cols_ <span class="token operator">||</span> i<span class="token operator">&lt;</span><span class="token number">0</span> <span class="token operator">||</span> j<span class="token operator">&lt;</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    <span class="token keyword">throw</span> <span class="token function">Exception</span><span class="token punctuation">(</span>ExceptionType<span class="token double-colon punctuation">::</span>OUT_OF_RANGE<span class="token punctuation">,</span><span class="token string">"index is out of range"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">return</span> data_<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">[</span>j<span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre></div></figure>
 <p>设置第 i 行 j 列的值</p>
-<figure><div class="code-wrapper"><pre class="language-c++" data-language="c++"><code class="language-c++">void SetElement(int i, int j, T val) override &#123;
-  if (i &gt;&#x3D; this-&gt;rows_ || j &gt;&#x3D; this-&gt;cols_ || i&lt;0 || j&lt;0)&#123;
-    throw Exception(ExceptionType::OUT_OF_RANGE,&quot;index is out of range&quot;);
-  &#125;
-  data_[i][j] &#x3D; val;
-&#125;</code></pre></div></figure>
+<figure><div class="code-wrapper"><pre class="language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">void</span> <span class="token function">SetElement</span><span class="token punctuation">(</span><span class="token keyword">int</span> i<span class="token punctuation">,</span> <span class="token keyword">int</span> j<span class="token punctuation">,</span> T val<span class="token punctuation">)</span> <span class="token keyword">override</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>i <span class="token operator">>=</span> <span class="token keyword">this</span><span class="token operator">-></span>rows_ <span class="token operator">||</span> j <span class="token operator">>=</span> <span class="token keyword">this</span><span class="token operator">-></span>cols_ <span class="token operator">||</span> i<span class="token operator">&lt;</span><span class="token number">0</span> <span class="token operator">||</span> j<span class="token operator">&lt;</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    <span class="token keyword">throw</span> <span class="token function">Exception</span><span class="token punctuation">(</span>ExceptionType<span class="token double-colon punctuation">::</span>OUT_OF_RANGE<span class="token punctuation">,</span><span class="token string">"index is out of range"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  data_<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">[</span>j<span class="token punctuation">]</span> <span class="token operator">=</span> val<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre></div></figure>
 <p>填值</p>
-<figure><div class="code-wrapper"><pre class="language-c++" data-language="c++"><code class="language-c++">void FillFrom(const std::vector&lt;T&gt; &amp;source) override &#123;
-  int source_size &#x3D; static_cast&lt;T&gt;(source.size());
-  if (source_size !&#x3D; this-&gt;cols_* this-&gt;rows_)&#123;
-    throw Exception(ExceptionType::OUT_OF_RANGE,&quot;index is out of range&quot;);
-  &#125;
-  for (int i &#x3D; 0; i &lt; source_size; i++) &#123;
-    Matrix&lt;T&gt;::linear_[i] &#x3D; source[i];
-  &#125;
-&#125;</code></pre></div></figure>
+<figure><div class="code-wrapper"><pre class="language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">void</span> <span class="token function">FillFrom</span><span class="token punctuation">(</span><span class="token keyword">const</span> std<span class="token double-colon punctuation">::</span>vector<span class="token operator">&lt;</span>T<span class="token operator">></span> <span class="token operator">&amp;</span>source<span class="token punctuation">)</span> <span class="token keyword">override</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">int</span> source_size <span class="token operator">=</span> <span class="token generic-function"><span class="token function">static_cast</span><span class="token generic class-name"><span class="token operator">&lt;</span>T<span class="token operator">></span></span></span><span class="token punctuation">(</span>source<span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>source_size <span class="token operator">!=</span> <span class="token keyword">this</span><span class="token operator">-></span>cols_<span class="token operator">*</span> <span class="token keyword">this</span><span class="token operator">-></span>rows_<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    <span class="token keyword">throw</span> <span class="token function">Exception</span><span class="token punctuation">(</span>ExceptionType<span class="token double-colon punctuation">::</span>OUT_OF_RANGE<span class="token punctuation">,</span><span class="token string">"index is out of range"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> source_size<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    Matrix<span class="token operator">&lt;</span>T<span class="token operator">></span><span class="token double-colon punctuation">::</span>linear_<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> source<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre></div></figure>
 <p>析构函数</p>
-<figure><div class="code-wrapper"><pre class="language-c++" data-language="c++"><code class="language-c++">~RowMatrix() override&#123;
-  delete []data_;
-&#125;</code></pre></div></figure>
+<figure><div class="code-wrapper"><pre class="language-cpp" data-language="cpp"><code class="language-cpp"><span class="token operator">~</span><span class="token function">RowMatrix</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">override</span><span class="token punctuation">&#123;</span>
+  <span class="token keyword">delete</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>data_<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre></div></figure>
 <h3 id="rowmatrixoperations">RowMatrixOperations</h3>
 <p>Add函数</p>
-<figure><div class="code-wrapper"><pre class="language-c++" data-language="c++"><code class="language-c++">static auto Add(const RowMatrix&lt;T&gt; *matrixA, const RowMatrix&lt;T&gt; *matrixB) -&gt; std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt; &#123;
-  &#x2F;&#x2F; TODO(P0): Add implementation
-  if (matrixA-&gt;GetRowCount() !&#x3D; matrixB-&gt;GetRowCount() || matrixA-&gt;GetColumnCount() !&#x3D; matrixB-&gt;GetColumnCount()) &#123;
-    return std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt;(nullptr);
-  &#125;
-  int rows &#x3D; matrixA-&gt;GetRowCount();
-  int cols &#x3D; matrixA-&gt;GetColumnCount();
-  T sum;
-  auto matrix_c &#x3D; std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt;(new RowMatrix&lt;T&gt;(rows, cols));
-  for (int i &#x3D; 0; i &lt; rows; i++) &#123;
-    for (int j &#x3D; 0; j &lt; cols; j++) &#123;
-      sum &#x3D; matrixA-&gt;GetElement(i, j) + matrixB-&gt;GetElement(i, j);
-      matrix_c-&gt;SetElement(i, j, sum);
-    &#125;
-  &#125;
-  return matrix_c;
-&#125;</code></pre></div></figure>
+<figure><div class="code-wrapper"><pre class="language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">static</span> <span class="token keyword">auto</span> <span class="token function">Add</span><span class="token punctuation">(</span><span class="token keyword">const</span> RowMatrix<span class="token operator">&lt;</span>T<span class="token operator">></span> <span class="token operator">*</span>matrixA<span class="token punctuation">,</span> <span class="token keyword">const</span> RowMatrix<span class="token operator">&lt;</span>T<span class="token operator">></span> <span class="token operator">*</span>matrixB<span class="token punctuation">)</span> <span class="token operator">-></span> std<span class="token double-colon punctuation">::</span>unique_ptr<span class="token operator">&lt;</span>RowMatrix<span class="token operator">&lt;</span>T<span class="token operator">>></span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">// TODO(P0): Add implementation</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>matrixA<span class="token operator">-></span><span class="token function">GetRowCount</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">!=</span> matrixB<span class="token operator">-></span><span class="token function">GetRowCount</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">||</span> matrixA<span class="token operator">-></span><span class="token function">GetColumnCount</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">!=</span> matrixB<span class="token operator">-></span><span class="token function">GetColumnCount</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> std<span class="token double-colon punctuation">::</span><span class="token generic-function"><span class="token function">unique_ptr</span><span class="token generic class-name"><span class="token operator">&lt;</span>RowMatrix<span class="token operator">&lt;</span>T<span class="token operator">>></span></span></span><span class="token punctuation">(</span><span class="token keyword">nullptr</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">int</span> rows <span class="token operator">=</span> matrixA<span class="token operator">-></span><span class="token function">GetRowCount</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">int</span> cols <span class="token operator">=</span> matrixA<span class="token operator">-></span><span class="token function">GetColumnCount</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  T sum<span class="token punctuation">;</span>
+  <span class="token keyword">auto</span> matrix_c <span class="token operator">=</span> std<span class="token double-colon punctuation">::</span><span class="token generic-function"><span class="token function">unique_ptr</span><span class="token generic class-name"><span class="token operator">&lt;</span>RowMatrix<span class="token operator">&lt;</span>T<span class="token operator">>></span></span></span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token generic-function"><span class="token function">RowMatrix</span><span class="token generic class-name"><span class="token operator">&lt;</span>T<span class="token operator">></span></span></span><span class="token punctuation">(</span>rows<span class="token punctuation">,</span> cols<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> rows<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> j <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> j <span class="token operator">&lt;</span> cols<span class="token punctuation">;</span> j<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      sum <span class="token operator">=</span> matrixA<span class="token operator">-></span><span class="token function">GetElement</span><span class="token punctuation">(</span>i<span class="token punctuation">,</span> j<span class="token punctuation">)</span> <span class="token operator">+</span> matrixB<span class="token operator">-></span><span class="token function">GetElement</span><span class="token punctuation">(</span>i<span class="token punctuation">,</span> j<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      matrix_c<span class="token operator">-></span><span class="token function">SetElement</span><span class="token punctuation">(</span>i<span class="token punctuation">,</span> j<span class="token punctuation">,</span> sum<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">return</span> matrix_c<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre></div></figure>
 <p>Multiply函数</p>
-<figure><div class="code-wrapper"><pre class="language-c++" data-language="c++"><code class="language-c++">static auto Multiply(const RowMatrix&lt;T&gt; *matrixA, const RowMatrix&lt;T&gt; *matrixB) -&gt; std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt; &#123;
-    &#x2F;&#x2F; TODO(P0): Add implementation
-    if (matrixA-&gt;GetColumnCount() !&#x3D; matrixB-&gt;GetRowCount()) &#123;
-      return std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt;(nullptr);
-    &#125;
-    int rows_a &#x3D; matrixA-&gt;GetRowCount();
-    int cols_b &#x3D; matrixB-&gt;GetColumnCount();
-    int cols &#x3D; matrixA-&gt;GetColumnCount();
-    T accumulate;
-    auto matrix_c &#x3D; std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt;(new RowMatrix&lt;T&gt;(rows_a, cols_b));
-    for (int i &#x3D; 0; i &lt; rows_a; i++) &#123;
-      for (int j &#x3D; 0; j &lt; cols_b; j++) &#123;
-        accumulate &#x3D; 0;
-        for (int k &#x3D; 0; k &lt; cols; k++) &#123;
-          accumulate +&#x3D; matrixA-&gt;GetElement(i, k) * matrixB-&gt;GetElement(k, j);
-        &#125;
-        matrix_c-&gt;SetElement(i, j, accumulate);
-      &#125;
-    &#125;
-    return matrix_c;
-  &#125;</code></pre></div></figure>
+<figure><div class="code-wrapper"><pre class="language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">static</span> <span class="token keyword">auto</span> <span class="token function">Multiply</span><span class="token punctuation">(</span><span class="token keyword">const</span> RowMatrix<span class="token operator">&lt;</span>T<span class="token operator">></span> <span class="token operator">*</span>matrixA<span class="token punctuation">,</span> <span class="token keyword">const</span> RowMatrix<span class="token operator">&lt;</span>T<span class="token operator">></span> <span class="token operator">*</span>matrixB<span class="token punctuation">)</span> <span class="token operator">-></span> std<span class="token double-colon punctuation">::</span>unique_ptr<span class="token operator">&lt;</span>RowMatrix<span class="token operator">&lt;</span>T<span class="token operator">>></span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// TODO(P0): Add implementation</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>matrixA<span class="token operator">-></span><span class="token function">GetColumnCount</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">!=</span> matrixB<span class="token operator">-></span><span class="token function">GetRowCount</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">return</span> std<span class="token double-colon punctuation">::</span><span class="token generic-function"><span class="token function">unique_ptr</span><span class="token generic class-name"><span class="token operator">&lt;</span>RowMatrix<span class="token operator">&lt;</span>T<span class="token operator">>></span></span></span><span class="token punctuation">(</span><span class="token keyword">nullptr</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">int</span> rows_a <span class="token operator">=</span> matrixA<span class="token operator">-></span><span class="token function">GetRowCount</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">int</span> cols_b <span class="token operator">=</span> matrixB<span class="token operator">-></span><span class="token function">GetColumnCount</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">int</span> cols <span class="token operator">=</span> matrixA<span class="token operator">-></span><span class="token function">GetColumnCount</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    T accumulate<span class="token punctuation">;</span>
+    <span class="token keyword">auto</span> matrix_c <span class="token operator">=</span> std<span class="token double-colon punctuation">::</span><span class="token generic-function"><span class="token function">unique_ptr</span><span class="token generic class-name"><span class="token operator">&lt;</span>RowMatrix<span class="token operator">&lt;</span>T<span class="token operator">>></span></span></span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token generic-function"><span class="token function">RowMatrix</span><span class="token generic class-name"><span class="token operator">&lt;</span>T<span class="token operator">></span></span></span><span class="token punctuation">(</span>rows_a<span class="token punctuation">,</span> cols_b<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> rows_a<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> j <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> j <span class="token operator">&lt;</span> cols_b<span class="token punctuation">;</span> j<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        accumulate <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> k <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> k <span class="token operator">&lt;</span> cols<span class="token punctuation">;</span> k<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+          accumulate <span class="token operator">+=</span> matrixA<span class="token operator">-></span><span class="token function">GetElement</span><span class="token punctuation">(</span>i<span class="token punctuation">,</span> k<span class="token punctuation">)</span> <span class="token operator">*</span> matrixB<span class="token operator">-></span><span class="token function">GetElement</span><span class="token punctuation">(</span>k<span class="token punctuation">,</span> j<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+        matrix_c<span class="token operator">-></span><span class="token function">SetElement</span><span class="token punctuation">(</span>i<span class="token punctuation">,</span> j<span class="token punctuation">,</span> accumulate<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">return</span> matrix_c<span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span></code></pre></div></figure>
 <p>GEMM函数</p>
-<figure><div class="code-wrapper"><pre class="language-c++" data-language="c++"><code class="language-c++">static auto GEMM(const RowMatrix&lt;T&gt; *matrixA, const RowMatrix&lt;T&gt; *matrixB, const RowMatrix&lt;T&gt; *matrixC)
-    -&gt; std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt; &#123;
-  &#x2F;&#x2F; TODO(P0): Add implementation
-  auto matrix_d &#x3D; Multiply(matrixA, matrixB);
-  if (matrix_d &#x3D;&#x3D; nullptr) &#123;
-    return std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt;(nullptr);
-  &#125;
-  return Add(matrix_d.get(), matrixC);
-&#125;</code></pre></div></figure>
+<figure><div class="code-wrapper"><pre class="language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">static</span> <span class="token keyword">auto</span> <span class="token function">GEMM</span><span class="token punctuation">(</span><span class="token keyword">const</span> RowMatrix<span class="token operator">&lt;</span>T<span class="token operator">></span> <span class="token operator">*</span>matrixA<span class="token punctuation">,</span> <span class="token keyword">const</span> RowMatrix<span class="token operator">&lt;</span>T<span class="token operator">></span> <span class="token operator">*</span>matrixB<span class="token punctuation">,</span> <span class="token keyword">const</span> RowMatrix<span class="token operator">&lt;</span>T<span class="token operator">></span> <span class="token operator">*</span>matrixC<span class="token punctuation">)</span>
+    <span class="token operator">-></span> std<span class="token double-colon punctuation">::</span>unique_ptr<span class="token operator">&lt;</span>RowMatrix<span class="token operator">&lt;</span>T<span class="token operator">>></span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">// TODO(P0): Add implementation</span>
+  <span class="token keyword">auto</span> matrix_d <span class="token operator">=</span> <span class="token function">Multiply</span><span class="token punctuation">(</span>matrixA<span class="token punctuation">,</span> matrixB<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>matrix_d <span class="token operator">==</span> <span class="token keyword">nullptr</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> std<span class="token double-colon punctuation">::</span><span class="token generic-function"><span class="token function">unique_ptr</span><span class="token generic class-name"><span class="token operator">&lt;</span>RowMatrix<span class="token operator">&lt;</span>T<span class="token operator">>></span></span></span><span class="token punctuation">(</span><span class="token keyword">nullptr</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">return</span> <span class="token function">Add</span><span class="token punctuation">(</span>matrix_d<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> matrixC<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre></div></figure>
 <h3 id="project-pass">Project Pass</h3>
 <h3 id="local-pass">Local Pass</h3>
 <figure>
