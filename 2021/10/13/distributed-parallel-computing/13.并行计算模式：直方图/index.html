@@ -226,7 +226,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          3.9k 字
+          3.8k 字
         
       </span>
     
@@ -237,7 +237,7 @@
         
         
         
-          33 分钟
+          32 分钟
         
       </span>
     
@@ -337,7 +337,9 @@ alt="194" />
 <h2 id="数据竞争条件">数据竞争条件</h2>
 <h3 id="并行线程执行中的数据竞争">并行线程执行中的数据竞争</h3>
 <p>thread1和thread2都要执行下面代码</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs c">Old←Mem[x]<br>New←Old + <span class="hljs-number">1</span><br>Mem[x]←New<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c">Old←Mem[x]
+New←Old + <span class="hljs-number">1</span>
+Mem[x]←New</code></pre></div>
 <p>Old 和 New 是每个线程寄存器变量。</p>
 <p>问题 1：如果 Mem[x] 最初为 0，那么在线程 1 和 2 完成后，Mem[x]
 的值是多少？ 问题 2：每个线程在它们的 Old 变量中得到什么？</p>
@@ -558,10 +560,30 @@ and swap)</li>
 <li>从全局或共享内存中的地址所指向的位置读取32位的字old，计算(old+val)，并将结果存储到相同的地址，函数返回old。</li>
 </ul>
 <p>CUDA中的更多原子加法：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">//Unsigned 32-bit integer atomic add</span><br><span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> <span class="hljs-title function_">atomicAdd</span><span class="hljs-params">(<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span>* address,<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> val)</span>; <br><br><span class="hljs-comment">//Unsigned 64-bit integer atomic add</span><br><span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> <span class="hljs-type">long</span> <span class="hljs-type">int</span> <span class="hljs-title function_">atomicAdd</span><span class="hljs-params">(<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> <span class="hljs-type">long</span> <span class="hljs-type">int</span>* address, <span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> <span class="hljs-type">long</span> <span class="hljs-type">int</span> val)</span>; <br><br><span class="hljs-comment">//Single-precision floating-point atomic add (capability &gt; 2.0)</span><br><span class="hljs-type">float</span> <span class="hljs-title function_">atomicAdd</span><span class="hljs-params">(<span class="hljs-type">float</span>* address, <span class="hljs-type">float</span> val)</span>; <br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-comment">//Unsigned 32-bit integer atomic add</span>
+<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> <span class="hljs-title function_">atomicAdd</span><span class="hljs-params">(<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span>* address,<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> val)</span>; 
+
+<span class="hljs-comment">//Unsigned 64-bit integer atomic add</span>
+<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> <span class="hljs-type">long</span> <span class="hljs-type">int</span> <span class="hljs-title function_">atomicAdd</span><span class="hljs-params">(<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> <span class="hljs-type">long</span> <span class="hljs-type">int</span>* address, <span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> <span class="hljs-type">long</span> <span class="hljs-type">int</span> val)</span>; 
+
+<span class="hljs-comment">//Single-precision floating-point atomic add (capability &gt; 2.0)</span>
+<span class="hljs-type">float</span> <span class="hljs-title function_">atomicAdd</span><span class="hljs-params">(<span class="hljs-type">float</span>* address, <span class="hljs-type">float</span> val)</span>;</code></pre></div>
 <h3 id="一个基本的直方图内核">一个基本的直方图内核</h3>
 <p>内核接收一个指向字节值输入缓冲区的指针 每个线程以步幅模式处理输入</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs c">__global__ <span class="hljs-type">void</span> <span class="hljs-title function_">histo_kernel</span><span class="hljs-params">(<span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> *buffer,<span class="hljs-type">long</span> size, <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> *histo)</span> <br>&#123;<br>   <span class="hljs-type">int</span> i = threadIdx.x + blockIdx.x * blockDim.x;<br>   <span class="hljs-comment">// stride is total number of threads</span><br>   <span class="hljs-type">int</span> stride = blockDim.x * gridDim.x;<br>   <span class="hljs-comment">// All threads handle blockDim.x * gridDim.x</span><br>   <span class="hljs-comment">// consecutive elements</span><br>   <span class="hljs-keyword">while</span> (i &lt; size) &#123;<br>      <span class="hljs-type">int</span> alphabet_position = buffer[i] – “a”;<br>      <span class="hljs-keyword">if</span> (alphabet_position &gt;= <span class="hljs-number">0</span> &amp;&amp; alpha_position &lt; <span class="hljs-number">26</span>) 		<br>		atomicAdd(&amp;(histo[alphabet_position/<span class="hljs-number">4</span>]), <span class="hljs-number">1</span>);<br>        i += stride;<br>   &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c">__global__ <span class="hljs-type">void</span> <span class="hljs-title function_">histo_kernel</span><span class="hljs-params">(<span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> *buffer,<span class="hljs-type">long</span> size, <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> *histo)</span> 
+&#123;
+   <span class="hljs-type">int</span> i = threadIdx.x + blockIdx.x * blockDim.x;
+   <span class="hljs-comment">// stride is total number of threads</span>
+   <span class="hljs-type">int</span> stride = blockDim.x * gridDim.x;
+   <span class="hljs-comment">// All threads handle blockDim.x * gridDim.x</span>
+   <span class="hljs-comment">// consecutive elements</span>
+   <span class="hljs-keyword">while</span> (i &lt; size) &#123;
+      <span class="hljs-type">int</span> alphabet_position = buffer[i] – “a”;
+      <span class="hljs-keyword">if</span> (alphabet_position &gt;= <span class="hljs-number">0</span> &amp;&amp; alpha_position &lt; <span class="hljs-number">26</span>) 		
+		atomicAdd(&amp;(histo[alphabet_position/<span class="hljs-number">4</span>]), <span class="hljs-number">1</span>);
+        i += stride;
+   &#125;
+&#125;</code></pre></div>
 <h2 id="私有化直方图内核">私有化直方图内核</h2>
 <h3 id="全局内存-dram-上的原子操作">全局内存 (DRAM) 上的原子操作</h3>
 <p>1.DRAM 位置上的原子操作从读取开始，其延迟为数百个周期
@@ -639,7 +661,28 @@ alt="200" />
 </ul>
 <p><strong>共享内存原子需要私有化</strong></p>
 <p>给每个线程块创建私有的<code>histo[]</code>数组副本</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs c">__global__ <span class="hljs-type">void</span> <span class="hljs-title function_">histo_kernel</span><span class="hljs-params">(<span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> *buffer,<span class="hljs-type">long</span> size, <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> *histo)</span> <br>&#123;<br>    __shared__ <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> histo_private[<span class="hljs-number">7</span>];<br>    <span class="hljs-comment">/*Build Private Histogram*/</span><br>    <span class="hljs-type">int</span> i = threadIdx.x + blockIdx.x * blockDim.x;<br>	<span class="hljs-comment">// stride is total number of threads</span><br>    <span class="hljs-type">int</span> stride = blockDim.x * gridDim.x;<br>    <br>    <span class="hljs-type">int</span> alphabet_position = <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">while</span> (i &lt; size) &#123;<br>       alphabet_position = buffer[i] – “a”;       <br>       <span class="hljs-keyword">if</span> (alphabet_position &gt;= <span class="hljs-number">0</span> &amp;&amp; alpha_position &lt; <span class="hljs-number">26</span>)      				 atomicAdd(&amp;(private_histo[alphabet_position/<span class="hljs-number">4</span>]), <span class="hljs-number">1</span>); <br>  	   i += stride;<br>  &#125;<br>   <span class="hljs-comment">/*Build Final Histogram*/</span><br>   <span class="hljs-comment">// wait for all other threads in the block to finish</span><br>  __syncthreads();<br><br>  <span class="hljs-keyword">if</span> (threadIdx.x &lt; <span class="hljs-number">7</span>) &#123;<br>         atomicAdd(&amp;(histo[threadIdx.x]), private_histo[threadIdx.x] );<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c">__global__ <span class="hljs-type">void</span> <span class="hljs-title function_">histo_kernel</span><span class="hljs-params">(<span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> *buffer,<span class="hljs-type">long</span> size, <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> *histo)</span> 
+&#123;
+    __shared__ <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> histo_private[<span class="hljs-number">7</span>];
+    <span class="hljs-comment">/*Build Private Histogram*/</span>
+    <span class="hljs-type">int</span> i = threadIdx.x + blockIdx.x * blockDim.x;
+	<span class="hljs-comment">// stride is total number of threads</span>
+    <span class="hljs-type">int</span> stride = blockDim.x * gridDim.x;
+    
+    <span class="hljs-type">int</span> alphabet_position = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">while</span> (i &lt; size) &#123;
+       alphabet_position = buffer[i] – “a”;       
+       <span class="hljs-keyword">if</span> (alphabet_position &gt;= <span class="hljs-number">0</span> &amp;&amp; alpha_position &lt; <span class="hljs-number">26</span>)      				 atomicAdd(&amp;(private_histo[alphabet_position/<span class="hljs-number">4</span>]), <span class="hljs-number">1</span>); 
+  	   i += stride;
+  &#125;
+   <span class="hljs-comment">/*Build Final Histogram*/</span>
+   <span class="hljs-comment">// wait for all other threads in the block to finish</span>
+  __syncthreads();
+
+  <span class="hljs-keyword">if</span> (threadIdx.x &lt; <span class="hljs-number">7</span>) &#123;
+         atomicAdd(&amp;(histo[threadIdx.x]), private_histo[threadIdx.x] );
+  &#125;
+&#125;</code></pre></div>
 <h3 id="更多关于私有化">更多关于私有化</h3>
 <p>私有化是用于并行化应用程序的强大且常用的技术
 私有直方图大小需要很小</p>

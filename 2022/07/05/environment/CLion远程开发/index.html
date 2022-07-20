@@ -236,7 +236,7 @@
         
         
         
-          12 分钟
+          11 分钟
         
       </span>
     
@@ -294,14 +294,19 @@ SSH但仍然觉得不友好，CLion 是一款专为开发 C 及 C++ 所设计的
 20.04和macos，windows的设置方式应该大同小异。</p>
 <h2 id="连接准备">连接准备</h2>
 <p>首先使用终端SSH进行连接，前往<code>~/.ssh</code>目录下，执行命令</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">vim config<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs bash">vim config</code></pre></div>
 <p>把下面内容粘贴进去并保存</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash">Host T					//这里的T只是一个名字<br> HostName ****	//这里是ip<br> User	ubuntu	//这里是用户名<br> Port 	22			//端口号<br> IdentityFile ~/.ssh/tencent_key	//存放私钥<br> ForwardAgent <span class="hljs-built_in">yes</span><br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs bash">Host T					//这里的T只是一个名字
+ HostName ****	//这里是ip
+ User	ubuntu	//这里是用户名
+ Port 	22			//端口号
+ IdentityFile ~/.ssh/tencent_key	//存放私钥
+ ForwardAgent <span class="hljs-built_in">yes</span></code></pre></div>
 <p>config文件同级目录下，使用下面命令，创建
 <strong>tencent_key</strong>文件，之后把<u>下载的密钥</u>（这个会在云服务器产商处生产）复制其中并保存。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">vim  tencent_key<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs bash">vim  tencent_key</code></pre></div>
 <p>进行连接</p>
-<p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">ssh tencent<br></code></pre></td></tr></table></figure></p>
+<p><div class="code-wrapper"><pre><code class="hljs bash">ssh tencent</code></pre></div></p>
 <p>连接之后的结果是这样的</p>
 <figure>
 <img
@@ -318,7 +323,12 @@ alt="image-20220717183936672" />
 <figcaption aria-hidden="true">image-20220717183936672</figcaption>
 </figure>
 <p>这时就可以把需要的环境安装上去了。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo apt-get update<br>sudo apt-get upgrade<br>sudo apt-get install cmake<br>sudo apt-get install gcc<br>sudo apt-get install g++<br>sudo apt-get install gdb<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs bash">sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get install cmake
+sudo apt-get install gcc
+sudo apt-get install g++
+sudo apt-get install gdb</code></pre></div>
 <h2 id="远程调试">远程调试</h2>
 <p>在Clion中先打开要上传的项目，打开设置。</p>
 <p>打开Cmake，选择<code>Toolchain</code>右侧的<code>Manage toolchains</code></p>
@@ -497,18 +507,12 @@ alt="image-20220708225534657" />
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2022/07/05/cmu15-445:645/Project0/" title="CMU15-445/645 Project0">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">CMU15-445/645 Project0</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2022/04/16/postgraduate/postgraduate-reexam/" title="考研复试指南">
-                        <span class="hidden-mobile">考研复试指南</span>
+                      <a href="/2022/07/05/cmu15-445:645/Project0/" title="CMU15-445/645 Project0">
+                        <span class="hidden-mobile">CMU15-445/645 Project0</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

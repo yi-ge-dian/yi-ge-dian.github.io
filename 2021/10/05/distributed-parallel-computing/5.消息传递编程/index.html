@@ -226,7 +226,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          5.8k 字
+          5.6k 字
         
       </span>
     
@@ -237,7 +237,7 @@
         
         
         
-          49 分钟
+          47 分钟
         
       </span>
     
@@ -381,7 +381,11 @@ Ridge</strong> 国家实验室开发的并行虚拟机 （PVM）
 <h3 id="包含的文件include-files">包含的文件（Include Files）</h3>
 <p>MPI header file:<code>#include &lt;mpi.h&gt;</code> nStandard I/O
 header file:<code>#include &lt;stdio.h&gt;</code></p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">main</span> <span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span> *argv[])</span> &#123;<br>   <span class="hljs-type">int</span> i;<br>   <span class="hljs-type">int</span> id; <span class="hljs-comment">/* Process rank */</span><br>   <span class="hljs-type">int</span> p;  <span class="hljs-comment">/* Number of processes */</span><br>   <span class="hljs-type">void</span> <span class="hljs-title function_">check_circuit</span> <span class="hljs-params">(<span class="hljs-type">int</span>, <span class="hljs-type">int</span>)</span>;<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">main</span> <span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span> *argv[])</span> &#123;
+   <span class="hljs-type">int</span> i;
+   <span class="hljs-type">int</span> id; <span class="hljs-comment">/* Process rank */</span>
+   <span class="hljs-type">int</span> p;  <span class="hljs-comment">/* Number of processes */</span>
+   <span class="hljs-type">void</span> <span class="hljs-title function_">check_circuit</span> <span class="hljs-params">(<span class="hljs-type">int</span>, <span class="hljs-type">int</span>)</span>;</code></pre></div>
 <p>argc and argv 参数: 初始化MPI的时候需要
 每个运行此程序的进程的每个变量的一个副本</p>
 <h3 id="初始化mpi">初始化MPI</h3>
@@ -414,10 +418,17 @@ header file:<code>#include &lt;stdio.h&gt;</code></p>
 <h3 id="自动变量的赋值">自动变量的赋值</h3>
 <p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/87.png" srcset="/img/loading.gif" lazyload alt="87" style="zoom:50%;" /></p>
 <h3 id="外部变量">外部变量</h3>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> total;<br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span> <span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span> *argv[])</span> &#123;<br>   <span class="hljs-type">int</span> i;<br>   <span class="hljs-type">int</span> id;<br>   <span class="hljs-type">int</span> p;<br>   …<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">int</span> total;
+
+<span class="hljs-type">int</span> <span class="hljs-title function_">main</span> <span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span> *argv[])</span> &#123;
+   <span class="hljs-type">int</span> i;
+   <span class="hljs-type">int</span> id;
+   <span class="hljs-type">int</span> p;
+   …</code></pre></div>
 <p>全局变量分配在静态存储区。</p>
 <h3 id="工作循环分配">工作循环分配</h3>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">for</span> (i = id; i &lt; <span class="hljs-number">65536</span>; i += p)<br>   check_circuit (id, i);<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-keyword">for</span> (i = id; i &lt; <span class="hljs-number">65536</span>; i += p)
+   check_circuit (id, i);</code></pre></div>
 <ul>
 <li>外部功能检查电路具有并行性</li>
 <li>它可以是一个普通的、顺序的功能</li>
@@ -429,7 +440,46 @@ header file:<code>#include &lt;stdio.h&gt;</code></p>
 <li>允许吸引释放掉MPI资源</li>
 </ul>
 <h3 id="完整的mpi代码">完整的MPI代码</h3>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;mpi.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span> <span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span> *argv[])</span> &#123; <br>	<span class="hljs-type">int</span> i;<br>	<span class="hljs-type">int</span> id;<br>	<span class="hljs-type">int</span> p;<br>	<span class="hljs-type">void</span> <span class="hljs-title function_">check_circuit</span> <span class="hljs-params">(<span class="hljs-type">int</span>, <span class="hljs-type">int</span>)</span>;<br>    MPI_Init (&amp;argc, &amp;argv);<br>    MPI_Comm_rank (MPI_COMM_WORLD, &amp;id);<br>    MPI_Comm_size (MPI_COMM_WORLD, &amp;p);<br>    <span class="hljs-keyword">for</span> (i = id; i &lt; <span class="hljs-number">65536</span>; i += p)<br>    check_circuit (id, i);<br>    <span class="hljs-built_in">printf</span> (<span class="hljs-string">&quot;Process %d is done\n&quot;</span>, id);<br>    fflush (<span class="hljs-built_in">stdout</span>);<span class="hljs-comment">//put fflush() after every printf</span><br>    MPI_Finalize();<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span><br><span class="hljs-comment">/* Return 1 if &#x27;i&#x27;th bit of &#x27;n&#x27; is 1; 0 otherwise */</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> EXTRACT_BIT(n,i) ((n&amp;(1&lt;&lt;i))?1:0)</span><br><br><span class="hljs-type">void</span> check_circuit (<span class="hljs-type">int</span> id, <span class="hljs-type">int</span> z) &#123;<br>   <span class="hljs-type">int</span> v[<span class="hljs-number">16</span>];        <span class="hljs-comment">/* Each element is a bit of z */</span><br>   <span class="hljs-type">int</span> i;<br><br>   <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">16</span>; i++) v[i] = EXTRACT_BIT(z,i);<br><br>   <span class="hljs-keyword">if</span> ((v[<span class="hljs-number">0</span>] || v[<span class="hljs-number">1</span>]) &amp;&amp; (!v[<span class="hljs-number">1</span>] || !v[<span class="hljs-number">3</span>]) &amp;&amp; (v[<span class="hljs-number">2</span>] || v[<span class="hljs-number">3</span>])<br>      &amp;&amp; (!v[<span class="hljs-number">3</span>] || !v[<span class="hljs-number">4</span>]) &amp;&amp; (v[<span class="hljs-number">4</span>] || !v[<span class="hljs-number">5</span>])<br>      &amp;&amp; (v[<span class="hljs-number">5</span>] || !v[<span class="hljs-number">6</span>]) &amp;&amp; (v[<span class="hljs-number">5</span>] || v[<span class="hljs-number">6</span>])<br>      &amp;&amp; (v[<span class="hljs-number">6</span>] || !v[<span class="hljs-number">15</span>]) &amp;&amp; (v[<span class="hljs-number">7</span>] || !v[<span class="hljs-number">8</span>])<br>      &amp;&amp; (!v[<span class="hljs-number">7</span>] || !v[<span class="hljs-number">13</span>]) &amp;&amp; (v[<span class="hljs-number">8</span>] || v[<span class="hljs-number">9</span>])<br>      &amp;&amp; (v[<span class="hljs-number">8</span>] || !v[<span class="hljs-number">9</span>]) &amp;&amp; (!v[<span class="hljs-number">9</span>] || !v[<span class="hljs-number">10</span>])<br>      &amp;&amp; (v[<span class="hljs-number">9</span>] || v[<span class="hljs-number">11</span>]) &amp;&amp; (v[<span class="hljs-number">10</span>] || v[<span class="hljs-number">11</span>])<br>      &amp;&amp; (v[<span class="hljs-number">12</span>] || v[<span class="hljs-number">13</span>]) &amp;&amp; (v[<span class="hljs-number">13</span>] || !v[<span class="hljs-number">14</span>])<br>      &amp;&amp; (v[<span class="hljs-number">14</span>] || v[<span class="hljs-number">15</span>])) &#123;<br>      <span class="hljs-built_in">printf</span> (<span class="hljs-string">&quot;%d) %d%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d\n&quot;</span>, id,<br>         v[<span class="hljs-number">0</span>],v[<span class="hljs-number">1</span>],v[<span class="hljs-number">2</span>],v[<span class="hljs-number">3</span>],v[<span class="hljs-number">4</span>],v[<span class="hljs-number">5</span>],v[<span class="hljs-number">6</span>],v[<span class="hljs-number">7</span>],v[<span class="hljs-number">8</span>],v[<span class="hljs-number">9</span>],<br>         v[<span class="hljs-number">10</span>],v[<span class="hljs-number">11</span>],v[<span class="hljs-number">12</span>],v[<span class="hljs-number">13</span>],v[<span class="hljs-number">14</span>],v[<span class="hljs-number">15</span>]);<br>      fflush (<span class="hljs-built_in">stdout</span>);<br>   &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;mpi.h&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span>
+<span class="hljs-type">int</span> <span class="hljs-title function_">main</span> <span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span> *argv[])</span> &#123; 
+	<span class="hljs-type">int</span> i;
+	<span class="hljs-type">int</span> id;
+	<span class="hljs-type">int</span> p;
+	<span class="hljs-type">void</span> <span class="hljs-title function_">check_circuit</span> <span class="hljs-params">(<span class="hljs-type">int</span>, <span class="hljs-type">int</span>)</span>;
+    MPI_Init (&amp;argc, &amp;argv);
+    MPI_Comm_rank (MPI_COMM_WORLD, &amp;id);
+    MPI_Comm_size (MPI_COMM_WORLD, &amp;p);
+    <span class="hljs-keyword">for</span> (i = id; i &lt; <span class="hljs-number">65536</span>; i += p)
+    check_circuit (id, i);
+    <span class="hljs-built_in">printf</span> (<span class="hljs-string">&quot;Process %d is done\n&quot;</span>, id);
+    fflush (<span class="hljs-built_in">stdout</span>);<span class="hljs-comment">//put fflush() after every printf</span>
+    MPI_Finalize();
+    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>
+<span class="hljs-comment">/* Return 1 if &#x27;i&#x27;th bit of &#x27;n&#x27; is 1; 0 otherwise */</span>
+<span class="hljs-meta">#<span class="hljs-keyword">define</span> EXTRACT_BIT(n,i) ((n&amp;(1&lt;&lt;i))?1:0)</span>
+
+<span class="hljs-type">void</span> check_circuit (<span class="hljs-type">int</span> id, <span class="hljs-type">int</span> z) &#123;
+   <span class="hljs-type">int</span> v[<span class="hljs-number">16</span>];        <span class="hljs-comment">/* Each element is a bit of z */</span>
+   <span class="hljs-type">int</span> i;
+
+   <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">16</span>; i++) v[i] = EXTRACT_BIT(z,i);
+
+   <span class="hljs-keyword">if</span> ((v[<span class="hljs-number">0</span>] || v[<span class="hljs-number">1</span>]) &amp;&amp; (!v[<span class="hljs-number">1</span>] || !v[<span class="hljs-number">3</span>]) &amp;&amp; (v[<span class="hljs-number">2</span>] || v[<span class="hljs-number">3</span>])
+      &amp;&amp; (!v[<span class="hljs-number">3</span>] || !v[<span class="hljs-number">4</span>]) &amp;&amp; (v[<span class="hljs-number">4</span>] || !v[<span class="hljs-number">5</span>])
+      &amp;&amp; (v[<span class="hljs-number">5</span>] || !v[<span class="hljs-number">6</span>]) &amp;&amp; (v[<span class="hljs-number">5</span>] || v[<span class="hljs-number">6</span>])
+      &amp;&amp; (v[<span class="hljs-number">6</span>] || !v[<span class="hljs-number">15</span>]) &amp;&amp; (v[<span class="hljs-number">7</span>] || !v[<span class="hljs-number">8</span>])
+      &amp;&amp; (!v[<span class="hljs-number">7</span>] || !v[<span class="hljs-number">13</span>]) &amp;&amp; (v[<span class="hljs-number">8</span>] || v[<span class="hljs-number">9</span>])
+      &amp;&amp; (v[<span class="hljs-number">8</span>] || !v[<span class="hljs-number">9</span>]) &amp;&amp; (!v[<span class="hljs-number">9</span>] || !v[<span class="hljs-number">10</span>])
+      &amp;&amp; (v[<span class="hljs-number">9</span>] || v[<span class="hljs-number">11</span>]) &amp;&amp; (v[<span class="hljs-number">10</span>] || v[<span class="hljs-number">11</span>])
+      &amp;&amp; (v[<span class="hljs-number">12</span>] || v[<span class="hljs-number">13</span>]) &amp;&amp; (v[<span class="hljs-number">13</span>] || !v[<span class="hljs-number">14</span>])
+      &amp;&amp; (v[<span class="hljs-number">14</span>] || v[<span class="hljs-number">15</span>])) &#123;
+      <span class="hljs-built_in">printf</span> (<span class="hljs-string">&quot;%d) %d%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d\n&quot;</span>, id,
+         v[<span class="hljs-number">0</span>],v[<span class="hljs-number">1</span>],v[<span class="hljs-number">2</span>],v[<span class="hljs-number">3</span>],v[<span class="hljs-number">4</span>],v[<span class="hljs-number">5</span>],v[<span class="hljs-number">6</span>],v[<span class="hljs-number">7</span>],v[<span class="hljs-number">8</span>],v[<span class="hljs-number">9</span>],
+         v[<span class="hljs-number">10</span>],v[<span class="hljs-number">11</span>],v[<span class="hljs-number">12</span>],v[<span class="hljs-number">13</span>],v[<span class="hljs-number">14</span>],v[<span class="hljs-number">15</span>]);
+      fflush (<span class="hljs-built_in">stdout</span>);
+   &#125;
+&#125;</code></pre></div>
 <h2 id="编译mpi程序">编译MPI程序</h2>
 <p><code>mpicc -O -o foo foo.c</code></p>
 <p>mpicc： 编写和链接 C+MPI 程序的脚本 标志：与C编译器的含义相同
@@ -448,15 +498,48 @@ band03.cs.ppu.edu band04.cs.ppu.edu</p>
 <blockquote>
 <p>1个CPU</p>
 </blockquote>
-<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs tex"><span class="hljs-comment">% mpirun -np 1 sat</span><br>0) 1010111110011001<br>0) 0110111110011001<br>0) 1110111110011001<br>0) 1010111111011001<br>0) 0110111111011001<br>0) 1110111111011001<br>0) 1010111110111001<br>0) 0110111110111001<br>0) 1110111110111001<br>Process 0 is done<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs tex"><span class="hljs-comment">% mpirun -np 1 sat</span>
+0) 1010111110011001
+0) 0110111110011001
+0) 1110111110011001
+0) 1010111111011001
+0) 0110111111011001
+0) 1110111111011001
+0) 1010111110111001
+0) 0110111110111001
+0) 1110111110111001
+Process 0 is done</code></pre></div>
 <blockquote>
 <p>两个CPU</p>
 </blockquote>
-<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs tex"><span class="hljs-comment">% mpirun -np 2 sat</span><br>0) 0110111110011001<br>0) 0110111111011001<br>0) 0110111110111001<br>1) 1010111110011001<br>1) 1110111110011001<br>1) 1010111111011001<br>1) 1110111111011001<br>1) 1010111110111001<br>1) 1110111110111001<br>Process 0 is done<br>Process 1 is done<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs tex"><span class="hljs-comment">% mpirun -np 2 sat</span>
+0) 0110111110011001
+0) 0110111111011001
+0) 0110111110111001
+1) 1010111110011001
+1) 1110111110011001
+1) 1010111111011001
+1) 1110111111011001
+1) 1010111110111001
+1) 1110111110111001
+Process 0 is done
+Process 1 is done</code></pre></div>
 <blockquote>
 <p>3个CPU</p>
 </blockquote>
-<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs tex"><span class="hljs-comment">% mpirun -np 3 sat</span><br>0) 0110111110011001<br>0) 1110111111011001<br>2) 1010111110011001<br>1) 1110111110011001<br>1) 1010111111011001<br>1) 0110111110111001<br>0) 1010111110111001<br>2) 0110111111011001<br>2) 1110111110111001<br>Process 1 is done<br>Process 2 is done<br>Process 0 is done<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs tex"><span class="hljs-comment">% mpirun -np 3 sat</span>
+0) 0110111110011001
+0) 1110111111011001
+2) 1010111110011001
+1) 1110111110011001
+1) 1010111111011001
+1) 0110111110111001
+0) 1010111110111001
+2) 0110111111011001
+2) 1110111110111001
+Process 1 is done
+Process 2 is done
+Process 0 is done</code></pre></div>
 <h3 id="解释输出">解释输出</h3>
 <ul>
 <li>输出清单仅部分反映并行计算机内的输出事件顺序</li>
@@ -481,15 +564,75 @@ B 消息之前显示</li>
 <li>在每一次循环之后进行规约</li>
 </ul>
 <h3 id="新的声明和代码">新的声明和代码</h3>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> count;  <span class="hljs-comment">/* Local sum */</span><br><span class="hljs-type">int</span> global_count; <span class="hljs-comment">/* Global sum */</span><br><span class="hljs-type">int</span> <span class="hljs-title function_">check_circuit</span> <span class="hljs-params">(<span class="hljs-type">int</span>, <span class="hljs-type">int</span>)</span>;<br>count = <span class="hljs-number">0</span>;<br><span class="hljs-keyword">for</span> (i = id; i &lt; <span class="hljs-number">65536</span>; i += p)<br>   count += check_circuit (id, i);<br></code></pre></td></tr></table></figure>
-<p>MPI_Reduce <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">MPI_Reduce</span> <span class="hljs-params">(<span class="hljs-type">void</span>         *operand,</span><br><span class="hljs-params">                <span class="hljs-comment">/* addr of 1st reduction element */</span></span><br><span class="hljs-params">                <span class="hljs-type">void</span>         *result,</span><br><span class="hljs-params">                <span class="hljs-comment">/* addr of 1st reduction result */</span>  </span><br><span class="hljs-params">                <span class="hljs-type">int</span>          count,</span><br><span class="hljs-params">                <span class="hljs-comment">/* reductions to perform */</span></span><br><span class="hljs-params">                MPI_Datatype type,</span><br><span class="hljs-params">                <span class="hljs-comment">/* type of elements */</span></span><br><span class="hljs-params">                MPI_Op       operator,</span><br><span class="hljs-params">                <span class="hljs-comment">/* reduction operator */</span></span><br><span class="hljs-params">  				 <span class="hljs-type">int</span>          root,</span><br><span class="hljs-params">                <span class="hljs-comment">/* process getting result(s) */</span></span><br><span class="hljs-params">   				MPI_Comm     comm</span><br><span class="hljs-params">                <span class="hljs-comment">/* communicator */</span></span><br><span class="hljs-params">)</span><br></code></pre></td></tr></table></figure></p>
-<p>MPI_DATATYPE OPTIONS <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs c">MPI_CHAR<br>MPI_DOUBLE<br>MPI_FLOAT<br>MPI_INT<br>MPI_LONG<br>MPI_LONG_DOUBLE<br>MPI_SHORT<br>MPI_UNSIGNED_CHAR<br>MPI_UNSIGNED<br>MPI_UNSIGNED_LONG<br>MPI_UNSIGNED_SHORT<br></code></pre></td></tr></table></figure></p>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">int</span> count;  <span class="hljs-comment">/* Local sum */</span>
+<span class="hljs-type">int</span> global_count; <span class="hljs-comment">/* Global sum */</span>
+<span class="hljs-type">int</span> <span class="hljs-title function_">check_circuit</span> <span class="hljs-params">(<span class="hljs-type">int</span>, <span class="hljs-type">int</span>)</span>;
+count = <span class="hljs-number">0</span>;
+<span class="hljs-keyword">for</span> (i = id; i &lt; <span class="hljs-number">65536</span>; i += p)
+   count += check_circuit (id, i);</code></pre></div>
+<p>MPI_Reduce <div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">MPI_Reduce</span> <span class="hljs-params">(<span class="hljs-type">void</span>         *operand,</span>
+<span class="hljs-params">                <span class="hljs-comment">/* addr of 1st reduction element */</span></span>
+<span class="hljs-params">                <span class="hljs-type">void</span>         *result,</span>
+<span class="hljs-params">                <span class="hljs-comment">/* addr of 1st reduction result */</span>  </span>
+<span class="hljs-params">                <span class="hljs-type">int</span>          count,</span>
+<span class="hljs-params">                <span class="hljs-comment">/* reductions to perform */</span></span>
+<span class="hljs-params">                MPI_Datatype type,</span>
+<span class="hljs-params">                <span class="hljs-comment">/* type of elements */</span></span>
+<span class="hljs-params">                MPI_Op       operator,</span>
+<span class="hljs-params">                <span class="hljs-comment">/* reduction operator */</span></span>
+<span class="hljs-params">  				 <span class="hljs-type">int</span>          root,</span>
+<span class="hljs-params">                <span class="hljs-comment">/* process getting result(s) */</span></span>
+<span class="hljs-params">   				MPI_Comm     comm</span>
+<span class="hljs-params">                <span class="hljs-comment">/* communicator */</span></span>
+<span class="hljs-params">)</span></code></pre></div></p>
+<p>MPI_DATATYPE OPTIONS <div class="code-wrapper"><pre><code class="hljs c">MPI_CHAR
+MPI_DOUBLE
+MPI_FLOAT
+MPI_INT
+MPI_LONG
+MPI_LONG_DOUBLE
+MPI_SHORT
+MPI_UNSIGNED_CHAR
+MPI_UNSIGNED
+MPI_UNSIGNED_LONG
+MPI_UNSIGNED_SHORT</code></pre></div></p>
 <p>MPI_OP OPTIONS</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs c">MPI_BAND<br>MPI_BOR<br>MPI_BXOR<br>MPI_LAND<br>MPI_LOR<br>MPI_LXOR<br>MPI_MAX<br>MPI_MAXLOC<br>MPI_MIN<br>MPI_MINLOC<br>MPI_PROD<br>MPI_SUM<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c">MPI_BAND
+MPI_BOR
+MPI_BXOR
+MPI_LAND
+MPI_LOR
+MPI_LXOR
+MPI_MAX
+MPI_MAXLOC
+MPI_MIN
+MPI_MINLOC
+MPI_PROD
+MPI_SUM</code></pre></div>
 <h3 id="调用mpi_reduce">调用MPI_Reduce</h3>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c">MPI_Reduce (&amp;count,<br>            &amp;global_count,<br>            <span class="hljs-number">1</span>,<br>            MPI_INT,<br>            MPI_SUM,<br>            <span class="hljs-number">0</span>,<span class="hljs-comment">//Only process 0 will get the result</span><br>            MPI_COMM_WORLD);<br><span class="hljs-keyword">if</span> (!id) <span class="hljs-built_in">printf</span> (<span class="hljs-string">&quot;There are %d different solutions\n&quot;</span>,global_count);<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c">MPI_Reduce (&amp;count,
+            &amp;global_count,
+            <span class="hljs-number">1</span>,
+            MPI_INT,
+            MPI_SUM,
+            <span class="hljs-number">0</span>,<span class="hljs-comment">//Only process 0 will get the result</span>
+            MPI_COMM_WORLD);
+<span class="hljs-keyword">if</span> (!id) <span class="hljs-built_in">printf</span> (<span class="hljs-string">&quot;There are %d different solutions\n&quot;</span>,global_count);</code></pre></div>
 <h3 id="执行第二个程序">执行第二个程序</h3>
-<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs tex"><span class="hljs-comment">% mpirun -np 3 seq2</span><br>0) 0110111110011001<br>0) 1110111111011001<br>1) 1110111110011001<br>1) 1010111111011001<br>2) 1010111110011001<br>2) 0110111111011001<br>2) 1110111110111001<br>1) 0110111110111001<br>0) 1010111110111001<br>Process 1 is done<br>Process 2 is done<br>Process 0 is done<br>There are 9 different solutions<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs tex"><span class="hljs-comment">% mpirun -np 3 seq2</span>
+0) 0110111110011001
+0) 1110111111011001
+1) 1110111110011001
+1) 1010111111011001
+2) 1010111110011001
+2) 0110111111011001
+2) 1110111110111001
+1) 0110111110111001
+0) 1010111110111001
+Process 1 is done
+Process 2 is done
+Process 0 is done
+There are 9 different solutions</code></pre></div>
 <h2 id="mpi基准测试程序">MPI基准测试程序</h2>
 <ul>
 <li>MPI_Barrier - barrier synchronization（障碍同步）</li>
@@ -509,7 +652,13 @@ CPU time（挂钟时间vsCPU时间）</h3>
 <li>/usr/bin/time</li>
 </ul>
 <h3 id="基准测试代码">基准测试代码</h3>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">double</span> elapsed_time;<br>MPI_Init (&amp;argc, &amp;argv);<br>MPI_Barrier (MPI_COMM_WORLD);<br>elapsed_time = - MPI_Wtime();<br>…<br>MPI_Reduce (…);<br>elapsed_time += MPI_Wtime();<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">double</span> elapsed_time;
+MPI_Init (&amp;argc, &amp;argv);
+MPI_Barrier (MPI_COMM_WORLD);
+elapsed_time = - MPI_Wtime();
+…
+MPI_Reduce (…);
+elapsed_time += MPI_Wtime();</code></pre></div>
 <h3 id="基准测试结果">基准测试结果</h3>
 <table>
 <thead>

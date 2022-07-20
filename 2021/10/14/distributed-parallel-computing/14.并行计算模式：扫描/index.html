@@ -226,7 +226,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          3.8k 字
+          3.7k 字
         
       </span>
     
@@ -298,9 +298,13 @@
 <h3 id="scan的典型应用">Scan的典型应用</h3>
 <p>Scan是一个简单并且有用的并行构筑模块</p>
 <p>将顺序递归转换为:</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> j=<span class="hljs-number">1</span>;j&lt;n;j++)<br>	output[j]=output[j<span class="hljs-number">-1</span>]+f(j);<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> j=<span class="hljs-number">1</span>;j&lt;n;j++)
+	output[j]=output[j<span class="hljs-number">-1</span>]+f(j);</code></pre></div>
 <p>进入并行</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c">forall(j)&#123;<br>	temp[j]=f(j)<br>&#125;;<br>scan(out, temp);<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c">forall(j)&#123;
+	temp[j]=f(j)
+&#125;;
+scan(out, temp);</code></pre></div>
 <ul>
 <li>受益的并行算法：</li>
 </ul>
@@ -315,15 +319,21 @@ memory to parallel threads Allocating memory bugger space for
 communication channels…</p>
 <h3 id="全面顺序扫描算法">全面顺序扫描算法</h3>
 <p>给定一个序列：<code>[x0, x1, x2, ... ]</code>，计算输出<code>[y0, y1, y2, ... ]</code>，例如</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs c">y0 = x0<br>y1 = x0 + x1<br>y2 = x0 + x1+ x2....<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c">y0 = x0
+y1 = x0 + x1
+y2 = x0 + x1+ x2....</code></pre></div>
 <p>使用递归的定义：<code>yi = yi − 1 + xi</code></p>
 <h4 id="高效的c实现">高效的C实现</h4>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs c">y[<span class="hljs-number">0</span>]=x[<span class="hljs-number">0</span>]<br><span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i=<span class="hljs-number">1</span>; i &lt; max_i; i++)<br>	y[i]=y[i<span class="hljs-number">-1</span>]+x[i]<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c">y[<span class="hljs-number">0</span>]=x[<span class="hljs-number">0</span>]
+<span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i=<span class="hljs-number">1</span>; i &lt; max_i; i++)
+	y[i]=y[i<span class="hljs-number">-1</span>]+x[i]</code></pre></div>
 <p>Computationally efficient：计算效率高，只是比顺序规约稍微贵一点
 N个元素需要N次加法运算，O(N)</p>
 <h4 id="简单的全面并行扫描">简单的全面并行扫描</h4>
 <p>给每个y的计算分配一个thread(线程)，让每个thread将计算这个y所需要的x相加</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs c">y0 = x0<br>y1 = x0 + x1<br>y2 = x0 + x1+ x2....<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c">y0 = x0
+y1 = x0 + x1
+y2 = x0 + x1+ x2....</code></pre></div>
 <blockquote>
 <p>并行计算在不考虑性能的时候十分简单</p>
 </blockquote>
@@ -352,7 +362,20 @@ alt="201" />
 <li>所有线程执行加法和写输出操作</li>
 </ul>
 <h2 id="低效的并行扫描内核">低效的并行扫描内核</h2>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs c">__global__ <span class="hljs-type">void</span> <span class="hljs-title function_">work_inefficient_scan_kernel</span><span class="hljs-params">(<span class="hljs-type">float</span> *X, <span class="hljs-type">float</span> *Y, <span class="hljs-type">int</span> InputSize)</span> &#123;<br>    __shared__ <span class="hljs-type">float</span> XY[SECTION_SIZE];<br>    <span class="hljs-type">int</span> i = blockIdx.x * blockDim.x + threadIdx.x;<br>    <span class="hljs-keyword">if</span> (i &lt; InputSize) &#123;XY[threadIdx.x] = X[i];&#125;<br>        <span class="hljs-comment">// the code below performs iterative scan on XY</span><br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> stride = <span class="hljs-number">1</span>; stride &lt;= threadIdx.x; stride *= <span class="hljs-number">2</span>) &#123;<br>        __syncthreads();<br>            <span class="hljs-type">float</span> in1 = XY[threadIdx.x - stride];<br>            __syncthreads();<br>            XY[threadIdx.x] += in1;<br>        &#125;<br>      __ <span class="hljs-title function_">syncthreads</span><span class="hljs-params">()</span>;<br>      If (i &lt; InputSize) &#123;Y[i] = XY[threadIdx.x];&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c">__global__ <span class="hljs-type">void</span> <span class="hljs-title function_">work_inefficient_scan_kernel</span><span class="hljs-params">(<span class="hljs-type">float</span> *X, <span class="hljs-type">float</span> *Y, <span class="hljs-type">int</span> InputSize)</span> &#123;
+    __shared__ <span class="hljs-type">float</span> XY[SECTION_SIZE];
+    <span class="hljs-type">int</span> i = blockIdx.x * blockDim.x + threadIdx.x;
+    <span class="hljs-keyword">if</span> (i &lt; InputSize) &#123;XY[threadIdx.x] = X[i];&#125;
+        <span class="hljs-comment">// the code below performs iterative scan on XY</span>
+        <span class="hljs-keyword">for</span> (<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> stride = <span class="hljs-number">1</span>; stride &lt;= threadIdx.x; stride *= <span class="hljs-number">2</span>) &#123;
+        __syncthreads();
+            <span class="hljs-type">float</span> in1 = XY[threadIdx.x - stride];
+            __syncthreads();
+            XY[threadIdx.x] += in1;
+        &#125;
+      __ <span class="hljs-title function_">syncthreads</span><span class="hljs-params">()</span>;
+      If (i &lt; InputSize) &#123;Y[i] = XY[threadIdx.x];&#125;
+&#125;</code></pre></div>
 <h3 id="高效工作的考虑">高效工作的考虑</h3>
 <p>Scan 操作log(n)次并行迭代</p>
 <ul>
@@ -391,7 +414,13 @@ alt="202" />
 <figcaption aria-hidden="true">202</figcaption>
 </figure>
 <h3 id="规约阶段内核代码">规约阶段内核代码</h3>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// XY[2*BLOCK_SIZE] is in shared memory</span><br><span class="hljs-keyword">for</span> (<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> stride = <span class="hljs-number">1</span>;stride &lt;= BLOCK_SIZE; stride *= <span class="hljs-number">2</span>) &#123;<br>    <span class="hljs-type">int</span> index = (threadIdx.x+<span class="hljs-number">1</span>)*stride*<span class="hljs-number">2</span> - <span class="hljs-number">1</span>;<br>    <span class="hljs-keyword">if</span>(index &lt; <span class="hljs-number">2</span>*BLOCK_SIZE)<br>        XY[index] += XY[index-stride];<br>    __syncthreads();<br>&#125;<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-comment">// XY[2*BLOCK_SIZE] is in shared memory</span>
+<span class="hljs-keyword">for</span> (<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> stride = <span class="hljs-number">1</span>;stride &lt;= BLOCK_SIZE; stride *= <span class="hljs-number">2</span>) &#123;
+    <span class="hljs-type">int</span> index = (threadIdx.x+<span class="hljs-number">1</span>)*stride*<span class="hljs-number">2</span> - <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">if</span>(index &lt; <span class="hljs-number">2</span>*BLOCK_SIZE)
+        XY[index] += XY[index-stride];
+    __syncthreads();
+&#125;</code></pre></div>
 <blockquote>
 <p>threadIdx.x+1 = 1, 2, 3, 4…. stride = 1, index = 1, 3, 5, 7, …</p>
 </blockquote>
@@ -402,7 +431,15 @@ alt="203" />
 <figcaption aria-hidden="true">203</figcaption>
 </figure>
 <h3 id="反向规约内核代码">反向规约内核代码</h3>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">for</span> (<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> stride = BLOCK_SIZE/<span class="hljs-number">2</span>; stride &gt; <span class="hljs-number">0</span>; stride /= <span class="hljs-number">2</span>) &#123;<br>    __syncthreads();<br>    <span class="hljs-type">int</span> index = (threadIdx.x+<span class="hljs-number">1</span>)*stride*<span class="hljs-number">2</span> - <span class="hljs-number">1</span>;<br>    <span class="hljs-keyword">if</span>(index+stride &lt; <span class="hljs-number">2</span>*BLOCK_SIZE) &#123;<br>      	XY[index + stride] += XY[index];<br>     &#125;<br>  &#125;<br>   __syncthreads();<br>  <span class="hljs-keyword">if</span> (i &lt; InputSize) Y[i] = XY[threadIdx.x];<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-keyword">for</span> (<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> stride = BLOCK_SIZE/<span class="hljs-number">2</span>; stride &gt; <span class="hljs-number">0</span>; stride /= <span class="hljs-number">2</span>) &#123;
+    __syncthreads();
+    <span class="hljs-type">int</span> index = (threadIdx.x+<span class="hljs-number">1</span>)*stride*<span class="hljs-number">2</span> - <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">if</span>(index+stride &lt; <span class="hljs-number">2</span>*BLOCK_SIZE) &#123;
+      	XY[index + stride] += XY[index];
+     &#125;
+  &#125;
+   __syncthreads();
+  <span class="hljs-keyword">if</span> (i &lt; InputSize) Y[i] = XY[threadIdx.x];</code></pre></div>
 <blockquote>
 <p>First iteration for 16-element section threadIdx.x = 0 stride =
 BLOCK_SIZE/2 = 8/2 = 4 index = 8-1 = 7</p>

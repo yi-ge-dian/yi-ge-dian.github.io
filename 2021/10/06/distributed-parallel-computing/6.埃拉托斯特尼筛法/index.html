@@ -18,12 +18,12 @@
   <meta name="author" content="yi-ge-dian">
   <meta name="keywords" content="">
   
-    <meta name="description" content="串行算法 输入N。 输出0 到 N之间的所有素数。 埃拉托斯特尼筛法伪代码： 12345671. Create list of unmarked natural numbers 2, 3, …, n2. k←23. Repeat	(a) Mark all multiples of k between k^2 and n	(b) k ←smallest unmarked number &gt; k">
+    <meta name="description" content="串行算法 输入N。 输出0 到 N之间的所有素数。 埃拉托斯特尼筛法伪代码： 1. Create list of unmarked natural numbers 2, 3, …, n 2. k←2 3. Repeat 	(a) Mark all multiples of k between k^2 and n 	(b) k ←smallest unmarked number &gt; k">
 <meta property="og:type" content="article">
 <meta property="og:title" content="第六章：埃拉托斯特尼筛法">
 <meta property="og:url" content="http://onepoint.link/2021/10/06/distributed-parallel-computing/6.%E5%9F%83%E6%8B%89%E6%89%98%E6%96%AF%E7%89%B9%E5%B0%BC%E7%AD%9B%E6%B3%95/index.html">
 <meta property="og:site_name" content="onepoint">
-<meta property="og:description" content="串行算法 输入N。 输出0 到 N之间的所有素数。 埃拉托斯特尼筛法伪代码： 12345671. Create list of unmarked natural numbers 2, 3, …, n2. k←23. Repeat	(a) Mark all multiples of k between k^2 and n	(b) k ←smallest unmarked number &gt; k">
+<meta property="og:description" content="串行算法 输入N。 输出0 到 N之间的所有素数。 埃拉托斯特尼筛法伪代码： 1. Create list of unmarked natural numbers 2, 3, …, n 2. k←2 3. Repeat 	(a) Mark all multiples of k between k^2 and n 	(b) k ←smallest unmarked number &gt; k">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/parallel.jpeg">
 <meta property="article:published_time" content="2021-10-05T16:00:00.000Z">
@@ -226,7 +226,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          8.9k 字
+          8.4k 字
         
       </span>
     
@@ -237,7 +237,7 @@
         
         
         
-          75 分钟
+          71 分钟
         
       </span>
     
@@ -284,7 +284,13 @@
 <p>输入N。</p>
 <p>输出0 到 N之间的所有素数。</p>
 <p>埃拉托斯特尼筛法伪代码：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-number">1.</span> Create <span class="hljs-built_in">list</span> of unmarked natural numbers <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, …, n<br><span class="hljs-number">2.</span> k←<span class="hljs-number">2</span><br><span class="hljs-number">3.</span> Repeat<br>	(a) Mark all multiples of k between k^<span class="hljs-number">2</span> and <span class="hljs-title function_">n</span><br>	<span class="hljs-params">(b)</span> k ←smallest unmarked number &gt; k<br>    until k2 &gt; n<br>4. The unmarked numbers are primes<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-number">1.</span> Create <span class="hljs-built_in">list</span> of unmarked natural numbers <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, …, n
+<span class="hljs-number">2.</span> k←<span class="hljs-number">2</span>
+<span class="hljs-number">3.</span> Repeat
+	(a) Mark all multiples of k between k^<span class="hljs-number">2</span> and <span class="hljs-title function_">n</span>
+	<span class="hljs-params">(b)</span> k ←smallest unmarked number &gt; k
+    until k2 &gt; n
+4. The unmarked numbers are primes</code></pre></div>
 <p>上述算法的时间复杂度为Θ(n ln lnn);</p>
 <h2 id="并行性源头">并行性源头</h2>
 <p>区域分解</p>
@@ -295,9 +301,14 @@
 <p>每个数组的原始任务</p>
 <h3 id="制造并行">制造并行</h3>
 <p><code>Mark all multiples of k between k^2 and n</code>可以变为</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">for</span> all j where k2≤j ≤ n <span class="hljs-keyword">do</span><br>   <span class="hljs-keyword">if</span> j mod k = <span class="hljs-number">0</span> then<br>      mark j (it is not a prime)<br>   endif<br>endfor<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-keyword">for</span> all j where k2≤j ≤ n <span class="hljs-keyword">do</span>
+   <span class="hljs-keyword">if</span> j mod k = <span class="hljs-number">0</span> then
+      mark j (it is not a prime)
+   endif
+endfor</code></pre></div>
 <p><code>smallest unmarked number &gt; k</code>可以变为</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs c">Min-reduction (to find smallest unmarked number &gt; k)<br>Broadcast (to get result to all tasks)<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c">Min-reduction (to find smallest unmarked number &gt; k)
+Broadcast (to get result to all tasks)</code></pre></div>
 <h3 id="聚集的目标">聚集的目标</h3>
 <ul>
 <li>合并任务</li>
@@ -326,7 +337,11 @@
 </ul>
 <h3 id="方法">方法</h3>
 <h4 id="第一个方法">第一个方法</h4>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c">Let r = n mod p<br>If r = <span class="hljs-number">0</span>, all blocks have same size<br>Else<br>	First r blocks have size n/p的向上取整<br>	Remaining p-r blocks have size n/p的向下取整<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c">Let r = n mod p
+If r = <span class="hljs-number">0</span>, all blocks have same size
+Else
+	First r blocks have size n/p的向上取整
+	Remaining p-r blocks have size n/p的向下取整</code></pre></div>
 <p>例子:</p>
 <p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/89.png" srcset="/img/loading.gif" lazyload alt="89" style="zoom:67%;" /></p>
 <p>计算：↑[...]:代表向上取整，↓[...]:代表向下取整</p>
@@ -371,14 +386,28 @@
 <p>测试：说明块分解方法2如何在 5 个进程中划分 13 个元素。</p>
 <p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/91.png" srcset="/img/loading.gif" lazyload alt="91" style="zoom:67%;" /></p>
 <h3 id="块分解宏命令">块分解宏命令</h3>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">define</span> BLOCK_LOW(id,p,n)  ((i)*(n)/(p))</span><br><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> BLOCK_HIGH(id,p,n) \</span><br><span class="hljs-meta">        (BLOCK_LOW((id)+1,p,n)-1)</span><br><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> BLOCK_SIZE(id,p,n) \</span><br><span class="hljs-meta">        (BLOCK_LOW((id)+1)-BLOCK_LOW(id))</span><br><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> BLOCK_OWNER(index,p,n) \</span><br><span class="hljs-meta">        (((p)*(index)+1)-1)/(n))</span><br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">define</span> BLOCK_LOW(id,p,n)  ((i)*(n)/(p))</span>
+
+<span class="hljs-meta">#<span class="hljs-keyword">define</span> BLOCK_HIGH(id,p,n) \</span>
+<span class="hljs-meta">        (BLOCK_LOW((id)+1,p,n)-1)</span>
+
+<span class="hljs-meta">#<span class="hljs-keyword">define</span> BLOCK_SIZE(id,p,n) \</span>
+<span class="hljs-meta">        (BLOCK_LOW((id)+1)-BLOCK_LOW(id))</span>
+
+<span class="hljs-meta">#<span class="hljs-keyword">define</span> BLOCK_OWNER(index,p,n) \</span>
+<span class="hljs-meta">        (((p)*(index)+1)-1)/(n))</span></code></pre></div>
 <h3 id="本地与全局索引">本地与全局索引</h3>
 <p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/92.png" srcset="/img/loading.gif" lazyload alt="92" style="zoom: 67%;" /></p>
 <h3 id="循环元素">循环元素</h3>
 <p>串行：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; n; i++) &#123;<br>   …<br>&#125;<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; n; i++) &#123;
+   …
+&#125;</code></pre></div>
 <p>并行：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c">size = BLOCK_SIZE (id,p,n);<br><span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; size; i++) &#123;<span class="hljs-comment">//i:Index i on this process</span><br>   gi = i + BLOCK_LOW(id,p,n);<span class="hljs-comment">//gi:takes place of sequential program&#x27;s index</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c">size = BLOCK_SIZE (id,p,n);
+<span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; size; i++) &#123;<span class="hljs-comment">//i:Index i on this process</span>
+   gi = i + BLOCK_LOW(id,p,n);<span class="hljs-comment">//gi:takes place of sequential program&#x27;s index</span>
+&#125;</code></pre></div>
 <h3 id="分解影响实现">分解影响实现</h3>
 <ul>
 <li><p>用于筛选的最大素数为<code>√n</code></p>
@@ -397,11 +426,18 @@
 </ul>
 <h3 id="快速标记">快速标记</h3>
 <p>块分解允许与序列算法相同的标记<code>:j, j+k, j+2k, j+3k，…</code>来代替</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">for</span> all j in block<br>		<span class="hljs-keyword">if</span> j mod k = <span class="hljs-number">0</span> then mark j (it is not a prime)<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-keyword">for</span> all j in block
+		<span class="hljs-keyword">if</span> j mod k = <span class="hljs-number">0</span> then mark j (it is not a prime)</code></pre></div>
 <h2 id="并行算法开发与分析">并行算法开发与分析</h2>
 <p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/93.png" srcset="/img/loading.gif" lazyload alt="93" style="zoom: 67%;" /></p>
 <h3 id="函数mpi_bcast">函数MPI_BCAST</h3>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">MPI_Bcast</span> <span class="hljs-params">(</span><br><span class="hljs-params">   <span class="hljs-type">void</span> *buffer, <span class="hljs-comment">/* Addr of 1st element */</span></span><br><span class="hljs-params">   <span class="hljs-type">int</span> count,    <span class="hljs-comment">/* # elements to broadcast */</span></span><br><span class="hljs-params">   MPI_Datatype datatype, <span class="hljs-comment">/* Type of elements */</span></span><br><span class="hljs-params">   <span class="hljs-type">int</span> root,     <span class="hljs-comment">/* ID of root process */</span></span><br><span class="hljs-params">   MPI_Comm comm)</span>  <span class="hljs-comment">/* Communicator */</span><br>   <span class="hljs-title function_">MPI_Bcast</span> <span class="hljs-params">(&amp;k, <span class="hljs-number">1</span>, MPI_INT, <span class="hljs-number">0</span>, MPI_COMM_WORLD)</span>;<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">MPI_Bcast</span> <span class="hljs-params">(</span>
+<span class="hljs-params">   <span class="hljs-type">void</span> *buffer, <span class="hljs-comment">/* Addr of 1st element */</span></span>
+<span class="hljs-params">   <span class="hljs-type">int</span> count,    <span class="hljs-comment">/* # elements to broadcast */</span></span>
+<span class="hljs-params">   MPI_Datatype datatype, <span class="hljs-comment">/* Type of elements */</span></span>
+<span class="hljs-params">   <span class="hljs-type">int</span> root,     <span class="hljs-comment">/* ID of root process */</span></span>
+<span class="hljs-params">   MPI_Comm comm)</span>  <span class="hljs-comment">/* Communicator */</span>
+   <span class="hljs-title function_">MPI_Bcast</span> <span class="hljs-params">(&amp;k, <span class="hljs-number">1</span>, MPI_INT, <span class="hljs-number">0</span>, MPI_COMM_WORLD)</span>;</code></pre></div>
 <h3 id="任务通道图">任务/通道图</h3>
 <p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/94.png" srcset="/img/loading.gif" lazyload alt="94" style="zoom: 50%;" /></p>
 <h3 id="分析">分析</h3>
@@ -410,7 +446,72 @@
 通信一次的时间：<code>λ↑[log p]</code>
 期待的执行时间：<code>x nln ln n/p+(√n / ln √n)λ↑[log p]</code></p>
 <h2 id="mpi程序">MPI程序</h2>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;mpi.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;math.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;MyMPI.h&quot;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> MIN(a,b)  ((a)&lt;(b)?(a):(b))</span><br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span> <span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span> *argv[])</span><br>&#123;<br>   ...<br>   MPI_Init (&amp;argc, &amp;argv);<br>   MPI_Barrier(MPI_COMM_WORLD);<br>   elapsed_time = -MPI_Wtime();<br>   MPI_Comm_rank (MPI_COMM_WORLD, &amp;id);<br>   MPI_Comm_size (MPI_COMM_WORLD, &amp;p);<br><span class="hljs-keyword">if</span> (argc != <span class="hljs-number">2</span>) &#123;<br>      <span class="hljs-keyword">if</span> (!id) <span class="hljs-built_in">printf</span> (<span class="hljs-string">&quot;Command line: %s &lt;m&gt;\n&quot;</span>, argv[<span class="hljs-number">0</span>]);<br>      MPI_Finalize(); <span class="hljs-built_in">exit</span> (<span class="hljs-number">1</span>);<br>&#125;<br>   n = atoi(argv[<span class="hljs-number">1</span>]);<br>   low_value = <span class="hljs-number">2</span> + BLOCK_LOW(id,p,n<span class="hljs-number">-1</span>);<br>   high_value = <span class="hljs-number">2</span> + BLOCK_HIGH(id,p,n<span class="hljs-number">-1</span>);<br>   size = BLOCK_SIZE(id,p,n<span class="hljs-number">-1</span>);<br>   proc0_size = (n<span class="hljs-number">-1</span>)/p;<br>   <span class="hljs-keyword">if</span> ((<span class="hljs-number">2</span> + proc0_size) &lt; (<span class="hljs-type">int</span>) <span class="hljs-built_in">sqrt</span>((<span class="hljs-type">double</span>) n)) &#123;<br>      <span class="hljs-keyword">if</span> (!id) <span class="hljs-built_in">printf</span> (<span class="hljs-string">&quot;Too many processes\n&quot;</span>);<br>      MPI_Finalize();<br>      <span class="hljs-built_in">exit</span> (<span class="hljs-number">1</span>);<br>   &#125;<br><br>   marked = (<span class="hljs-type">char</span> *) <span class="hljs-built_in">malloc</span> (size);<br>   <span class="hljs-keyword">if</span> (marked == <span class="hljs-literal">NULL</span>) &#123;<br>      <span class="hljs-built_in">printf</span> (<span class="hljs-string">&quot;Cannot allocate enough memory\n&quot;</span>);<br>      MPI_Finalize();<br>      <span class="hljs-built_in">exit</span> (<span class="hljs-number">1</span>);<br>   &#125;<br>   <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; size; i++) marked[i] = <span class="hljs-number">0</span>;<br>   <span class="hljs-keyword">if</span> (!id) index = <span class="hljs-number">0</span>;<br>   prime = <span class="hljs-number">2</span>;<br>   <span class="hljs-keyword">do</span> &#123;<br>      <span class="hljs-keyword">if</span> (prime * prime &gt; low_value)<br>         first = prime * prime - low_value;<br>      <span class="hljs-keyword">else</span> &#123;<br>         <span class="hljs-keyword">if</span> (!(low_value % prime)) first = <span class="hljs-number">0</span>;<br>         <span class="hljs-keyword">else</span> first = prime - (low_value % prime);<br>      &#125;<br>      <span class="hljs-keyword">for</span> (i = first; i &lt; size; i += prime) marked[i] = <span class="hljs-number">1</span>;<br>      <span class="hljs-keyword">if</span> (!id) &#123;<br>         <span class="hljs-keyword">while</span> (marked[++index]);<span class="hljs-comment">/*find the smallest unmarked*/</span><br>         prime = index + <span class="hljs-number">2</span>;<br>      &#125;<br>      MPI_Bcast (&amp;prime,  <span class="hljs-number">1</span>, MPI_INT, <span class="hljs-number">0</span>, MPI_COMM_WORLD);<br>   &#125; <span class="hljs-keyword">while</span> (prime * prime &lt;= n);<br>   count = <span class="hljs-number">0</span>;<br>   <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; size; i++)<br>      <span class="hljs-keyword">if</span> (!marked[i]) count++;<br>   MPI_Reduce (&amp;count, &amp;global_count, <span class="hljs-number">1</span>, MPI_INT, MPI_SUM,<br>      <span class="hljs-number">0</span>, MPI_COMM_WORLD);<br>   elapsed_time += MPI_Wtime();<br>   <span class="hljs-keyword">if</span> (!id) &#123;<br>      <span class="hljs-built_in">printf</span> (<span class="hljs-string">&quot;%d primes are less than or equal to %d\n&quot;</span>,<br>         global_count, n);<br>      <span class="hljs-built_in">printf</span> (<span class="hljs-string">&quot;Total elapsed time: %10.6f\n&quot;</span>, elapsed_time);<br>   &#125;<br>   MPI_Finalize ();<br>   <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;mpi.h&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;math.h&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span>
+<span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;MyMPI.h&quot;</span></span>
+<span class="hljs-meta">#<span class="hljs-keyword">define</span> MIN(a,b)  ((a)&lt;(b)?(a):(b))</span>
+
+<span class="hljs-type">int</span> <span class="hljs-title function_">main</span> <span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span> *argv[])</span>
+&#123;
+   ...
+   MPI_Init (&amp;argc, &amp;argv);
+   MPI_Barrier(MPI_COMM_WORLD);
+   elapsed_time = -MPI_Wtime();
+   MPI_Comm_rank (MPI_COMM_WORLD, &amp;id);
+   MPI_Comm_size (MPI_COMM_WORLD, &amp;p);
+<span class="hljs-keyword">if</span> (argc != <span class="hljs-number">2</span>) &#123;
+      <span class="hljs-keyword">if</span> (!id) <span class="hljs-built_in">printf</span> (<span class="hljs-string">&quot;Command line: %s &lt;m&gt;\n&quot;</span>, argv[<span class="hljs-number">0</span>]);
+      MPI_Finalize(); <span class="hljs-built_in">exit</span> (<span class="hljs-number">1</span>);
+&#125;
+   n = atoi(argv[<span class="hljs-number">1</span>]);
+   low_value = <span class="hljs-number">2</span> + BLOCK_LOW(id,p,n<span class="hljs-number">-1</span>);
+   high_value = <span class="hljs-number">2</span> + BLOCK_HIGH(id,p,n<span class="hljs-number">-1</span>);
+   size = BLOCK_SIZE(id,p,n<span class="hljs-number">-1</span>);
+   proc0_size = (n<span class="hljs-number">-1</span>)/p;
+   <span class="hljs-keyword">if</span> ((<span class="hljs-number">2</span> + proc0_size) &lt; (<span class="hljs-type">int</span>) <span class="hljs-built_in">sqrt</span>((<span class="hljs-type">double</span>) n)) &#123;
+      <span class="hljs-keyword">if</span> (!id) <span class="hljs-built_in">printf</span> (<span class="hljs-string">&quot;Too many processes\n&quot;</span>);
+      MPI_Finalize();
+      <span class="hljs-built_in">exit</span> (<span class="hljs-number">1</span>);
+   &#125;
+
+   marked = (<span class="hljs-type">char</span> *) <span class="hljs-built_in">malloc</span> (size);
+   <span class="hljs-keyword">if</span> (marked == <span class="hljs-literal">NULL</span>) &#123;
+      <span class="hljs-built_in">printf</span> (<span class="hljs-string">&quot;Cannot allocate enough memory\n&quot;</span>);
+      MPI_Finalize();
+      <span class="hljs-built_in">exit</span> (<span class="hljs-number">1</span>);
+   &#125;
+   <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; size; i++) marked[i] = <span class="hljs-number">0</span>;
+   <span class="hljs-keyword">if</span> (!id) index = <span class="hljs-number">0</span>;
+   prime = <span class="hljs-number">2</span>;
+   <span class="hljs-keyword">do</span> &#123;
+      <span class="hljs-keyword">if</span> (prime * prime &gt; low_value)
+         first = prime * prime - low_value;
+      <span class="hljs-keyword">else</span> &#123;
+         <span class="hljs-keyword">if</span> (!(low_value % prime)) first = <span class="hljs-number">0</span>;
+         <span class="hljs-keyword">else</span> first = prime - (low_value % prime);
+      &#125;
+      <span class="hljs-keyword">for</span> (i = first; i &lt; size; i += prime) marked[i] = <span class="hljs-number">1</span>;
+      <span class="hljs-keyword">if</span> (!id) &#123;
+         <span class="hljs-keyword">while</span> (marked[++index]);<span class="hljs-comment">/*find the smallest unmarked*/</span>
+         prime = index + <span class="hljs-number">2</span>;
+      &#125;
+      MPI_Bcast (&amp;prime,  <span class="hljs-number">1</span>, MPI_INT, <span class="hljs-number">0</span>, MPI_COMM_WORLD);
+   &#125; <span class="hljs-keyword">while</span> (prime * prime &lt;= n);
+   count = <span class="hljs-number">0</span>;
+   <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; size; i++)
+      <span class="hljs-keyword">if</span> (!marked[i]) count++;
+   MPI_Reduce (&amp;count, &amp;global_count, <span class="hljs-number">1</span>, MPI_INT, MPI_SUM,
+      <span class="hljs-number">0</span>, MPI_COMM_WORLD);
+   elapsed_time += MPI_Wtime();
+   <span class="hljs-keyword">if</span> (!id) &#123;
+      <span class="hljs-built_in">printf</span> (<span class="hljs-string">&quot;%d primes are less than or equal to %d\n&quot;</span>,
+         global_count, n);
+      <span class="hljs-built_in">printf</span> (<span class="hljs-string">&quot;Total elapsed time: %10.6f\n&quot;</span>, elapsed_time);
+   &#125;
+   MPI_Finalize ();
+   <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+&#125;</code></pre></div>
 <h2 id="基准测试">基准测试</h2>
 <ul>
 <li>执行顺序方法：决定x=85.47 nanosec</li>
@@ -475,19 +576,197 @@
 <li>将计算次数减半</li>
 <li>为较大的n值可以进行自由的存储</li>
 </ul>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> N = (n - <span class="hljs-number">1</span>) / <span class="hljs-number">2</span>;<br>low_index = id * (N / p) + MIN(id, N % p); <span class="hljs-comment">// 进程的第一个数的索引</span><br>high_index = (id + <span class="hljs-number">1</span>) * (N / p) + MIN(id + <span class="hljs-number">1</span>, N % p) - <span class="hljs-number">1</span>; <span class="hljs-comment">// 进程的最后一个数的索引</span><br>low_value = low_index * <span class="hljs-number">2</span> + <span class="hljs-number">3</span>; <span class="hljs-comment">//进程的第一个数</span><br>high_value = (high_index + <span class="hljs-number">1</span>) * <span class="hljs-number">2</span> + <span class="hljs-number">1</span>;<span class="hljs-comment">//进程的最后一个数</span><br>size = (high_value - low_value) / <span class="hljs-number">2</span> + <span class="hljs-number">1</span>;    <span class="hljs-comment">//进程处理的数组大小</span><br>   <br><span class="hljs-keyword">do</span> &#123;<br>   <span class="hljs-comment">/*确定该进程中素数的第一个倍数的下标 */</span><br>   <span class="hljs-comment">// 如果该素数n*n&gt;low_value，n*(n-i)都被标记了</span><br>   <span class="hljs-comment">// 即n*n为该进程中的第一个素数</span><br>   <span class="hljs-comment">// 其下标为n*n-low_value，并且由于数组大小减半所以除以2</span><br>   <span class="hljs-keyword">if</span> (prime * prime &gt; low_value) &#123;<br>   	   first = (prime * prime - low_value) / <span class="hljs-number">2</span>;<br>   &#125; <span class="hljs-keyword">else</span> &#123;<br>       <span class="hljs-comment">// 若最小值low_value为该素数的倍数</span><br>       <span class="hljs-comment">// 则第一个倍数为low_value，即其下标为0</span><br>       <span class="hljs-keyword">if</span> (!(low_value % prime)) first = <span class="hljs-number">0</span>;<br>       <span class="hljs-comment">// 若最小值low_value不是该素数的倍数</span><br>       <span class="hljs-comment">// 但是其余数为偶数，那么第一个非素数的索引为该素数剪去求余除以2</span><br>       <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (low_value % prime % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>) first = prime - ((low_value % prime) / <span class="hljs-number">2</span>);<br>       <span class="hljs-comment">// 若最小值low_value不是该素数的倍数</span><br>       <span class="hljs-comment">// 那么第一个倍数的下标为该素数减去余数的值，并且由于数组大小减半所以除以2</span><br>       <span class="hljs-keyword">else</span> first = (prime - (low_value % prime)) / <span class="hljs-number">2</span>;<br>   &#125;<br>    <span class="hljs-comment">// 从第一个素数开始，标记该素数的倍数为非素数</span><br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = first; i &lt; size; i += prime) marked[i] = <span class="hljs-number">1</span>;<br><br>    <span class="hljs-comment">// 只有id=0的进程才调用，用于找到下一素数的位置</span><br>    <span class="hljs-keyword">if</span> (!id) &#123;<br>        <span class="hljs-keyword">while</span> (marked[++index]);<br>        prime = index * <span class="hljs-number">2</span> + <span class="hljs-number">3</span>; <span class="hljs-comment">// 起始加偏移</span><br>    &#125;<br>    <span class="hljs-comment">// 只有id=0的进程才调用，用于将下一个素数广播出去</span><br>    <span class="hljs-keyword">if</span> (p &gt; <span class="hljs-number">1</span>) &#123;<br>        MPI_Bcast(&amp;prime, <span class="hljs-number">1</span>, MPI_INT, <span class="hljs-number">0</span>, MPI_COMM_WORLD);<br>    &#125;<br>&#125; <span class="hljs-keyword">while</span> (prime * prime &lt;= n);<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">int</span> N = (n - <span class="hljs-number">1</span>) / <span class="hljs-number">2</span>;
+low_index = id * (N / p) + MIN(id, N % p); <span class="hljs-comment">// 进程的第一个数的索引</span>
+high_index = (id + <span class="hljs-number">1</span>) * (N / p) + MIN(id + <span class="hljs-number">1</span>, N % p) - <span class="hljs-number">1</span>; <span class="hljs-comment">// 进程的最后一个数的索引</span>
+low_value = low_index * <span class="hljs-number">2</span> + <span class="hljs-number">3</span>; <span class="hljs-comment">//进程的第一个数</span>
+high_value = (high_index + <span class="hljs-number">1</span>) * <span class="hljs-number">2</span> + <span class="hljs-number">1</span>;<span class="hljs-comment">//进程的最后一个数</span>
+size = (high_value - low_value) / <span class="hljs-number">2</span> + <span class="hljs-number">1</span>;    <span class="hljs-comment">//进程处理的数组大小</span>
+   
+<span class="hljs-keyword">do</span> &#123;
+   <span class="hljs-comment">/*确定该进程中素数的第一个倍数的下标 */</span>
+   <span class="hljs-comment">// 如果该素数n*n&gt;low_value，n*(n-i)都被标记了</span>
+   <span class="hljs-comment">// 即n*n为该进程中的第一个素数</span>
+   <span class="hljs-comment">// 其下标为n*n-low_value，并且由于数组大小减半所以除以2</span>
+   <span class="hljs-keyword">if</span> (prime * prime &gt; low_value) &#123;
+   	   first = (prime * prime - low_value) / <span class="hljs-number">2</span>;
+   &#125; <span class="hljs-keyword">else</span> &#123;
+       <span class="hljs-comment">// 若最小值low_value为该素数的倍数</span>
+       <span class="hljs-comment">// 则第一个倍数为low_value，即其下标为0</span>
+       <span class="hljs-keyword">if</span> (!(low_value % prime)) first = <span class="hljs-number">0</span>;
+       <span class="hljs-comment">// 若最小值low_value不是该素数的倍数</span>
+       <span class="hljs-comment">// 但是其余数为偶数，那么第一个非素数的索引为该素数剪去求余除以2</span>
+       <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (low_value % prime % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>) first = prime - ((low_value % prime) / <span class="hljs-number">2</span>);
+       <span class="hljs-comment">// 若最小值low_value不是该素数的倍数</span>
+       <span class="hljs-comment">// 那么第一个倍数的下标为该素数减去余数的值，并且由于数组大小减半所以除以2</span>
+       <span class="hljs-keyword">else</span> first = (prime - (low_value % prime)) / <span class="hljs-number">2</span>;
+   &#125;
+    <span class="hljs-comment">// 从第一个素数开始，标记该素数的倍数为非素数</span>
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = first; i &lt; size; i += prime) marked[i] = <span class="hljs-number">1</span>;
+
+    <span class="hljs-comment">// 只有id=0的进程才调用，用于找到下一素数的位置</span>
+    <span class="hljs-keyword">if</span> (!id) &#123;
+        <span class="hljs-keyword">while</span> (marked[++index]);
+        prime = index * <span class="hljs-number">2</span> + <span class="hljs-number">3</span>; <span class="hljs-comment">// 起始加偏移</span>
+    &#125;
+    <span class="hljs-comment">// 只有id=0的进程才调用，用于将下一个素数广播出去</span>
+    <span class="hljs-keyword">if</span> (p &gt; <span class="hljs-number">1</span>) &#123;
+        MPI_Bcast(&amp;prime, <span class="hljs-number">1</span>, MPI_INT, <span class="hljs-number">0</span>, MPI_COMM_WORLD);
+    &#125;
+&#125; <span class="hljs-keyword">while</span> (prime * prime &lt;= n);</code></pre></div>
 <p>每个过程都能找到自己的筛选的素数</p>
 <ul>
 <li>将素数的计算赋值到√n</li>
 <li>消除通信</li>
 </ul>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">/* 小数组 */</span><br><span class="hljs-type">char</span> *sub_marked;       <span class="hljs-comment">/* sub_mark array */</span><br><span class="hljs-type">int</span> sub_low_index;      <span class="hljs-comment">/* Lowest index on sub_array */</span><br><span class="hljs-type">int</span> sub_low_value;      <span class="hljs-comment">/* Lowest array on sub_array */</span><br><span class="hljs-type">int</span> sub_high_index;     <span class="hljs-comment">/* Highest index on sub_array */</span><br><span class="hljs-type">int</span> sub_high_value;     <span class="hljs-comment">/* Highest index on sub_array */</span><br><br><span class="hljs-type">int</span> sub_n = (<span class="hljs-type">int</span>) <span class="hljs-built_in">sqrt</span>((<span class="hljs-type">double</span>) n);<br><span class="hljs-type">int</span> sub_N = (sub_n - <span class="hljs-number">1</span>) / <span class="hljs-number">2</span>;<br><br>sub_low_index = <span class="hljs-number">0</span> * (sub_N / p) + MIN(<span class="hljs-number">0</span>, sub_N % p); <span class="hljs-comment">// 进程的第一个数的索引</span><br>sub_high_index = <span class="hljs-number">1</span> * (sub_N / p) + MIN(<span class="hljs-number">1</span>, sub_N % p) - <span class="hljs-number">1</span>; <span class="hljs-comment">// 进程的最后一个数的索引</span><br>sub_low_value = sub_low_index * <span class="hljs-number">2</span> + <span class="hljs-number">3</span>; <span class="hljs-comment">//进程的第一个数</span><br>sub_high_value = (sub_high_index + <span class="hljs-number">1</span>) * <span class="hljs-number">2</span> + <span class="hljs-number">1</span>;<span class="hljs-comment">//进程的最后一个数</span><br><br>sub_marked = (<span class="hljs-type">char</span> *) <span class="hljs-built_in">malloc</span>(sub_n);<br><span class="hljs-keyword">if</span> (sub_marked == nullptr) &#123;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Cannot allocate enough memory \n&quot;</span>);<br>    MPI_Finalize();<br>    <span class="hljs-built_in">exit</span>(<span class="hljs-number">1</span>);<br>&#125;<br><br><span class="hljs-comment">// 先假定所有的整数都是素数</span><br><span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; sub_n; i++) sub_marked[i] = <span class="hljs-number">0</span>;<br><br><span class="hljs-comment">// 索引初始化为0</span><br>index = <span class="hljs-number">0</span>;<br><br>prime = <span class="hljs-number">3</span>;<br><span class="hljs-keyword">do</span> &#123;<br>    <span class="hljs-comment">// 从小数组开始标只会命中第一个条件</span><br>    first = (prime * prime - sub_low_value) / <span class="hljs-number">2</span>;<br>    <span class="hljs-comment">// 从第一个素数开始，标记该素数的倍数为非素数</span><br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = first; i &lt; sub_n; i += prime) &#123;<br>    	sub_marked[i] = <span class="hljs-number">1</span>;<br>	&#125;<br>    <span class="hljs-keyword">while</span> (sub_marked[++index]);<br>    prime = index * <span class="hljs-number">2</span> + <span class="hljs-number">3</span>; <span class="hljs-comment">// 起始加偏移</span><br>&#125; <span class="hljs-keyword">while</span> (prime * prime &lt;= sub_n);<br><br><br><span class="hljs-comment">/* 大数组 */</span><br><span class="hljs-keyword">do</span> &#123;<br>    <br>	...<br>    <span class="hljs-keyword">while</span> (sub_marked[++index]);<br>    ...<br>        <br>    <span class="hljs-comment">// if (p &gt; 1) &#123;</span><br>    <span class="hljs-comment">//     MPI_Bcast(&amp;prime, 1, MPI_INT, 0, MPI_COMM_WORLD);</span><br>    <span class="hljs-comment">// &#125;</span><br>&#125; <span class="hljs-keyword">while</span> (prime * prime &lt;= n);<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-comment">/* 小数组 */</span>
+<span class="hljs-type">char</span> *sub_marked;       <span class="hljs-comment">/* sub_mark array */</span>
+<span class="hljs-type">int</span> sub_low_index;      <span class="hljs-comment">/* Lowest index on sub_array */</span>
+<span class="hljs-type">int</span> sub_low_value;      <span class="hljs-comment">/* Lowest array on sub_array */</span>
+<span class="hljs-type">int</span> sub_high_index;     <span class="hljs-comment">/* Highest index on sub_array */</span>
+<span class="hljs-type">int</span> sub_high_value;     <span class="hljs-comment">/* Highest index on sub_array */</span>
+
+<span class="hljs-type">int</span> sub_n = (<span class="hljs-type">int</span>) <span class="hljs-built_in">sqrt</span>((<span class="hljs-type">double</span>) n);
+<span class="hljs-type">int</span> sub_N = (sub_n - <span class="hljs-number">1</span>) / <span class="hljs-number">2</span>;
+
+sub_low_index = <span class="hljs-number">0</span> * (sub_N / p) + MIN(<span class="hljs-number">0</span>, sub_N % p); <span class="hljs-comment">// 进程的第一个数的索引</span>
+sub_high_index = <span class="hljs-number">1</span> * (sub_N / p) + MIN(<span class="hljs-number">1</span>, sub_N % p) - <span class="hljs-number">1</span>; <span class="hljs-comment">// 进程的最后一个数的索引</span>
+sub_low_value = sub_low_index * <span class="hljs-number">2</span> + <span class="hljs-number">3</span>; <span class="hljs-comment">//进程的第一个数</span>
+sub_high_value = (sub_high_index + <span class="hljs-number">1</span>) * <span class="hljs-number">2</span> + <span class="hljs-number">1</span>;<span class="hljs-comment">//进程的最后一个数</span>
+
+sub_marked = (<span class="hljs-type">char</span> *) <span class="hljs-built_in">malloc</span>(sub_n);
+<span class="hljs-keyword">if</span> (sub_marked == nullptr) &#123;
+    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Cannot allocate enough memory \n&quot;</span>);
+    MPI_Finalize();
+    <span class="hljs-built_in">exit</span>(<span class="hljs-number">1</span>);
+&#125;
+
+<span class="hljs-comment">// 先假定所有的整数都是素数</span>
+<span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; sub_n; i++) sub_marked[i] = <span class="hljs-number">0</span>;
+
+<span class="hljs-comment">// 索引初始化为0</span>
+index = <span class="hljs-number">0</span>;
+
+prime = <span class="hljs-number">3</span>;
+<span class="hljs-keyword">do</span> &#123;
+    <span class="hljs-comment">// 从小数组开始标只会命中第一个条件</span>
+    first = (prime * prime - sub_low_value) / <span class="hljs-number">2</span>;
+    <span class="hljs-comment">// 从第一个素数开始，标记该素数的倍数为非素数</span>
+    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = first; i &lt; sub_n; i += prime) &#123;
+    	sub_marked[i] = <span class="hljs-number">1</span>;
+	&#125;
+    <span class="hljs-keyword">while</span> (sub_marked[++index]);
+    prime = index * <span class="hljs-number">2</span> + <span class="hljs-number">3</span>; <span class="hljs-comment">// 起始加偏移</span>
+&#125; <span class="hljs-keyword">while</span> (prime * prime &lt;= sub_n);
+
+
+<span class="hljs-comment">/* 大数组 */</span>
+<span class="hljs-keyword">do</span> &#123;
+    
+	...
+    <span class="hljs-keyword">while</span> (sub_marked[++index]);
+    ...
+        
+    <span class="hljs-comment">// if (p &gt; 1) &#123;</span>
+    <span class="hljs-comment">//     MPI_Bcast(&amp;prime, 1, MPI_INT, 0, MPI_COMM_WORLD);</span>
+    <span class="hljs-comment">// &#125;</span>
+&#125; <span class="hljs-keyword">while</span> (prime * prime &lt;= n);</code></pre></div>
 <p>重组循环</p>
 <ul>
 <li>增加缓存命中率</li>
 </ul>
 <p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/95.png" srcset="/img/loading.gif" lazyload alt="95" style="zoom: 67%;" /></p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> sub_n = (<span class="hljs-type">int</span>) <span class="hljs-built_in">sqrt</span>((<span class="hljs-type">double</span>) n);<br>   <span class="hljs-type">int</span> sub_N = (sub_n - <span class="hljs-number">1</span>) / <span class="hljs-number">2</span>;<br>   sub_low_index = <span class="hljs-number">0</span>; <br>   sub_high_index = sub_N / p - <span class="hljs-number">1</span>;<br>   sub_low_value = sub_low_index * <span class="hljs-number">2</span> + <span class="hljs-number">3</span>; <br>   sub_high_value = (sub_high_index + <span class="hljs-number">1</span>) * <span class="hljs-number">2</span> + <span class="hljs-number">1</span>;<br>   sub_marked = (<span class="hljs-type">char</span> *) <span class="hljs-built_in">malloc</span>(sub_n);<br>   <br>   <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; sub_n; i++) sub_marked[i] = <span class="hljs-number">0</span>;<br>   index = <span class="hljs-number">0</span>;<br>   prime = <span class="hljs-number">3</span>;<br>   <span class="hljs-keyword">do</span> &#123;<br>       first = (prime * prime - sub_low_value) / <span class="hljs-number">2</span>;<br>       <br>       <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = first; i &lt; sub_n; i += prime) &#123;<br>           sub_marked[i] = <span class="hljs-number">1</span>;<br><br>       &#125;<br>       <span class="hljs-keyword">while</span> (sub_marked[++index]);<br>       prime = index * <span class="hljs-number">2</span> + <span class="hljs-number">3</span>; <br>   &#125; <span class="hljs-keyword">while</span> (prime * prime &lt;= sub_n);<br><br>   <span class="hljs-comment">// step 2: build &#x27;marked&#x27; array with blocks</span><br>   <span class="hljs-type">int</span> N = (n - <span class="hljs-number">1</span>) / <span class="hljs-number">2</span>;<br>   low_index = id * N / p;            <br>   high_index = (id + <span class="hljs-number">1</span>) * N / p - <span class="hljs-number">1</span>; <br><br>   low_value = low_index * <span class="hljs-number">2</span> + <span class="hljs-number">3</span>; <br>   high_value = (high_index + <span class="hljs-number">1</span>) * <span class="hljs-number">2</span> + <span class="hljs-number">1</span>;<br>   size = (high_value - low_value) / <span class="hljs-number">2</span> + <span class="hljs-number">1</span>;   <br><br>   <span class="hljs-type">int</span> CACHE_size = atoi(argv[<span class="hljs-number">2</span>]);<br><br>   <span class="hljs-type">int</span> CACHE_int = CACHE_size / <span class="hljs-number">4</span>;<br><br>   <span class="hljs-type">int</span> Block_size = CACHE_int / p ;<br>   <span class="hljs-type">int</span> Block_num = size / Block_size;<br>   <span class="hljs-type">int</span> Block_remain = size % Block_size;<br>   <span class="hljs-type">int</span> Block_id = <span class="hljs-number">0</span>;<br>   <span class="hljs-type">int</span> Block_N = Block_size - <span class="hljs-number">1</span>;<br>   <span class="hljs-type">int</span> Block_low_index = Block_id * Block_N + low_index;<br>   <span class="hljs-type">int</span> Block_high_index = (Block_id + <span class="hljs-number">1</span>) * Block_N - <span class="hljs-number">1</span> + low_index;<br>   <span class="hljs-type">int</span> Block_low_value = Block_low_index * <span class="hljs-number">2</span> + <span class="hljs-number">3</span>;<br>   <span class="hljs-type">int</span> Block_high_value = (Block_high_index + <span class="hljs-number">1</span>) * <span class="hljs-number">2</span> + <span class="hljs-number">1</span>;<br>   <span class="hljs-type">int</span> Block_count;<br><br>   <span class="hljs-comment">// allocate this process &#x27;s share of the array</span><br>   <span class="hljs-keyword">if</span>(Block_num==<span class="hljs-number">0</span>) Block_size=size;<br>   marked = (<span class="hljs-type">char</span> *) <span class="hljs-built_in">malloc</span>(Block_size);<br>   count = <span class="hljs-number">0</span>;<br>   <span class="hljs-keyword">while</span> (Block_id &lt;= Block_num) &#123;<br>       index = <span class="hljs-number">0</span>;<br>       prime = <span class="hljs-number">3</span>;<br>       Block_count = <span class="hljs-number">0</span>;<br>       <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; Block_size; i++) marked[i] = <span class="hljs-number">0</span>;<br>       <span class="hljs-keyword">do</span> &#123;<br>           <span class="hljs-keyword">if</span> (prime * prime &gt; Block_low_value) &#123;<br>               first = (prime * prime - Block_low_value) / <span class="hljs-number">2</span>;<br>           &#125; <span class="hljs-keyword">else</span> &#123;<br>               <span class="hljs-keyword">if</span> (!(Block_low_value % prime)) first = <span class="hljs-number">0</span>;<br>               <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (Block_low_value % prime % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>) first = prime - ((Block_low_value % prime) / <span class="hljs-number">2</span>);<br>               <span class="hljs-keyword">else</span> first = (prime - (Block_low_value % prime)) / <span class="hljs-number">2</span>;<br>           &#125;<br><br>           <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = first; i &lt; Block_size; i += prime) &#123;<br>               marked[i] = <span class="hljs-number">1</span>;<br>           &#125;<br><br>           <span class="hljs-keyword">while</span> (sub_marked[++index]);<br><br>           prime = index * <span class="hljs-number">2</span> + <span class="hljs-number">3</span>; <br><br>       &#125; <span class="hljs-keyword">while</span> (prime * prime &lt;= Block_high_value);<br>       <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; Block_size; i++) &#123;<br>           <span class="hljs-keyword">if</span> (marked[i] == <span class="hljs-number">0</span>) &#123;<br>               Block_count++;<br>           &#125;<br>       &#125;<br>       count += Block_count;<br>       Block_id++;<br>       Block_low_index = Block_id * Block_N + Block_id + low_index;<br>       Block_high_index = (Block_id + <span class="hljs-number">1</span>) * Block_N + (Block_id + <span class="hljs-number">1</span>)- <span class="hljs-number">1</span> + low_index;<br>       Block_low_value = Block_low_index * <span class="hljs-number">2</span> + <span class="hljs-number">3</span>;<br>       <span class="hljs-keyword">if</span> (Block_id == Block_num) &#123;<br>           Block_high_value = high_value;<br>           Block_high_index = high_index;<br>           Block_size = (Block_high_value - Block_low_value) / <span class="hljs-number">2</span> + <span class="hljs-number">1</span>;<br>       &#125; <span class="hljs-keyword">else</span> &#123;<br>           Block_high_value = (Block_high_index + <span class="hljs-number">1</span>) * <span class="hljs-number">2</span> + <span class="hljs-number">1</span>;<br>       &#125;<br>   &#125;<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">int</span> sub_n = (<span class="hljs-type">int</span>) <span class="hljs-built_in">sqrt</span>((<span class="hljs-type">double</span>) n);
+   <span class="hljs-type">int</span> sub_N = (sub_n - <span class="hljs-number">1</span>) / <span class="hljs-number">2</span>;
+   sub_low_index = <span class="hljs-number">0</span>; 
+   sub_high_index = sub_N / p - <span class="hljs-number">1</span>;
+   sub_low_value = sub_low_index * <span class="hljs-number">2</span> + <span class="hljs-number">3</span>; 
+   sub_high_value = (sub_high_index + <span class="hljs-number">1</span>) * <span class="hljs-number">2</span> + <span class="hljs-number">1</span>;
+   sub_marked = (<span class="hljs-type">char</span> *) <span class="hljs-built_in">malloc</span>(sub_n);
+   
+   <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; sub_n; i++) sub_marked[i] = <span class="hljs-number">0</span>;
+   index = <span class="hljs-number">0</span>;
+   prime = <span class="hljs-number">3</span>;
+   <span class="hljs-keyword">do</span> &#123;
+       first = (prime * prime - sub_low_value) / <span class="hljs-number">2</span>;
+       
+       <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = first; i &lt; sub_n; i += prime) &#123;
+           sub_marked[i] = <span class="hljs-number">1</span>;
+
+       &#125;
+       <span class="hljs-keyword">while</span> (sub_marked[++index]);
+       prime = index * <span class="hljs-number">2</span> + <span class="hljs-number">3</span>; 
+   &#125; <span class="hljs-keyword">while</span> (prime * prime &lt;= sub_n);
+
+   <span class="hljs-comment">// step 2: build &#x27;marked&#x27; array with blocks</span>
+   <span class="hljs-type">int</span> N = (n - <span class="hljs-number">1</span>) / <span class="hljs-number">2</span>;
+   low_index = id * N / p;            
+   high_index = (id + <span class="hljs-number">1</span>) * N / p - <span class="hljs-number">1</span>; 
+
+   low_value = low_index * <span class="hljs-number">2</span> + <span class="hljs-number">3</span>; 
+   high_value = (high_index + <span class="hljs-number">1</span>) * <span class="hljs-number">2</span> + <span class="hljs-number">1</span>;
+   size = (high_value - low_value) / <span class="hljs-number">2</span> + <span class="hljs-number">1</span>;   
+
+   <span class="hljs-type">int</span> CACHE_size = atoi(argv[<span class="hljs-number">2</span>]);
+
+   <span class="hljs-type">int</span> CACHE_int = CACHE_size / <span class="hljs-number">4</span>;
+
+   <span class="hljs-type">int</span> Block_size = CACHE_int / p ;
+   <span class="hljs-type">int</span> Block_num = size / Block_size;
+   <span class="hljs-type">int</span> Block_remain = size % Block_size;
+   <span class="hljs-type">int</span> Block_id = <span class="hljs-number">0</span>;
+   <span class="hljs-type">int</span> Block_N = Block_size - <span class="hljs-number">1</span>;
+   <span class="hljs-type">int</span> Block_low_index = Block_id * Block_N + low_index;
+   <span class="hljs-type">int</span> Block_high_index = (Block_id + <span class="hljs-number">1</span>) * Block_N - <span class="hljs-number">1</span> + low_index;
+   <span class="hljs-type">int</span> Block_low_value = Block_low_index * <span class="hljs-number">2</span> + <span class="hljs-number">3</span>;
+   <span class="hljs-type">int</span> Block_high_value = (Block_high_index + <span class="hljs-number">1</span>) * <span class="hljs-number">2</span> + <span class="hljs-number">1</span>;
+   <span class="hljs-type">int</span> Block_count;
+
+   <span class="hljs-comment">// allocate this process &#x27;s share of the array</span>
+   <span class="hljs-keyword">if</span>(Block_num==<span class="hljs-number">0</span>) Block_size=size;
+   marked = (<span class="hljs-type">char</span> *) <span class="hljs-built_in">malloc</span>(Block_size);
+   count = <span class="hljs-number">0</span>;
+   <span class="hljs-keyword">while</span> (Block_id &lt;= Block_num) &#123;
+       index = <span class="hljs-number">0</span>;
+       prime = <span class="hljs-number">3</span>;
+       Block_count = <span class="hljs-number">0</span>;
+       <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; Block_size; i++) marked[i] = <span class="hljs-number">0</span>;
+       <span class="hljs-keyword">do</span> &#123;
+           <span class="hljs-keyword">if</span> (prime * prime &gt; Block_low_value) &#123;
+               first = (prime * prime - Block_low_value) / <span class="hljs-number">2</span>;
+           &#125; <span class="hljs-keyword">else</span> &#123;
+               <span class="hljs-keyword">if</span> (!(Block_low_value % prime)) first = <span class="hljs-number">0</span>;
+               <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (Block_low_value % prime % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>) first = prime - ((Block_low_value % prime) / <span class="hljs-number">2</span>);
+               <span class="hljs-keyword">else</span> first = (prime - (Block_low_value % prime)) / <span class="hljs-number">2</span>;
+           &#125;
+
+           <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = first; i &lt; Block_size; i += prime) &#123;
+               marked[i] = <span class="hljs-number">1</span>;
+           &#125;
+
+           <span class="hljs-keyword">while</span> (sub_marked[++index]);
+
+           prime = index * <span class="hljs-number">2</span> + <span class="hljs-number">3</span>; 
+
+       &#125; <span class="hljs-keyword">while</span> (prime * prime &lt;= Block_high_value);
+       <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; Block_size; i++) &#123;
+           <span class="hljs-keyword">if</span> (marked[i] == <span class="hljs-number">0</span>) &#123;
+               Block_count++;
+           &#125;
+       &#125;
+       count += Block_count;
+       Block_id++;
+       Block_low_index = Block_id * Block_N + Block_id + low_index;
+       Block_high_index = (Block_id + <span class="hljs-number">1</span>) * Block_N + (Block_id + <span class="hljs-number">1</span>)- <span class="hljs-number">1</span> + low_index;
+       Block_low_value = Block_low_index * <span class="hljs-number">2</span> + <span class="hljs-number">3</span>;
+       <span class="hljs-keyword">if</span> (Block_id == Block_num) &#123;
+           Block_high_value = high_value;
+           Block_high_index = high_index;
+           Block_size = (Block_high_value - Block_low_value) / <span class="hljs-number">2</span> + <span class="hljs-number">1</span>;
+       &#125; <span class="hljs-keyword">else</span> &#123;
+           Block_high_value = (Block_high_index + <span class="hljs-number">1</span>) * <span class="hljs-number">2</span> + <span class="hljs-number">1</span>;
+       &#125;
+   &#125;</code></pre></div>
 <h3 id="比较四个版本">比较四个版本</h3>
 <table>
 <thead>

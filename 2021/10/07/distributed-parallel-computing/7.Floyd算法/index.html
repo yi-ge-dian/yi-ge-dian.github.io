@@ -226,7 +226,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          6.1k 字
+          6k 字
         
       </span>
     
@@ -237,7 +237,7 @@
         
         
         
-          52 分钟
+          50 分钟
         
       </span>
     
@@ -339,14 +339,24 @@
 </tbody>
 </table>
 <p>算法：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">for</span> k ← <span class="hljs-number">0</span> to n<span class="hljs-number">-1</span><br>	<span class="hljs-keyword">for</span> i ← <span class="hljs-number">0</span> to n<span class="hljs-number">-1</span><br>		<span class="hljs-keyword">for</span> j ← <span class="hljs-number">0</span> to n<span class="hljs-number">-1</span><br>			a[i,j] ←  min (a[i,j], a[i,k] + a[k,j])<br>		endfor<br>	endfor<br>endfor<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-keyword">for</span> k ← <span class="hljs-number">0</span> to n<span class="hljs-number">-1</span>
+	<span class="hljs-keyword">for</span> i ← <span class="hljs-number">0</span> to n<span class="hljs-number">-1</span>
+		<span class="hljs-keyword">for</span> j ← <span class="hljs-number">0</span> to n<span class="hljs-number">-1</span>
+			a[i,j] ←  min (a[i,j], a[i,k] + a[k,j])
+		endfor
+	endfor
+endfor</code></pre></div>
 <p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/97.png" srcset="/img/loading.gif" lazyload alt="97" style="zoom:67%;" /></p>
 <h2 id="动态二维数组">动态二维数组</h2>
 <h3 id="动态一维数组建立">动态一维数组建立</h3>
 <p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/98.png" srcset="/img/loading.gif" lazyload alt="98" style="zoom: 67%;" /></p>
 <h3 id="动态二维数组建立">动态二维数组建立</h3>
 <p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/99.png" srcset="/img/loading.gif" lazyload alt="99" style="zoom:67%;" /></p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> *BStorage, **B;<br>B = <span class="hljs-built_in">malloc</span>(M * <span class="hljs-keyword">sizeof</span>(<span class="hljs-type">int</span> *));<br>BStorage = <span class="hljs-built_in">malloc</span>(SIZE * <span class="hljs-keyword">sizeof</span>(<span class="hljs-type">int</span>));<br><span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; M; i++)<br>B[i] = &amp;BStorage[i * N];<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">int</span> *BStorage, **B;
+B = <span class="hljs-built_in">malloc</span>(M * <span class="hljs-keyword">sizeof</span>(<span class="hljs-type">int</span> *));
+BStorage = <span class="hljs-built_in">malloc</span>(SIZE * <span class="hljs-keyword">sizeof</span>(<span class="hljs-type">int</span>));
+<span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; M; i++)
+B[i] = &amp;BStorage[i * N];</code></pre></div>
 <h2 id="设计并行算法">设计并行算法</h2>
 <h3 id="分区">分区</h3>
 <p>区域分解还是函数分解？</p>
@@ -363,7 +373,8 @@
 <h3 id="通信">通信</h3>
 <p>1.第 m 列中的每项任务都需要 a[k，m] 2.第 m 行中的每项任务都需要
 a[m，k] 3.让 k 控制算法的外循环：</p>
-<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs stylus"><span class="hljs-selector-tag">a</span><span class="hljs-selector-attr">[i,k]</span> = <span class="hljs-built_in">min</span>(<span class="hljs-selector-tag">a</span><span class="hljs-selector-attr">[i,k]</span>,<span class="hljs-selector-tag">a</span><span class="hljs-selector-attr">[i,k]</span>+<span class="hljs-selector-tag">a</span><span class="hljs-selector-attr">[k,k]</span>←<span class="hljs-number">0</span><br><span class="hljs-selector-tag">a</span><span class="hljs-selector-attr">[k,j]</span> = <span class="hljs-built_in">min</span>(<span class="hljs-selector-tag">a</span><span class="hljs-selector-attr">[k,j]</span>, <span class="hljs-selector-tag">a</span><span class="hljs-selector-attr">[k,k]</span>(←<span class="hljs-number">0</span>)+<span class="hljs-selector-tag">a</span><span class="hljs-selector-attr">[k,j]</span><br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs stylus"><span class="hljs-selector-tag">a</span><span class="hljs-selector-attr">[i,k]</span> = <span class="hljs-built_in">min</span>(<span class="hljs-selector-tag">a</span><span class="hljs-selector-attr">[i,k]</span>,<span class="hljs-selector-tag">a</span><span class="hljs-selector-attr">[i,k]</span>+<span class="hljs-selector-tag">a</span><span class="hljs-selector-attr">[k,k]</span>←<span class="hljs-number">0</span>
+<span class="hljs-selector-tag">a</span><span class="hljs-selector-attr">[k,j]</span> = <span class="hljs-built_in">min</span>(<span class="hljs-selector-tag">a</span><span class="hljs-selector-attr">[k,j]</span>, <span class="hljs-selector-tag">a</span><span class="hljs-selector-attr">[k,k]</span>(←<span class="hljs-number">0</span>)+<span class="hljs-selector-tag">a</span><span class="hljs-selector-attr">[k,j]</span></code></pre></div>
 <p>4.对于特定值的k广播是可能的</p>
 <figure>
 <img
@@ -410,9 +421,25 @@ alt="100" />
 <h3 id="不集体发送接受数据">不集体发送接受数据</h3>
 <p><img src="https://cdn.jsdelivr.net/gh/Yi-Ge-Dian/YiGeDian_image_hosting@master/20220110/kuangstudybf6ea2b5-8bf5-4922-9791-b8135fae11b8.2y5b06yx1xu0.webp" srcset="/img/loading.gif" lazyload alt="kuangstudybf6ea2b5-8bf5-4922-9791-b8135fae11b8" style="zoom:50%;" /></p>
 <h3 id="函数mpi_send">函数MPI_Send</h3>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">MPI_Send</span> <span class="hljs-params">(</span><br><span class="hljs-params">      <span class="hljs-type">void</span>         *message,</span><br><span class="hljs-params">      <span class="hljs-type">int</span>           count,</span><br><span class="hljs-params">      MPI_Datatype  datatype,</span><br><span class="hljs-params">      <span class="hljs-type">int</span>           dest,</span><br><span class="hljs-params">      <span class="hljs-type">int</span>           tag,</span><br><span class="hljs-params">      MPI_Comm      comm</span><br><span class="hljs-params">)</span><br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">MPI_Send</span> <span class="hljs-params">(</span>
+<span class="hljs-params">      <span class="hljs-type">void</span>         *message,</span>
+<span class="hljs-params">      <span class="hljs-type">int</span>           count,</span>
+<span class="hljs-params">      MPI_Datatype  datatype,</span>
+<span class="hljs-params">      <span class="hljs-type">int</span>           dest,</span>
+<span class="hljs-params">      <span class="hljs-type">int</span>           tag,</span>
+<span class="hljs-params">      MPI_Comm      comm</span>
+<span class="hljs-params">)</span></code></pre></div>
 <h3 id="函数mpi_receive">函数MPI_Receive</h3>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">MPI_Recv</span> <span class="hljs-params">(</span><br><span class="hljs-params">      <span class="hljs-type">void</span>         *message,</span><br><span class="hljs-params">      <span class="hljs-type">int</span>           count,</span><br><span class="hljs-params">      MPI_Datatype  datatype,</span><br><span class="hljs-params">      <span class="hljs-type">int</span>           source,</span><br><span class="hljs-params">      <span class="hljs-type">int</span>           tag,</span><br><span class="hljs-params">      MPI_Comm      comm,</span><br><span class="hljs-params">      MPI_Status   *status</span><br><span class="hljs-params">)</span><br><br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">MPI_Recv</span> <span class="hljs-params">(</span>
+<span class="hljs-params">      <span class="hljs-type">void</span>         *message,</span>
+<span class="hljs-params">      <span class="hljs-type">int</span>           count,</span>
+<span class="hljs-params">      MPI_Datatype  datatype,</span>
+<span class="hljs-params">      <span class="hljs-type">int</span>           source,</span>
+<span class="hljs-params">      <span class="hljs-type">int</span>           tag,</span>
+<span class="hljs-params">      MPI_Comm      comm,</span>
+<span class="hljs-params">      MPI_Status   *status</span>
+<span class="hljs-params">)</span>
+</code></pre></div>
 <h4
 id="函数mpi_send和mpi_receive的内部">函数MPI_Send和MPI_Receive的内部</h4>
 <p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/103.png" srcset="/img/loading.gif" lazyload alt="103" style="zoom:67%;" /></p>
@@ -434,10 +461,24 @@ id="函数mpi_send和mpi_receive的内部">函数MPI_Send和MPI_Receive的内部
 <li>进程向错误的目的地进程发送消息</li>
 </ul>
 <p>例1 :</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">if</span> (id == <span class="hljs-number">0</span>) &#123;<br>	MPI_Recv (&amp;b,...);<br>	MPI_Send (&amp;a,...);<br>   c = (a + b)/<span class="hljs-number">2.0</span>; <br>&#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (id == <span class="hljs-number">1</span>) &#123;<br>	MPI_Recv (&amp;a,...);<br>	MPI_Send (&amp;b,...);<br>   c = (a + b)/<span class="hljs-number">2.0</span>; &#125;<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-keyword">if</span> (id == <span class="hljs-number">0</span>) &#123;
+	MPI_Recv (&amp;b,...);
+	MPI_Send (&amp;a,...);
+   c = (a + b)/<span class="hljs-number">2.0</span>; 
+&#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (id == <span class="hljs-number">1</span>) &#123;
+	MPI_Recv (&amp;a,...);
+	MPI_Send (&amp;b,...);
+   c = (a + b)/<span class="hljs-number">2.0</span>; &#125;</code></pre></div>
 <p>进程0等待1的消息而阻塞，进程1等待0的消息而阻塞，产生了死锁。</p>
 <p>例2：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">if</span> (id ==<span class="hljs-number">0</span>) &#123;<br>	MPI_Send(&amp;a, ... <span class="hljs-number">1</span>,MPI_COMM_WORLD);<br>	MPI_Recv(&amp;b, ... <span class="hljs-number">1</span>, MPI_COMM_WORLD,&amp;status);<br>	c = (a+b)/<span class="hljs-number">2.0</span>; <br>&#125;<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (id ==<span class="hljs-number">1</span>) &#123;<br>	MPI_Send(&amp;a, ... <span class="hljs-number">0</span>,MPI_COMM_WORLD);<br>	MPI_Recv(&amp;b, ... <span class="hljs-number">0</span>, MPI_COMM_WORLD,&amp;status);<br>	c = (a+b)/<span class="hljs-number">2.0</span>;&#125;<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-keyword">if</span> (id ==<span class="hljs-number">0</span>) &#123;
+	MPI_Send(&amp;a, ... <span class="hljs-number">1</span>,MPI_COMM_WORLD);
+	MPI_Recv(&amp;b, ... <span class="hljs-number">1</span>, MPI_COMM_WORLD,&amp;status);
+	c = (a+b)/<span class="hljs-number">2.0</span>; 
+&#125;<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (id ==<span class="hljs-number">1</span>) &#123;
+	MPI_Send(&amp;a, ... <span class="hljs-number">0</span>,MPI_COMM_WORLD);
+	MPI_Recv(&amp;b, ... <span class="hljs-number">0</span>, MPI_COMM_WORLD,&amp;status);
+	c = (a+b)/<span class="hljs-number">2.0</span>;&#125;</code></pre></div>
 <p>这两个进程在尝试接收之前都会发送，但仍然陷入死锁。 为什么？</p>
 <blockquote>
 <p>标签错了。进程0正在尝试接收1的标签，但进程1正在发送0的标签。</p>
@@ -499,11 +540,28 @@ MPI 标准允许MPI_Send以两种不同的方式行事：</p>
 标准定义的MPI_Send替代方法。额外的"s"表示同步，MPI_Ssend保证阻塞，直到匹配接收开始。</p>
 <p>考虑这样一种情况，一个生产者重复生产新值并把他们发送给一个使用者。假设生产者产生值比使用者使用的快。如果使用缓存发送，将导致一个缓存溢出。给这个程序加一个附加的同步以阻止这种情况发生。如果使用标准发送，那么生产者将被自动停止，就象当缓存空间得不到时，它的发送操作将阻止。
 　</p>
-<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs objectivec"><span class="hljs-type">int</span> <span class="hljs-built_in">MPI_Ssend</span>()&#123;<br>	<span class="hljs-type">void</span> 			* msg_buf_p;<br>	<span class="hljs-type">int</span>  			msg_size;<br>	<span class="hljs-built_in">MPI_Datatype</span>	msg_type;<br>	<span class="hljs-type">int</span> 			dest;<br>	<span class="hljs-type">int</span> 			tag;<br>	<span class="hljs-built_in">MPI_Comm</span>		communicator;<br>&#125;<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs objectivec"><span class="hljs-type">int</span> <span class="hljs-built_in">MPI_Ssend</span>()&#123;
+	<span class="hljs-type">void</span> 			* msg_buf_p;
+	<span class="hljs-type">int</span>  			msg_size;
+	<span class="hljs-built_in">MPI_Datatype</span>	msg_type;
+	<span class="hljs-type">int</span> 			dest;
+	<span class="hljs-type">int</span> 			tag;
+	<span class="hljs-built_in">MPI_Comm</span>		communicator;
+&#125;</code></pre></div>
 <h4 id="方法2调整通信">方法2调整通信：</h4>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs c">MPI_Send(msg,size,MPI_INT,(my_rank+<span class="hljs-number">1</span>)%comm_sz,<span class="hljs-number">0</span>,comm)<br>MPI_Recv(new_msg,size,MPI_INT,(my_rank+comm_sz<span class="hljs-number">-1</span>)%comm_sz,<span class="hljs-number">0</span>,comm,<br>MPI_STATUS_IGNORE)<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c">MPI_Send(msg,size,MPI_INT,(my_rank+<span class="hljs-number">1</span>)%comm_sz,<span class="hljs-number">0</span>,comm)
+MPI_Recv(new_msg,size,MPI_INT,(my_rank+comm_sz<span class="hljs-number">-1</span>)%comm_sz,<span class="hljs-number">0</span>,comm,
+MPI_STATUS_IGNORE)</code></pre></div>
 <p>改为：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">if</span>(my_rank%<span class="hljs-number">2</span>==<span class="hljs-number">0</span>)&#123;<br>    MPI_Send(msg,size,MPI_INT,(my_rank+<span class="hljs-number">1</span>)%comm_sz,<span class="hljs-number">0</span>,comm);<br>	MPI_Recv(new_msg,size,MPI_INT,(my_rank+comm_sz<span class="hljs-number">-1</span>)%comm_sz,<span class="hljs-number">0</span>,comm,<br>MPI_STATUS_IGNORE);<br>&#125;<span class="hljs-keyword">else</span>&#123;<br>    MPI_Recv(new_msg,size,MPI_INT,(my_rank+comm_sz<span class="hljs-number">-1</span>)%comm_sz,<span class="hljs-number">0</span>,comm,<br>MPI_STATUS_IGNORE);<br>    MPI_Send(msg,size,MPI_INT,(my_rank+<span class="hljs-number">1</span>)%comm_sz,<span class="hljs-number">0</span>,comm);<br>&#125;<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-keyword">if</span>(my_rank%<span class="hljs-number">2</span>==<span class="hljs-number">0</span>)&#123;
+    MPI_Send(msg,size,MPI_INT,(my_rank+<span class="hljs-number">1</span>)%comm_sz,<span class="hljs-number">0</span>,comm);
+	MPI_Recv(new_msg,size,MPI_INT,(my_rank+comm_sz<span class="hljs-number">-1</span>)%comm_sz,<span class="hljs-number">0</span>,comm,
+MPI_STATUS_IGNORE);
+&#125;<span class="hljs-keyword">else</span>&#123;
+    MPI_Recv(new_msg,size,MPI_INT,(my_rank+comm_sz<span class="hljs-number">-1</span>)%comm_sz,<span class="hljs-number">0</span>,comm,
+MPI_STATUS_IGNORE);
+    MPI_Send(msg,size,MPI_INT,(my_rank+<span class="hljs-number">1</span>)%comm_sz,<span class="hljs-number">0</span>,comm);
+&#125;</code></pre></div>
 <p>偶数个comm_sz是没有问题的，奇数个comm_sz可能是不安全的</p>
 <p>5个进程下的安全通信：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/104.png" srcset="/img/loading.gif" lazyload alt="104" style="zoom:67%;" /></p>
@@ -511,7 +569,20 @@ MPI 标准允许MPI_Send以两种不同的方式行事：</p>
 <p>1.自己安排通信的替代方法。 2.在单个调用中执行阻塞发送和接收。 3.dest
 和 source 可以相同也可以不同。 4.特别有用，因为 MPI
 安排通信以便程序不会挂起或崩溃。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">MPI_Sendrecv</span><span class="hljs-params">(</span><br><span class="hljs-params">	<span class="hljs-type">void</span>* 				send_buf_p;</span><br><span class="hljs-params">    <span class="hljs-type">int</span> 				send_buf_size;</span><br><span class="hljs-params">    MPI_Datatype		send_buf_type;</span><br><span class="hljs-params">    <span class="hljs-type">int</span> 				dest;</span><br><span class="hljs-params">    <span class="hljs-type">int</span> 				send_tag;</span><br><span class="hljs-params">    <span class="hljs-type">void</span>* 				recv_buf_p;</span><br><span class="hljs-params">    <span class="hljs-type">int</span> 				recv_buf_size;</span><br><span class="hljs-params">    MPI_Datatype		recv_buf_type;</span><br><span class="hljs-params">    <span class="hljs-type">int</span>					source;</span><br><span class="hljs-params">    <span class="hljs-type">int</span> 				recv_tag;</span><br><span class="hljs-params">    MPI_Comm			communicator;</span><br><span class="hljs-params">    MPI_Status*			status_p;		</span><br><span class="hljs-params">)</span>;<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">MPI_Sendrecv</span><span class="hljs-params">(</span>
+<span class="hljs-params">	<span class="hljs-type">void</span>* 				send_buf_p;</span>
+<span class="hljs-params">    <span class="hljs-type">int</span> 				send_buf_size;</span>
+<span class="hljs-params">    MPI_Datatype		send_buf_type;</span>
+<span class="hljs-params">    <span class="hljs-type">int</span> 				dest;</span>
+<span class="hljs-params">    <span class="hljs-type">int</span> 				send_tag;</span>
+<span class="hljs-params">    <span class="hljs-type">void</span>* 				recv_buf_p;</span>
+<span class="hljs-params">    <span class="hljs-type">int</span> 				recv_buf_size;</span>
+<span class="hljs-params">    MPI_Datatype		recv_buf_type;</span>
+<span class="hljs-params">    <span class="hljs-type">int</span>					source;</span>
+<span class="hljs-params">    <span class="hljs-type">int</span> 				recv_tag;</span>
+<span class="hljs-params">    MPI_Comm			communicator;</span>
+<span class="hljs-params">    MPI_Status*			status_p;		</span>
+<span class="hljs-params">)</span>;</code></pre></div>
 <h3 id="集群通信和点到点通信">集群通信和点到点通信</h3>
 <p>1.在通讯子中全部进程必须调用相同的集合函数</p>
 <ul>
@@ -534,7 +605,56 @@ out_data_p，即使它只是空值.</p>
 <li>他们被匹配仅仅在通信子的基础和他们被调用的顺序</li>
 </ul>
 <h2 id="块行矩阵io并行代码">块行矩阵I/O并行代码</h2>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">main</span> <span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span> *argv[])</span>&#123;<br>    dtype**	a; 		<span class="hljs-comment">/*doubly-subscripted array*/</span><br>    dtype* 	storage; <span class="hljs-comment">/*Loacl portion of array elements*/</span><br>    <span class="hljs-type">int</span> i,j,k;<br>    <span class="hljs-type">int</span> id;<br>    <span class="hljs-type">int</span> m;<span class="hljs-comment">/*rows in maxtrix*/</span><br>    <span class="hljs-type">int</span> n;<span class="hljs-comment">/*columns in maxtrix*/</span><br>    <span class="hljs-type">int</span> p;<span class="hljs-comment">/*number of processes*/</span><br>    <span class="hljs-type">double</span> time,max_time;<br>    <span class="hljs-type">void</span> <span class="hljs-title function_">compute_shortest_paths</span><span class="hljs-params">(<span class="hljs-type">int</span>,<span class="hljs-type">int</span>,<span class="hljs-type">int</span>**,<span class="hljs-type">int</span>)</span>;<br>    MPI_Init (&amp;argc, &amp;argv);<br>    MPI_Comm_rank(MPI_COMM_WORLD,&amp;id);<br>    MPI_Comm_size(MPI_COMM_WORLD,&amp;p);<br>    read_row_striped_matrix(argv[<span class="hljs-number">1</span>],(<span class="hljs-type">void</span>*) &amp;a),(<span class="hljs-type">void</span>*) &amp;storage,MPI_TYPE,&amp;m,&amp;n,MPI_COMM_WORLD);<br>    <span class="hljs-keyword">if</span>(m!=n) <span class="hljs-built_in">terminate</span>(id,<span class="hljs-string">&quot;Matrix must be square\n&quot;</span>);<br>    pirnt_row_striped_matrix((<span class="hljs-type">void</span>**) a,MPI_TYPE,<span class="hljs-number">0</span>,MPI_COMM_WORLD);<br>    MPI_Barrier(MPI_COMMON_WORLD);<br>    time =-MPI_Wtime;<br>    compute_shortest_paths(id,p,(dtype**) a,n);<br>    time+=MPI_Wtime;<br>    MPI_Reduce(&amp;time,&amp;max_time,<span class="hljs-number">1</span>,MPI_DOUBLE,MPI_MAX,<span class="hljs-number">0</span>,MPI_COMM_WORLD);<br>    <span class="hljs-keyword">if</span>(!id) <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Floyd,matrix size %d,%d processes:%6.2f seconds\n&quot;</span>,n,p,max_time);<br>    pirnt_row_striped_matrix((<span class="hljs-type">void</span>**) a,MPI_TYPE,<span class="hljs-number">0</span>,MPI_COMM_WORLD);<br>    MPI_Finalize();<br>&#125;<br><span class="hljs-type">void</span> <span class="hljs-title function_">compute_shortest_paths</span><span class="hljs-params">(<span class="hljs-type">int</span> id,<span class="hljs-type">int</span> p,dtype** a,<span class="hljs-type">int</span> n)</span>&#123;<br>    <span class="hljs-type">int</span> i,j,k;<br>    <span class="hljs-type">int</span> offset;<span class="hljs-comment">//local index of broadcast row</span><br>    <span class="hljs-type">int</span> root;<span class="hljs-comment">//process controlling row to be cast;</span><br>    <span class="hljs-type">int</span> *tmp;<span class="hljs-comment">//holds the broadcast row;</span><br>    tmp=(dtype *)<span class="hljs-built_in">malloc</span> (n*<span class="hljs-keyword">sizeof</span>(dtype));<br>    <span class="hljs-keyword">for</span>(k=<span class="hljs-number">0</span>;k&lt;n;k++)&#123;<br>        root=BLOCK_OWNER(id,p,n);<br>        <span class="hljs-keyword">if</span>(root==id)&#123;<br>            offset=k-BLOCK_LOW(id,p,n);<br>            <span class="hljs-keyword">for</span>(j=<span class="hljs-number">0</span>;j&lt;n;j++)&#123;<br>                temp[j]=a[offset][l];<br>            &#125;<br>            MPI_Bcast(tmp,n,MPI_TYPE,root,MPI_COMM_WORLD);<br>            <span class="hljs-keyword">for</span>(i=<span class="hljs-number">0</span>;i&lt;BLOCK_SIZE(id,p,n);i++)&#123;<br>                <span class="hljs-keyword">for</span>(j=<span class="hljs-number">0</span>;j&lt;n;j++)&#123;<br>                    a[i][j]=MIN(a[i][j],a[i][k]+temp[j]);<br>                &#125;<br>            &#125;<br>        &#125;<br>        <span class="hljs-built_in">free</span> (tmp);<br>    &#125;<br>&#125;<br><br><br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">main</span> <span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span> *argv[])</span>&#123;
+    dtype**	a; 		<span class="hljs-comment">/*doubly-subscripted array*/</span>
+    dtype* 	storage; <span class="hljs-comment">/*Loacl portion of array elements*/</span>
+    <span class="hljs-type">int</span> i,j,k;
+    <span class="hljs-type">int</span> id;
+    <span class="hljs-type">int</span> m;<span class="hljs-comment">/*rows in maxtrix*/</span>
+    <span class="hljs-type">int</span> n;<span class="hljs-comment">/*columns in maxtrix*/</span>
+    <span class="hljs-type">int</span> p;<span class="hljs-comment">/*number of processes*/</span>
+    <span class="hljs-type">double</span> time,max_time;
+    <span class="hljs-type">void</span> <span class="hljs-title function_">compute_shortest_paths</span><span class="hljs-params">(<span class="hljs-type">int</span>,<span class="hljs-type">int</span>,<span class="hljs-type">int</span>**,<span class="hljs-type">int</span>)</span>;
+    MPI_Init (&amp;argc, &amp;argv);
+    MPI_Comm_rank(MPI_COMM_WORLD,&amp;id);
+    MPI_Comm_size(MPI_COMM_WORLD,&amp;p);
+    read_row_striped_matrix(argv[<span class="hljs-number">1</span>],(<span class="hljs-type">void</span>*) &amp;a),(<span class="hljs-type">void</span>*) &amp;storage,MPI_TYPE,&amp;m,&amp;n,MPI_COMM_WORLD);
+    <span class="hljs-keyword">if</span>(m!=n) <span class="hljs-built_in">terminate</span>(id,<span class="hljs-string">&quot;Matrix must be square\n&quot;</span>);
+    pirnt_row_striped_matrix((<span class="hljs-type">void</span>**) a,MPI_TYPE,<span class="hljs-number">0</span>,MPI_COMM_WORLD);
+    MPI_Barrier(MPI_COMMON_WORLD);
+    time =-MPI_Wtime;
+    compute_shortest_paths(id,p,(dtype**) a,n);
+    time+=MPI_Wtime;
+    MPI_Reduce(&amp;time,&amp;max_time,<span class="hljs-number">1</span>,MPI_DOUBLE,MPI_MAX,<span class="hljs-number">0</span>,MPI_COMM_WORLD);
+    <span class="hljs-keyword">if</span>(!id) <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Floyd,matrix size %d,%d processes:%6.2f seconds\n&quot;</span>,n,p,max_time);
+    pirnt_row_striped_matrix((<span class="hljs-type">void</span>**) a,MPI_TYPE,<span class="hljs-number">0</span>,MPI_COMM_WORLD);
+    MPI_Finalize();
+&#125;
+<span class="hljs-type">void</span> <span class="hljs-title function_">compute_shortest_paths</span><span class="hljs-params">(<span class="hljs-type">int</span> id,<span class="hljs-type">int</span> p,dtype** a,<span class="hljs-type">int</span> n)</span>&#123;
+    <span class="hljs-type">int</span> i,j,k;
+    <span class="hljs-type">int</span> offset;<span class="hljs-comment">//local index of broadcast row</span>
+    <span class="hljs-type">int</span> root;<span class="hljs-comment">//process controlling row to be cast;</span>
+    <span class="hljs-type">int</span> *tmp;<span class="hljs-comment">//holds the broadcast row;</span>
+    tmp=(dtype *)<span class="hljs-built_in">malloc</span> (n*<span class="hljs-keyword">sizeof</span>(dtype));
+    <span class="hljs-keyword">for</span>(k=<span class="hljs-number">0</span>;k&lt;n;k++)&#123;
+        root=BLOCK_OWNER(id,p,n);
+        <span class="hljs-keyword">if</span>(root==id)&#123;
+            offset=k-BLOCK_LOW(id,p,n);
+            <span class="hljs-keyword">for</span>(j=<span class="hljs-number">0</span>;j&lt;n;j++)&#123;
+                temp[j]=a[offset][l];
+            &#125;
+            MPI_Bcast(tmp,n,MPI_TYPE,root,MPI_COMM_WORLD);
+            <span class="hljs-keyword">for</span>(i=<span class="hljs-number">0</span>;i&lt;BLOCK_SIZE(id,p,n);i++)&#123;
+                <span class="hljs-keyword">for</span>(j=<span class="hljs-number">0</span>;j&lt;n;j++)&#123;
+                    a[i][j]=MIN(a[i][j],a[i][k]+temp[j]);
+                &#125;
+            &#125;
+        &#125;
+        <span class="hljs-built_in">free</span> (tmp);
+    &#125;
+&#125;
+
+</code></pre></div>
 <h2 id="分析和基准测试程序">分析和基准测试程序</h2>
 <h3 id="计算复杂度">计算复杂度</h3>
 <p>1.最内层循环具有复杂性 Θ(n) 2.中间循环最多执行 ↑[n/p]次 3.外循环执行

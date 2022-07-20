@@ -226,7 +226,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          4.2k 字
+          4.1k 字
         
       </span>
     
@@ -345,10 +345,24 @@ Thrust 是一个开源的 C++
 加速添加到应用程序的最直接方式，在许多情况下，它们的性能是无与伦比的。</p>
 </blockquote>
 <h3 id="推力中的向量加法">推力中的向量加法</h3>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c">thrust::device_vector&lt;<span class="hljs-type">float</span>&gt; <span class="hljs-title function_">deviceInput1</span><span class="hljs-params">(inputLength)</span>;<br>thrust::device_vector&lt;<span class="hljs-type">float</span>&gt; <span class="hljs-title function_">deviceInput2</span><span class="hljs-params">(inputLength)</span>;<br>thrust::device_vector&lt;<span class="hljs-type">float</span>&gt; <span class="hljs-title function_">deviceOutput</span><span class="hljs-params">(inputLength)</span>;<br><br>thrust::copy(hostInput1, hostInput1 + inputLength, deviceInput1.begin());<br>thrust::copy(hostInput2, hostInput2 + inputLength, deviceInput2.begin());<br><br>thrust::transform(deviceInput1.begin(), deviceInput1.end(), deviceInput2.begin(), deviceOutput.begin(), thrust::plus&lt;<span class="hljs-type">float</span>&gt;());<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c">thrust::device_vector&lt;<span class="hljs-type">float</span>&gt; <span class="hljs-title function_">deviceInput1</span><span class="hljs-params">(inputLength)</span>;
+thrust::device_vector&lt;<span class="hljs-type">float</span>&gt; <span class="hljs-title function_">deviceInput2</span><span class="hljs-params">(inputLength)</span>;
+thrust::device_vector&lt;<span class="hljs-type">float</span>&gt; <span class="hljs-title function_">deviceOutput</span><span class="hljs-params">(inputLength)</span>;
+
+thrust::copy(hostInput1, hostInput1 + inputLength, deviceInput1.begin());
+thrust::copy(hostInput2, hostInput2 + inputLength, deviceInput2.begin());
+
+thrust::transform(deviceInput1.begin(), deviceInput1.end(), deviceInput2.begin(), deviceOutput.begin(), thrust::plus&lt;<span class="hljs-type">float</span>&gt;());</code></pre></div>
 <h3 id="opencacc">OPENCACC</h3>
 <p>C、C++ 和 FORTRAN 的编译器指令</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-meta">#<span class="hljs-keyword">pragma</span> acc parallel loop</span><br><br>copyin(input1[<span class="hljs-number">0</span>:inputLength],input2[<span class="hljs-number">0</span>:inputLength]), <br>copyout(output[<span class="hljs-number">0</span>:inputLength])<br><br>    <span class="hljs-keyword">for</span>(i = <span class="hljs-number">0</span>; i &lt; inputLength; ++i) &#123;<br>        output[i] = input1[i] + input2[i];<br>    &#125;<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs C"><span class="hljs-meta">#<span class="hljs-keyword">pragma</span> acc parallel loop</span>
+
+copyin(input1[<span class="hljs-number">0</span>:inputLength],input2[<span class="hljs-number">0</span>:inputLength]), 
+copyout(output[<span class="hljs-number">0</span>:inputLength])
+
+    <span class="hljs-keyword">for</span>(i = <span class="hljs-number">0</span>; i &lt; inputLength; ++i) &#123;
+        output[i] = input1[i] + input2[i];
+    &#125;</code></pre></div>
 <h3 id="gpu编程语言">GPU编程语言</h3>
 <figure>
 <img
@@ -428,7 +442,20 @@ alt="135" />
 <figcaption aria-hidden="true">135</figcaption>
 </figure>
 <p>向量加法，传统C代码：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// Compute vector sum C = A + B</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">vecAdd</span><span class="hljs-params">(<span class="hljs-type">float</span> *h_A, <span class="hljs-type">float</span> *h_B, <span class="hljs-type">float</span> *h_C, <span class="hljs-type">int</span> n)</span><br>&#123;<br>    <span class="hljs-type">int</span> i;<br>    <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i&lt;n; i++) h_C[i] = h_A[i] + h_B[i];<br>&#125;<br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span><br>&#123;<br>    <span class="hljs-comment">// Memory allocation for h_A, h_B, and h_C</span><br>    <span class="hljs-comment">// I/O to read h_A and h_B, N elements</span><br>	 …<br>    vecAdd(h_A, h_B, h_C, N);<br>&#125;<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-comment">// Compute vector sum C = A + B</span>
+<span class="hljs-type">void</span> <span class="hljs-title function_">vecAdd</span><span class="hljs-params">(<span class="hljs-type">float</span> *h_A, <span class="hljs-type">float</span> *h_B, <span class="hljs-type">float</span> *h_C, <span class="hljs-type">int</span> n)</span>
+&#123;
+    <span class="hljs-type">int</span> i;
+    <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i&lt;n; i++) h_C[i] = h_A[i] + h_B[i];
+&#125;
+
+<span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span>
+&#123;
+    <span class="hljs-comment">// Memory allocation for h_A, h_B, and h_C</span>
+    <span class="hljs-comment">// I/O to read h_A and h_B, N elements</span>
+	 …
+    vecAdd(h_A, h_B, h_C, N);
+&#125;</code></pre></div>
 <p>异构计算，向量主机代码：</p>
 <figure>
 <img
@@ -436,7 +463,22 @@ src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/136.png" srcse
 alt="136" />
 <figcaption aria-hidden="true">136</figcaption>
 </figure>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;cuda.h&gt;</span></span><br><span class="hljs-type">void</span> <span class="hljs-title function_">vecAdd</span><span class="hljs-params">(<span class="hljs-type">float</span> *h_A, <span class="hljs-type">float</span> *h_B, <span class="hljs-type">float</span> *h_C, <span class="hljs-type">int</span> n)</span>‏<br>&#123;<br>   <span class="hljs-type">int</span> size = n* <span class="hljs-keyword">sizeof</span>(<span class="hljs-type">float</span>); <br>   <span class="hljs-type">float</span> *d_A, *d_B, *d_C;<br>   <span class="hljs-comment">// Part 1</span><br>   <span class="hljs-comment">// Allocate device memory for A, B, and C</span><br>   <span class="hljs-comment">// copy A and B to device memory </span><br>    <br>   <span class="hljs-comment">// Part 2</span><br>   <span class="hljs-comment">// Kernel launch code – the device performs the actual vector addition</span><br><br>   <span class="hljs-comment">// Part 3</span><br>   <span class="hljs-comment">// copy C from the device memory</span><br>   <span class="hljs-comment">// Free device vectors</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;cuda.h&gt;</span></span>
+<span class="hljs-type">void</span> <span class="hljs-title function_">vecAdd</span><span class="hljs-params">(<span class="hljs-type">float</span> *h_A, <span class="hljs-type">float</span> *h_B, <span class="hljs-type">float</span> *h_C, <span class="hljs-type">int</span> n)</span>‏
+&#123;
+   <span class="hljs-type">int</span> size = n* <span class="hljs-keyword">sizeof</span>(<span class="hljs-type">float</span>); 
+   <span class="hljs-type">float</span> *d_A, *d_B, *d_C;
+   <span class="hljs-comment">// Part 1</span>
+   <span class="hljs-comment">// Allocate device memory for A, B, and C</span>
+   <span class="hljs-comment">// copy A and B to device memory </span>
+    
+   <span class="hljs-comment">// Part 2</span>
+   <span class="hljs-comment">// Kernel launch code – the device performs the actual vector addition</span>
+
+   <span class="hljs-comment">// Part 3</span>
+   <span class="hljs-comment">// copy C from the device memory</span>
+   <span class="hljs-comment">// Free device vectors</span>
+&#125;</code></pre></div>
 <p>CUDA内存部分概述：</p>
 <p>HOST代码可以：向/从每个网格全局内存传输数据
 Device代码可以：每线程读/写 寄存器，读/写全共享 全局内存</p>
@@ -469,9 +511,27 @@ alt="137" />
 <li>传输到设备是异步的</li>
 </ul>
 <h3 id="向量加法host代码">向量加法HOST代码</h3>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">void</span> <span class="hljs-title function_">vecAdd</span><span class="hljs-params">(<span class="hljs-type">float</span> *h_A, <span class="hljs-type">float</span> *h_B, <span class="hljs-type">float</span> *h_C, <span class="hljs-type">int</span> n)</span>&#123;<br>    <span class="hljs-type">int</span> size = n * <span class="hljs-keyword">sizeof</span>(<span class="hljs-type">float</span>); <span class="hljs-type">float</span> *d_A, *d_B, *d_C;<br><br>    cudaMalloc((<span class="hljs-type">void</span> **) &amp;d_A, size);    <br>    cudaMemcpy(d_A, h_A, size, cudaMemcpyHostToDevice);<br>    cudaMalloc((<span class="hljs-type">void</span> **) &amp;d_B, size);<br>    cudaMemcpy(d_B, h_B, size, cudaMemcpyHostToDevice);<br>    cudaMalloc((<span class="hljs-type">void</span> **) &amp;d_C, size);<br><br>    <span class="hljs-comment">// Kernel invocation code – to be shown later</span><br><br>    cudaMemcpy(h_C, d_C, size, cudaMemcpyDeviceToHost);<br>    cudaFree(d_A); cudaFree(d_B); cudaFree (d_C);<br>&#125;<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">void</span> <span class="hljs-title function_">vecAdd</span><span class="hljs-params">(<span class="hljs-type">float</span> *h_A, <span class="hljs-type">float</span> *h_B, <span class="hljs-type">float</span> *h_C, <span class="hljs-type">int</span> n)</span>&#123;
+    <span class="hljs-type">int</span> size = n * <span class="hljs-keyword">sizeof</span>(<span class="hljs-type">float</span>); <span class="hljs-type">float</span> *d_A, *d_B, *d_C;
+
+    cudaMalloc((<span class="hljs-type">void</span> **) &amp;d_A, size);    
+    cudaMemcpy(d_A, h_A, size, cudaMemcpyHostToDevice);
+    cudaMalloc((<span class="hljs-type">void</span> **) &amp;d_B, size);
+    cudaMemcpy(d_B, h_B, size, cudaMemcpyHostToDevice);
+    cudaMalloc((<span class="hljs-type">void</span> **) &amp;d_C, size);
+
+    <span class="hljs-comment">// Kernel invocation code – to be shown later</span>
+
+    cudaMemcpy(h_C, d_C, size, cudaMemcpyDeviceToHost);
+    cudaFree(d_A); cudaFree(d_B); cudaFree (d_C);
+&#125;</code></pre></div>
 <p>在实行的时候，检查HOST代码中的 API 错误</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c">cudaError_t  err = cudaMalloc((<span class="hljs-type">void</span> **) &amp;d_A, size);<br><br><span class="hljs-keyword">if</span> (err != cudaSuccess)  &#123;<br>   <span class="hljs-built_in">printf</span>(“%s in %s at line %d\n”, cudaGetErrorString(err), __FILE__,__LINE__);<br>   <span class="hljs-built_in">exit</span>(EXIT_FAILURE);<br>&#125;<br></code></pre></td></tr></table></figure>
+<div class="code-wrapper"><pre><code class="hljs c">cudaError_t  err = cudaMalloc((<span class="hljs-type">void</span> **) &amp;d_A, size);
+
+<span class="hljs-keyword">if</span> (err != cudaSuccess)  &#123;
+   <span class="hljs-built_in">printf</span>(“%s in %s at line %d\n”, cudaGetErrorString(err), __FILE__,__LINE__);
+   <span class="hljs-built_in">exit</span>(EXIT_FAILURE);
+&#125;</code></pre></div>
 <h2 id="数据并行和线程">数据并行和线程</h2>
 <p><strong>cuda执行模型</strong></p>
 <p>异构host（cpu）+device（gpu）应用c程序 串行部分：在host的c代码中
