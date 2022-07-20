@@ -231,7 +231,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          3.7k 字
+          3.9k 字
         
       </span>
     
@@ -242,7 +242,7 @@
         
         
         
-          32 分钟
+          33 分钟
         
       </span>
     
@@ -303,13 +303,13 @@
 <h3 id="scan的典型应用">Scan的典型应用</h3>
 <p>Scan是一个简单并且有用的并行构筑模块</p>
 <p>将顺序递归转换为:</p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">int</span> j<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">;</span>j<span class="token operator">&lt;</span>n<span class="token punctuation">;</span>j<span class="token operator">++</span><span class="token punctuation">)</span>
-	output<span class="token punctuation">[</span>j<span class="token punctuation">]</span><span class="token operator">=</span>output<span class="token punctuation">[</span>j<span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token operator">+</span><span class="token function">f</span><span class="token punctuation">(</span>j<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre></div></figure>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">for(int j&#x3D;1;j&lt;n;j++)
+	output[j]&#x3D;output[j-1]+f(j);</code></pre></div></figure>
 <p>进入并行</p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token function">forall</span><span class="token punctuation">(</span>j<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-	temp<span class="token punctuation">[</span>j<span class="token punctuation">]</span><span class="token operator">=</span><span class="token function">f</span><span class="token punctuation">(</span>j<span class="token punctuation">)</span>
-<span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
-<span class="token function">scan</span><span class="token punctuation">(</span>out<span class="token punctuation">,</span> temp<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre></div></figure>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">forall(j)&#123;
+	temp[j]&#x3D;f(j)
+&#125;;
+scan(out, temp);</code></pre></div></figure>
 <ul>
 <li>受益的并行算法：</li>
 </ul>
@@ -324,21 +324,21 @@ memory to parallel threads Allocating memory bugger space for
 communication channels…</p>
 <h3 id="全面顺序扫描算法">全面顺序扫描算法</h3>
 <p>给定一个序列：<code>[x0, x1, x2, ... ]</code>，计算输出<code>[y0, y1, y2, ... ]</code>，例如</p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">y0 <span class="token operator">=</span> x0
-y1 <span class="token operator">=</span> x0 <span class="token operator">+</span> x1
-y2 <span class="token operator">=</span> x0 <span class="token operator">+</span> x1<span class="token operator">+</span> x2<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span></code></pre></div></figure>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">y0 &#x3D; x0
+y1 &#x3D; x0 + x1
+y2 &#x3D; x0 + x1+ x2....</code></pre></div></figure>
 <p>使用递归的定义：<code>yi = yi − 1 + xi</code></p>
 <h4 id="高效的c实现">高效的C实现</h4>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">y<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token operator">=</span>x<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span>
-<span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">int</span> i<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> max_i<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span>
-	y<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token operator">=</span>y<span class="token punctuation">[</span>i<span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token operator">+</span>x<span class="token punctuation">[</span>i<span class="token punctuation">]</span></code></pre></div></figure>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">y[0]&#x3D;x[0]
+for(int i&#x3D;1; i &lt; max_i; i++)
+	y[i]&#x3D;y[i-1]+x[i]</code></pre></div></figure>
 <p>Computationally efficient：计算效率高，只是比顺序规约稍微贵一点
 N个元素需要N次加法运算，O(N)</p>
 <h4 id="简单的全面并行扫描">简单的全面并行扫描</h4>
 <p>给每个y的计算分配一个thread(线程)，让每个thread将计算这个y所需要的x相加</p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">y0 <span class="token operator">=</span> x0
-y1 <span class="token operator">=</span> x0 <span class="token operator">+</span> x1
-y2 <span class="token operator">=</span> x0 <span class="token operator">+</span> x1<span class="token operator">+</span> x2<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span></code></pre></div></figure>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">y0 &#x3D; x0
+y1 &#x3D; x0 + x1
+y2 &#x3D; x0 + x1+ x2....</code></pre></div></figure>
 <blockquote>
 <p>并行计算在不考虑性能的时候十分简单</p>
 </blockquote>
@@ -367,20 +367,20 @@ alt="201" />
 <li>所有线程执行加法和写输出操作</li>
 </ul>
 <h2 id="低效的并行扫描内核">低效的并行扫描内核</h2>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">__global__ <span class="token keyword">void</span> <span class="token function">work_inefficient_scan_kernel</span><span class="token punctuation">(</span><span class="token keyword">float</span> <span class="token operator">*</span>X<span class="token punctuation">,</span> <span class="token keyword">float</span> <span class="token operator">*</span>Y<span class="token punctuation">,</span> <span class="token keyword">int</span> InputSize<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    __shared__ <span class="token keyword">float</span> XY<span class="token punctuation">[</span>SECTION_SIZE<span class="token punctuation">]</span><span class="token punctuation">;</span>
-    <span class="token keyword">int</span> i <span class="token operator">=</span> blockIdx<span class="token punctuation">.</span>x <span class="token operator">*</span> blockDim<span class="token punctuation">.</span>x <span class="token operator">+</span> threadIdx<span class="token punctuation">.</span>x<span class="token punctuation">;</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>i <span class="token operator">&lt;</span> InputSize<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>XY<span class="token punctuation">[</span>threadIdx<span class="token punctuation">.</span>x<span class="token punctuation">]</span> <span class="token operator">=</span> X<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token punctuation">&#125;</span>
-        <span class="token comment">// the code below performs iterative scan on XY</span>
-        <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">unsigned</span> <span class="token keyword">int</span> stride <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span> stride <span class="token operator">&lt;=</span> threadIdx<span class="token punctuation">.</span>x<span class="token punctuation">;</span> stride <span class="token operator">*=</span> <span class="token number">2</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token function">__syncthreads</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-            <span class="token keyword">float</span> in1 <span class="token operator">=</span> XY<span class="token punctuation">[</span>threadIdx<span class="token punctuation">.</span>x <span class="token operator">-</span> stride<span class="token punctuation">]</span><span class="token punctuation">;</span>
-            <span class="token function">__syncthreads</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-            XY<span class="token punctuation">[</span>threadIdx<span class="token punctuation">.</span>x<span class="token punctuation">]</span> <span class="token operator">+=</span> in1<span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span>
-      __ <span class="token function">syncthreads</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-      <span class="token function">If</span> <span class="token punctuation">(</span>i <span class="token operator">&lt;</span> InputSize<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>Y<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> XY<span class="token punctuation">[</span>threadIdx<span class="token punctuation">.</span>x<span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre></div></figure>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">__global__ void work_inefficient_scan_kernel(float *X, float *Y, int InputSize) &#123;
+    __shared__ float XY[SECTION_SIZE];
+    int i &#x3D; blockIdx.x * blockDim.x + threadIdx.x;
+    if (i &lt; InputSize) &#123;XY[threadIdx.x] &#x3D; X[i];&#125;
+        &#x2F;&#x2F; the code below performs iterative scan on XY
+        for (unsigned int stride &#x3D; 1; stride &lt;&#x3D; threadIdx.x; stride *&#x3D; 2) &#123;
+        __syncthreads();
+            float in1 &#x3D; XY[threadIdx.x - stride];
+            __syncthreads();
+            XY[threadIdx.x] +&#x3D; in1;
+        &#125;
+      __ syncthreads();
+      If (i &lt; InputSize) &#123;Y[i] &#x3D; XY[threadIdx.x];&#125;
+&#125;</code></pre></div></figure>
 <h3 id="高效工作的考虑">高效工作的考虑</h3>
 <p>Scan 操作log(n)次并行迭代</p>
 <ul>
@@ -419,13 +419,13 @@ alt="202" />
 <figcaption aria-hidden="true">202</figcaption>
 </figure>
 <h3 id="规约阶段内核代码">规约阶段内核代码</h3>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">// XY[2*BLOCK_SIZE] is in shared memory</span>
-<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">unsigned</span> <span class="token keyword">int</span> stride <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>stride <span class="token operator">&lt;=</span> BLOCK_SIZE<span class="token punctuation">;</span> stride <span class="token operator">*=</span> <span class="token number">2</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">int</span> index <span class="token operator">=</span> <span class="token punctuation">(</span>threadIdx<span class="token punctuation">.</span>x<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token operator">*</span>stride<span class="token operator">*</span><span class="token number">2</span> <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span><span class="token punctuation">(</span>index <span class="token operator">&lt;</span> <span class="token number">2</span><span class="token operator">*</span>BLOCK_SIZE<span class="token punctuation">)</span>
-        XY<span class="token punctuation">[</span>index<span class="token punctuation">]</span> <span class="token operator">+=</span> XY<span class="token punctuation">[</span>index<span class="token operator">-</span>stride<span class="token punctuation">]</span><span class="token punctuation">;</span>
-    <span class="token function">__syncthreads</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span></code></pre></div></figure>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">&#x2F;&#x2F; XY[2*BLOCK_SIZE] is in shared memory
+for (unsigned int stride &#x3D; 1;stride &lt;&#x3D; BLOCK_SIZE; stride *&#x3D; 2) &#123;
+    int index &#x3D; (threadIdx.x+1)*stride*2 - 1;
+    if(index &lt; 2*BLOCK_SIZE)
+        XY[index] +&#x3D; XY[index-stride];
+    __syncthreads();
+&#125;</code></pre></div></figure>
 <blockquote>
 <p>threadIdx.x+1 = 1, 2, 3, 4…. stride = 1, index = 1, 3, 5, 7, …</p>
 </blockquote>
@@ -436,15 +436,15 @@ alt="203" />
 <figcaption aria-hidden="true">203</figcaption>
 </figure>
 <h3 id="反向规约内核代码">反向规约内核代码</h3>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">unsigned</span> <span class="token keyword">int</span> stride <span class="token operator">=</span> BLOCK_SIZE<span class="token operator">/</span><span class="token number">2</span><span class="token punctuation">;</span> stride <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">;</span> stride <span class="token operator">/=</span> <span class="token number">2</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    <span class="token function">__syncthreads</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">int</span> index <span class="token operator">=</span> <span class="token punctuation">(</span>threadIdx<span class="token punctuation">.</span>x<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token operator">*</span>stride<span class="token operator">*</span><span class="token number">2</span> <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span><span class="token punctuation">(</span>index<span class="token operator">+</span>stride <span class="token operator">&lt;</span> <span class="token number">2</span><span class="token operator">*</span>BLOCK_SIZE<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-      	XY<span class="token punctuation">[</span>index <span class="token operator">+</span> stride<span class="token punctuation">]</span> <span class="token operator">+=</span> XY<span class="token punctuation">[</span>index<span class="token punctuation">]</span><span class="token punctuation">;</span>
-     <span class="token punctuation">&#125;</span>
-  <span class="token punctuation">&#125;</span>
-   <span class="token function">__syncthreads</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token keyword">if</span> <span class="token punctuation">(</span>i <span class="token operator">&lt;</span> InputSize<span class="token punctuation">)</span> Y<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> XY<span class="token punctuation">[</span>threadIdx<span class="token punctuation">.</span>x<span class="token punctuation">]</span><span class="token punctuation">;</span></code></pre></div></figure>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">for (unsigned int stride &#x3D; BLOCK_SIZE&#x2F;2; stride &gt; 0; stride &#x2F;&#x3D; 2) &#123;
+    __syncthreads();
+    int index &#x3D; (threadIdx.x+1)*stride*2 - 1;
+    if(index+stride &lt; 2*BLOCK_SIZE) &#123;
+      	XY[index + stride] +&#x3D; XY[index];
+     &#125;
+  &#125;
+   __syncthreads();
+  if (i &lt; InputSize) Y[i] &#x3D; XY[threadIdx.x];</code></pre></div></figure>
 <blockquote>
 <p>First iteration for 16-element section threadIdx.x = 0 stride =
 BLOCK_SIZE/2 = 8/2 = 4 index = 8-1 = 7</p>
@@ -887,6 +887,10 @@ XY[threadIdx.x]</li>
   });
 </script>
 
+
+  <script  src="https://lib.baomitu.com/prism/1.27.0/components/prism-core.min.js" ></script>
+
+  <script  src="https://lib.baomitu.com/prism/1.27.0/plugins/autoloader/prism-autoloader.min.js" ></script>
 
   <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
 

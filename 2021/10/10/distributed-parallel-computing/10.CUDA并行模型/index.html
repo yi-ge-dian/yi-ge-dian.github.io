@@ -231,7 +231,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          3.8k 字
+          4.2k 字
         
       </span>
     
@@ -242,7 +242,7 @@
         
         
         
-          32 分钟
+          35 分钟
         
       </span>
     
@@ -309,28 +309,28 @@ alt="145" />
 <figcaption aria-hidden="true">145</figcaption>
 </figure>
 <p>源代码图片内核</p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">__global__ <span class="token keyword">void</span> <span class="token function">PictureKernel</span><span class="token punctuation">(</span><span class="token keyword">float</span><span class="token operator">*</span> d_Pin<span class="token punctuation">,</span> <span class="token keyword">float</span><span class="token operator">*</span> d_Pout<span class="token punctuation">,</span> <span class="token keyword">int</span> height<span class="token punctuation">,</span> <span class="token keyword">int</span> width<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">__global__ void PictureKernel(float* d_Pin, float* d_Pout, int height, int width)&#123;
 
-  <span class="token comment">// Calculate the row # of the d_Pin and d_Pout element</span>
-  <span class="token keyword">int</span> Row <span class="token operator">=</span> blockIdx<span class="token punctuation">.</span>y<span class="token operator">*</span>blockDim<span class="token punctuation">.</span>y <span class="token operator">+</span> threadIdx<span class="token punctuation">.</span>y<span class="token punctuation">;</span>
+  &#x2F;&#x2F; Calculate the row # of the d_Pin and d_Pout element
+  int Row &#x3D; blockIdx.y*blockDim.y + threadIdx.y;
   
-  <span class="token comment">// Calculate the column # of the d_Pin and d_Pout element</span>
-  <span class="token keyword">int</span> Col <span class="token operator">=</span> blockIdx<span class="token punctuation">.</span>x<span class="token operator">*</span>blockDim<span class="token punctuation">.</span>x <span class="token operator">+</span> threadIdx<span class="token punctuation">.</span>x<span class="token punctuation">;</span>
+  &#x2F;&#x2F; Calculate the column # of the d_Pin and d_Pout element
+  int Col &#x3D; blockIdx.x*blockDim.x + threadIdx.x;
 
-  <span class="token comment">// each thread computes one element of d_Pout if in range</span>
-  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>Row <span class="token operator">&lt;</span> height<span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>Col <span class="token operator">&lt;</span> width<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    d_Pout<span class="token punctuation">[</span>Row<span class="token operator">*</span>width<span class="token operator">+</span>Col<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">2.0</span><span class="token operator">*</span>d_Pin<span class="token punctuation">[</span>Row<span class="token operator">*</span>width<span class="token operator">+</span>Col<span class="token punctuation">]</span><span class="token punctuation">;</span>
-  <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre></div></figure>
+  &#x2F;&#x2F; each thread computes one element of d_Pout if in range
+  if ((Row &lt; height) &amp;&amp; (Col &lt; width)) &#123;
+    d_Pout[Row*width+Col] &#x3D; 2.0*d_Pin[Row*width+Col];
+  &#125;
+&#125;</code></pre></div></figure>
 <p>启动PictureKernel的HOST代码</p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">// assume that the picture is m × n, </span>
-<span class="token comment">// m pixels in y dimension and n pixels in x dimension</span>
-<span class="token comment">// input d_Pin has been allocated on and copied to device</span>
-<span class="token comment">// output d_Pout has been allocated on device</span>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">&#x2F;&#x2F; assume that the picture is m × n, 
+&#x2F;&#x2F; m pixels in y dimension and n pixels in x dimension
+&#x2F;&#x2F; input d_Pin has been allocated on and copied to device
+&#x2F;&#x2F; output d_Pout has been allocated on device
 …
-dim3 <span class="token function">DimGrid</span><span class="token punctuation">(</span><span class="token punctuation">(</span>n<span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token operator">/</span><span class="token number">16</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token punctuation">(</span>m<span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token operator">/</span><span class="token number">16</span><span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//网格，线程块的个数</span>
-dim3 <span class="token function">DimBlock</span><span class="token punctuation">(</span><span class="token number">16</span><span class="token punctuation">,</span> <span class="token number">16</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//块，每个线程块中线程的个数</span>
-PictureKernel<span class="token operator">&lt;&lt;</span><span class="token operator">&lt;</span>DimGrid<span class="token punctuation">,</span>DimBlock<span class="token operator">>></span><span class="token operator">></span><span class="token punctuation">(</span>d_Pin<span class="token punctuation">,</span> d_Pout<span class="token punctuation">,</span> m<span class="token punctuation">,</span> n<span class="token punctuation">)</span><span class="token punctuation">;</span>
+dim3 DimGrid((n-1)&#x2F;16 + 1, (m-1)&#x2F;16+1, 1);&#x2F;&#x2F;网格，线程块的个数
+dim3 DimBlock(16, 16, 1);&#x2F;&#x2F;块，每个线程块中线程的个数
+PictureKernel&lt;&lt;&lt;DimGrid,DimBlock&gt;&gt;&gt;(d_Pin, d_Pout, m, n);
 …</code></pre></div></figure>
 <p>并非 Block 中的所有线程都将遵循相同的控制流路径。</p>
 <figure>
@@ -374,26 +374,26 @@ alt="149" />
 <figcaption aria-hidden="true">149</figcaption>
 </figure>
 <h3 id="rgb到灰度转换代码">RGB到灰度转换代码</h3>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">CHANNELS</span> <span class="token expression"><span class="token number">3</span> </span><span class="token comment">// we have 3 channels corresponding to RGB</span></span>
-<span class="token comment">// The input image is encoded as unsigned characters [0, 255]</span>
-__global__ <span class="token keyword">void</span> <span class="token function">colorConvert</span><span class="token punctuation">(</span><span class="token keyword">unsigned</span> <span class="token keyword">char</span> <span class="token operator">*</span> grayImage<span class="token punctuation">,</span> <span class="token keyword">unsigned</span> <span class="token keyword">char</span> <span class="token operator">*</span> rgbImage<span class="token punctuation">,</span><span class="token keyword">int</span> width<span class="token punctuation">,</span> <span class="token keyword">int</span> height<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
- <span class="token keyword">int</span> x <span class="token operator">=</span> threadIdx<span class="token punctuation">.</span>x <span class="token operator">+</span> blockIdx<span class="token punctuation">.</span>x <span class="token operator">*</span> blockDim<span class="token punctuation">.</span>x<span class="token punctuation">;</span>
- <span class="token keyword">int</span> y <span class="token operator">=</span> threadIdx<span class="token punctuation">.</span>y <span class="token operator">+</span> blockIdx<span class="token punctuation">.</span>y <span class="token operator">*</span> blockDim<span class="token punctuation">.</span>y<span class="token punctuation">;</span>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">#define CHANNELS 3 &#x2F;&#x2F; we have 3 channels corresponding to RGB
+&#x2F;&#x2F; The input image is encoded as unsigned characters [0, 255]
+__global__ void colorConvert(unsigned char * grayImage, unsigned char * rgbImage,int width, int height) &#123;
+ int x &#x3D; threadIdx.x + blockIdx.x * blockDim.x;
+ int y &#x3D; threadIdx.y + blockIdx.y * blockDim.y;
 
- <span class="token keyword">if</span> <span class="token punctuation">(</span>x <span class="token operator">&lt;</span> width <span class="token operator">&amp;&amp;</span> y <span class="token operator">&lt;</span> height<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    <span class="token comment">// get 1D coordinate for the grayscale image</span>
-    <span class="token keyword">int</span> grayOffset <span class="token operator">=</span> y<span class="token operator">*</span>width <span class="token operator">+</span> x<span class="token punctuation">;</span>
-    <span class="token comment">// one can think of the RGB image having</span>
-    <span class="token comment">// CHANNEL times columns than the gray scale image</span>
-    <span class="token keyword">int</span> rgbOffset <span class="token operator">=</span> grayOffset<span class="token operator">*</span>CHANNELS<span class="token punctuation">;</span>
-    <span class="token keyword">unsigned</span> <span class="token keyword">char</span> r <span class="token operator">=</span>  rgbImage<span class="token punctuation">[</span>rgbOffset     <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token comment">// red value for pixel</span>
-    <span class="token keyword">unsigned</span> <span class="token keyword">char</span> g <span class="token operator">=</span> rgbImage<span class="token punctuation">[</span>rgbOffset <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token comment">// green value for pixel</span>
-    <span class="token keyword">unsigned</span> <span class="token keyword">char</span> b <span class="token operator">=</span> rgbImage<span class="token punctuation">[</span>rgbOffset <span class="token operator">+</span> <span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token comment">// blue value for pixel</span>
-    <span class="token comment">// perform the rescaling and store it</span>
-    <span class="token comment">// We multiply by floating point constants</span>
-    grayImage<span class="token punctuation">[</span>grayOffset<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0.21f</span><span class="token operator">*</span>r <span class="token operator">+</span> <span class="token number">0.71f</span><span class="token operator">*</span>g <span class="token operator">+</span> <span class="token number">0.07f</span><span class="token operator">*</span>b<span class="token punctuation">;</span>
- <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre></div></figure>
+ if (x &lt; width &amp;&amp; y &lt; height) &#123;
+    &#x2F;&#x2F; get 1D coordinate for the grayscale image
+    int grayOffset &#x3D; y*width + x;
+    &#x2F;&#x2F; one can think of the RGB image having
+    &#x2F;&#x2F; CHANNEL times columns than the gray scale image
+    int rgbOffset &#x3D; grayOffset*CHANNELS;
+    unsigned char r &#x3D;  rgbImage[rgbOffset     ]; &#x2F;&#x2F; red value for pixel
+    unsigned char g &#x3D; rgbImage[rgbOffset + 1]; &#x2F;&#x2F; green value for pixel
+    unsigned char b &#x3D; rgbImage[rgbOffset + 2]; &#x2F;&#x2F; blue value for pixel
+    &#x2F;&#x2F; perform the rescaling and store it
+    &#x2F;&#x2F; We multiply by floating point constants
+    grayImage[grayOffset] &#x3D; 0.21f*r + 0.71f*g + 0.07f*b;
+ &#125;
+&#125;</code></pre></div></figure>
 <h2 id="模糊图像处理示例">模糊图像处理示例</h2>
 <figure>
 <img
@@ -410,29 +410,29 @@ alt="151" />
 </figure>
 <p>图像模糊作为 2D 内核</p>
 <figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">__global__ 
-  <span class="token keyword">void</span> <span class="token function">blurKernel</span><span class="token punctuation">(</span><span class="token keyword">unsigned</span> <span class="token keyword">char</span> <span class="token operator">*</span> in<span class="token punctuation">,</span> <span class="token keyword">unsigned</span> <span class="token keyword">char</span> <span class="token operator">*</span> out<span class="token punctuation">,</span> <span class="token keyword">int</span> w<span class="token punctuation">,</span> <span class="token keyword">int</span> h<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">int</span> Col  <span class="token operator">=</span> blockIdx<span class="token punctuation">.</span>x <span class="token operator">*</span> blockDim<span class="token punctuation">.</span>x <span class="token operator">+</span> threadIdx<span class="token punctuation">.</span>x<span class="token punctuation">;</span>
-    <span class="token keyword">int</span> Row  <span class="token operator">=</span> blockIdx<span class="token punctuation">.</span>y <span class="token operator">*</span> blockDim<span class="token punctuation">.</span>y <span class="token operator">+</span> threadIdx<span class="token punctuation">.</span>y<span class="token punctuation">;</span>
+  void blurKernel(unsigned char * in, unsigned char * out, int w, int h) &#123;
+    int Col  &#x3D; blockIdx.x * blockDim.x + threadIdx.x;
+    int Row  &#x3D; blockIdx.y * blockDim.y + threadIdx.y;
 
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>Col <span class="token operator">&lt;</span> w <span class="token operator">&amp;&amp;</span> Row <span class="token operator">&lt;</span> h<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-          <span class="token keyword">int</span> pixVal <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
-          <span class="token keyword">int</span> pixels <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
-          <span class="token comment">// Get the average of the surrounding 2xBLUR_SIZE x 2xBLUR_SIZE box</span>
-  <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">int</span> blurRow <span class="token operator">=</span> <span class="token operator">-</span>BLUR_SIZE<span class="token punctuation">;</span> blurRow <span class="token operator">&lt;</span> BLUR_SIZE<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">;</span> <span class="token operator">++</span>blurRow<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-    <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">int</span> blurCol <span class="token operator">=</span> <span class="token operator">-</span>BLUR_SIZE<span class="token punctuation">;</span> blurCol <span class="token operator">&lt;</span> BLUR_SIZE<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">;</span> <span class="token operator">++</span>blurCol<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-                  <span class="token keyword">int</span> curRow <span class="token operator">=</span> Row <span class="token operator">+</span> blurRow<span class="token punctuation">;</span>
-                  <span class="token keyword">int</span> curCol <span class="token operator">=</span> Col <span class="token operator">+</span> blurCol<span class="token punctuation">;</span>
-                  <span class="token comment">// Verify we have a valid image pixel</span>
-         <span class="token keyword">if</span><span class="token punctuation">(</span>curRow <span class="token operator">></span> <span class="token operator">-</span><span class="token number">1</span> <span class="token operator">&amp;&amp;</span> curRow <span class="token operator">&lt;</span> h <span class="token operator">&amp;&amp;</span> curCol <span class="token operator">></span> <span class="token operator">-</span><span class="token number">1</span> <span class="token operator">&amp;&amp;</span> curCol <span class="token operator">&lt;</span> w<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-                      pixVal <span class="token operator">+=</span> in<span class="token punctuation">[</span>curRow <span class="token operator">*</span> w <span class="token operator">+</span> curCol<span class="token punctuation">]</span><span class="token punctuation">;</span>
-                      pixels<span class="token operator">++</span><span class="token punctuation">;</span> <span class="token comment">// Keep track of number of pixels in the accumulated total</span>
-                  <span class="token punctuation">&#125;</span>
-              <span class="token punctuation">&#125;</span>
-          <span class="token punctuation">&#125;</span>
-          <span class="token comment">// Write our new pixel value out</span>
-          out<span class="token punctuation">[</span>Row <span class="token operator">*</span> w <span class="token operator">+</span> Col<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">unsigned</span> <span class="token keyword">char</span><span class="token punctuation">)</span><span class="token punctuation">(</span>pixVal <span class="token operator">/</span> pixels<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre></div></figure>
+    if (Col &lt; w &amp;&amp; Row &lt; h) &#123;
+          int pixVal &#x3D; 0;
+          int pixels &#x3D; 0;
+          &#x2F;&#x2F; Get the average of the surrounding 2xBLUR_SIZE x 2xBLUR_SIZE box
+  for(int blurRow &#x3D; -BLUR_SIZE; blurRow &lt; BLUR_SIZE+1; ++blurRow)&#123;
+    for(int blurCol &#x3D; -BLUR_SIZE; blurCol &lt; BLUR_SIZE+1; ++blurCol) &#123;
+                  int curRow &#x3D; Row + blurRow;
+                  int curCol &#x3D; Col + blurCol;
+                  &#x2F;&#x2F; Verify we have a valid image pixel
+         if(curRow &gt; -1 &amp;&amp; curRow &lt; h &amp;&amp; curCol &gt; -1 &amp;&amp; curCol &lt; w) &#123;
+                      pixVal +&#x3D; in[curRow * w + curCol];
+                      pixels++; &#x2F;&#x2F; Keep track of number of pixels in the accumulated total
+                  &#125;
+              &#125;
+          &#125;
+          &#x2F;&#x2F; Write our new pixel value out
+          out[Row * w + Col] &#x3D; (unsigned char)(pixVal &#x2F; pixels);
+    &#125;
+&#125;</code></pre></div></figure>
 <h2 id="线程调度">线程调度</h2>
 <p>SP：最基本的处理单元，streaming processor，也称为CUDA
 core。最后具体的指令和任务都是在SP上处理的。GPU进行并行计算，也就是很多个SP同时做处理。
@@ -849,6 +849,10 @@ alt="154" />
   });
 </script>
 
+
+  <script  src="https://lib.baomitu.com/prism/1.27.0/components/prism-core.min.js" ></script>
+
+  <script  src="https://lib.baomitu.com/prism/1.27.0/plugins/autoloader/prism-autoloader.min.js" ></script>
 
   <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
 

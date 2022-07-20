@@ -231,7 +231,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          5.9k 字
+          6.2k 字
         
       </span>
     
@@ -242,7 +242,7 @@
         
         
         
-          50 分钟
+          52 分钟
         
       </span>
     
@@ -344,10 +344,10 @@
 </tbody>
 </table>
 <p>算法：</p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">for</span> k ← <span class="token number">0</span> to n<span class="token operator">-</span><span class="token number">1</span>
-	<span class="token keyword">for</span> i ← <span class="token number">0</span> to n<span class="token operator">-</span><span class="token number">1</span>
-		<span class="token keyword">for</span> j ← <span class="token number">0</span> to n<span class="token operator">-</span><span class="token number">1</span>
-			a<span class="token punctuation">[</span>i<span class="token punctuation">,</span>j<span class="token punctuation">]</span> ←  <span class="token function">min</span> <span class="token punctuation">(</span>a<span class="token punctuation">[</span>i<span class="token punctuation">,</span>j<span class="token punctuation">]</span><span class="token punctuation">,</span> a<span class="token punctuation">[</span>i<span class="token punctuation">,</span>k<span class="token punctuation">]</span> <span class="token operator">+</span> a<span class="token punctuation">[</span>k<span class="token punctuation">,</span>j<span class="token punctuation">]</span><span class="token punctuation">)</span>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">for k ← 0 to n-1
+	for i ← 0 to n-1
+		for j ← 0 to n-1
+			a[i,j] ←  min (a[i,j], a[i,k] + a[k,j])
 		endfor
 	endfor
 endfor</code></pre></div></figure>
@@ -357,11 +357,11 @@ endfor</code></pre></div></figure>
 <p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/98.png" srcset="/img/loading.gif" lazyload alt="98" style="zoom: 67%;" /></p>
 <h3 id="动态二维数组建立">动态二维数组建立</h3>
 <p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/99.png" srcset="/img/loading.gif" lazyload alt="99" style="zoom:67%;" /></p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">int</span> <span class="token operator">*</span>BStorage<span class="token punctuation">,</span> <span class="token operator">*</span><span class="token operator">*</span>B<span class="token punctuation">;</span>
-B <span class="token operator">=</span> <span class="token function">malloc</span><span class="token punctuation">(</span>M <span class="token operator">*</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token keyword">int</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-BStorage <span class="token operator">=</span> <span class="token function">malloc</span><span class="token punctuation">(</span>SIZE <span class="token operator">*</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> M<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span>
-B<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token operator">&amp;</span>BStorage<span class="token punctuation">[</span>i <span class="token operator">*</span> N<span class="token punctuation">]</span><span class="token punctuation">;</span></code></pre></div></figure>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">int *BStorage, **B;
+B &#x3D; malloc(M * sizeof(int *));
+BStorage &#x3D; malloc(SIZE * sizeof(int));
+for (int i &#x3D; 0; i &lt; M; i++)
+B[i] &#x3D; &amp;BStorage[i * N];</code></pre></div></figure>
 <h2 id="设计并行算法">设计并行算法</h2>
 <h3 id="分区">分区</h3>
 <p>区域分解还是函数分解？</p>
@@ -426,24 +426,24 @@ alt="100" />
 <h3 id="不集体发送接受数据">不集体发送接受数据</h3>
 <p><img src="https://cdn.jsdelivr.net/gh/Yi-Ge-Dian/YiGeDian_image_hosting@master/20220110/kuangstudybf6ea2b5-8bf5-4922-9791-b8135fae11b8.2y5b06yx1xu0.webp" srcset="/img/loading.gif" lazyload alt="kuangstudybf6ea2b5-8bf5-4922-9791-b8135fae11b8" style="zoom:50%;" /></p>
 <h3 id="函数mpi_send">函数MPI_Send</h3>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">int</span> <span class="token function">MPI_Send</span> <span class="token punctuation">(</span>
-      <span class="token keyword">void</span>         <span class="token operator">*</span>message<span class="token punctuation">,</span>
-      <span class="token keyword">int</span>           count<span class="token punctuation">,</span>
-      MPI_Datatype  datatype<span class="token punctuation">,</span>
-      <span class="token keyword">int</span>           dest<span class="token punctuation">,</span>
-      <span class="token keyword">int</span>           tag<span class="token punctuation">,</span>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">int MPI_Send (
+      void         *message,
+      int           count,
+      MPI_Datatype  datatype,
+      int           dest,
+      int           tag,
       MPI_Comm      comm
-<span class="token punctuation">)</span></code></pre></div></figure>
+)</code></pre></div></figure>
 <h3 id="函数mpi_receive">函数MPI_Receive</h3>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">int</span> <span class="token function">MPI_Recv</span> <span class="token punctuation">(</span>
-      <span class="token keyword">void</span>         <span class="token operator">*</span>message<span class="token punctuation">,</span>
-      <span class="token keyword">int</span>           count<span class="token punctuation">,</span>
-      MPI_Datatype  datatype<span class="token punctuation">,</span>
-      <span class="token keyword">int</span>           source<span class="token punctuation">,</span>
-      <span class="token keyword">int</span>           tag<span class="token punctuation">,</span>
-      MPI_Comm      comm<span class="token punctuation">,</span>
-      MPI_Status   <span class="token operator">*</span>status
-<span class="token punctuation">)</span>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">int MPI_Recv (
+      void         *message,
+      int           count,
+      MPI_Datatype  datatype,
+      int           source,
+      int           tag,
+      MPI_Comm      comm,
+      MPI_Status   *status
+)
 </code></pre></div></figure>
 <h4
 id="函数mpi_send和mpi_receive的内部">函数MPI_Send和MPI_Receive的内部</h4>
@@ -466,24 +466,24 @@ id="函数mpi_send和mpi_receive的内部">函数MPI_Send和MPI_Receive的内部
 <li>进程向错误的目的地进程发送消息</li>
 </ul>
 <p>例1 :</p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">if</span> <span class="token punctuation">(</span>id <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-	<span class="token function">MPI_Recv</span> <span class="token punctuation">(</span><span class="token operator">&amp;</span>b<span class="token punctuation">,</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-	<span class="token function">MPI_Send</span> <span class="token punctuation">(</span><span class="token operator">&amp;</span>a<span class="token punctuation">,</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-   c <span class="token operator">=</span> <span class="token punctuation">(</span>a <span class="token operator">+</span> b<span class="token punctuation">)</span><span class="token operator">/</span><span class="token number">2.0</span><span class="token punctuation">;</span> 
-<span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>id <span class="token operator">==</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-	<span class="token function">MPI_Recv</span> <span class="token punctuation">(</span><span class="token operator">&amp;</span>a<span class="token punctuation">,</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-	<span class="token function">MPI_Send</span> <span class="token punctuation">(</span><span class="token operator">&amp;</span>b<span class="token punctuation">,</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-   c <span class="token operator">=</span> <span class="token punctuation">(</span>a <span class="token operator">+</span> b<span class="token punctuation">)</span><span class="token operator">/</span><span class="token number">2.0</span><span class="token punctuation">;</span> <span class="token punctuation">&#125;</span></code></pre></div></figure>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">if (id &#x3D;&#x3D; 0) &#123;
+	MPI_Recv (&amp;b,...);
+	MPI_Send (&amp;a,...);
+   c &#x3D; (a + b)&#x2F;2.0; 
+&#125; else if (id &#x3D;&#x3D; 1) &#123;
+	MPI_Recv (&amp;a,...);
+	MPI_Send (&amp;b,...);
+   c &#x3D; (a + b)&#x2F;2.0; &#125;</code></pre></div></figure>
 <p>进程0等待1的消息而阻塞，进程1等待0的消息而阻塞，产生了死锁。</p>
 <p>例2：</p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">if</span> <span class="token punctuation">(</span>id <span class="token operator">==</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-	<span class="token function">MPI_Send</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>a<span class="token punctuation">,</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token number">1</span><span class="token punctuation">,</span>MPI_COMM_WORLD<span class="token punctuation">)</span><span class="token punctuation">;</span>
-	<span class="token function">MPI_Recv</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>b<span class="token punctuation">,</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token number">1</span><span class="token punctuation">,</span> MPI_COMM_WORLD<span class="token punctuation">,</span><span class="token operator">&amp;</span>status<span class="token punctuation">)</span><span class="token punctuation">;</span>
-	c <span class="token operator">=</span> <span class="token punctuation">(</span>a<span class="token operator">+</span>b<span class="token punctuation">)</span><span class="token operator">/</span><span class="token number">2.0</span><span class="token punctuation">;</span> 
-<span class="token punctuation">&#125;</span><span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>id <span class="token operator">==</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-	<span class="token function">MPI_Send</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>a<span class="token punctuation">,</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token number">0</span><span class="token punctuation">,</span>MPI_COMM_WORLD<span class="token punctuation">)</span><span class="token punctuation">;</span>
-	<span class="token function">MPI_Recv</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>b<span class="token punctuation">,</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token number">0</span><span class="token punctuation">,</span> MPI_COMM_WORLD<span class="token punctuation">,</span><span class="token operator">&amp;</span>status<span class="token punctuation">)</span><span class="token punctuation">;</span>
-	c <span class="token operator">=</span> <span class="token punctuation">(</span>a<span class="token operator">+</span>b<span class="token punctuation">)</span><span class="token operator">/</span><span class="token number">2.0</span><span class="token punctuation">;</span><span class="token punctuation">&#125;</span></code></pre></div></figure>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">if (id &#x3D;&#x3D;0) &#123;
+	MPI_Send(&amp;a, ... 1,MPI_COMM_WORLD);
+	MPI_Recv(&amp;b, ... 1, MPI_COMM_WORLD,&amp;status);
+	c &#x3D; (a+b)&#x2F;2.0; 
+&#125;else if (id &#x3D;&#x3D;1) &#123;
+	MPI_Send(&amp;a, ... 0,MPI_COMM_WORLD);
+	MPI_Recv(&amp;b, ... 0, MPI_COMM_WORLD,&amp;status);
+	c &#x3D; (a+b)&#x2F;2.0;&#125;</code></pre></div></figure>
 <p>这两个进程在尝试接收之前都会发送，但仍然陷入死锁。 为什么？</p>
 <blockquote>
 <p>标签错了。进程0正在尝试接收1的标签，但进程1正在发送0的标签。</p>
@@ -554,19 +554,19 @@ MPI 标准允许MPI_Send以两种不同的方式行事：</p>
 	MPI_Comm		communicator;
 &#125;</code></pre></div></figure>
 <h4 id="方法2调整通信">方法2调整通信：</h4>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token function">MPI_Send</span><span class="token punctuation">(</span>msg<span class="token punctuation">,</span>size<span class="token punctuation">,</span>MPI_INT<span class="token punctuation">,</span><span class="token punctuation">(</span>my_rank<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token operator">%</span>comm_sz<span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">,</span>comm<span class="token punctuation">)</span>
-<span class="token function">MPI_Recv</span><span class="token punctuation">(</span>new_msg<span class="token punctuation">,</span>size<span class="token punctuation">,</span>MPI_INT<span class="token punctuation">,</span><span class="token punctuation">(</span>my_rank<span class="token operator">+</span>comm_sz<span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token operator">%</span>comm_sz<span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">,</span>comm<span class="token punctuation">,</span>
-MPI_STATUS_IGNORE<span class="token punctuation">)</span></code></pre></div></figure>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">MPI_Send(msg,size,MPI_INT,(my_rank+1)%comm_sz,0,comm)
+MPI_Recv(new_msg,size,MPI_INT,(my_rank+comm_sz-1)%comm_sz,0,comm,
+MPI_STATUS_IGNORE)</code></pre></div></figure>
 <p>改为：</p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">if</span><span class="token punctuation">(</span>my_rank<span class="token operator">%</span><span class="token number">2</span><span class="token operator">==</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-    <span class="token function">MPI_Send</span><span class="token punctuation">(</span>msg<span class="token punctuation">,</span>size<span class="token punctuation">,</span>MPI_INT<span class="token punctuation">,</span><span class="token punctuation">(</span>my_rank<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token operator">%</span>comm_sz<span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">,</span>comm<span class="token punctuation">)</span><span class="token punctuation">;</span>
-	<span class="token function">MPI_Recv</span><span class="token punctuation">(</span>new_msg<span class="token punctuation">,</span>size<span class="token punctuation">,</span>MPI_INT<span class="token punctuation">,</span><span class="token punctuation">(</span>my_rank<span class="token operator">+</span>comm_sz<span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token operator">%</span>comm_sz<span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">,</span>comm<span class="token punctuation">,</span>
-MPI_STATUS_IGNORE<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span class="token keyword">else</span><span class="token punctuation">&#123;</span>
-    <span class="token function">MPI_Recv</span><span class="token punctuation">(</span>new_msg<span class="token punctuation">,</span>size<span class="token punctuation">,</span>MPI_INT<span class="token punctuation">,</span><span class="token punctuation">(</span>my_rank<span class="token operator">+</span>comm_sz<span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token operator">%</span>comm_sz<span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">,</span>comm<span class="token punctuation">,</span>
-MPI_STATUS_IGNORE<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">MPI_Send</span><span class="token punctuation">(</span>msg<span class="token punctuation">,</span>size<span class="token punctuation">,</span>MPI_INT<span class="token punctuation">,</span><span class="token punctuation">(</span>my_rank<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token operator">%</span>comm_sz<span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">,</span>comm<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span></code></pre></div></figure>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">if(my_rank%2&#x3D;&#x3D;0)&#123;
+    MPI_Send(msg,size,MPI_INT,(my_rank+1)%comm_sz,0,comm);
+	MPI_Recv(new_msg,size,MPI_INT,(my_rank+comm_sz-1)%comm_sz,0,comm,
+MPI_STATUS_IGNORE);
+&#125;else&#123;
+    MPI_Recv(new_msg,size,MPI_INT,(my_rank+comm_sz-1)%comm_sz,0,comm,
+MPI_STATUS_IGNORE);
+    MPI_Send(msg,size,MPI_INT,(my_rank+1)%comm_sz,0,comm);
+&#125;</code></pre></div></figure>
 <p>偶数个comm_sz是没有问题的，奇数个comm_sz可能是不安全的</p>
 <p>5个进程下的安全通信：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/104.png" srcset="/img/loading.gif" lazyload alt="104" style="zoom:67%;" /></p>
@@ -574,20 +574,20 @@ MPI_STATUS_IGNORE<span class="token punctuation">)</span><span class="token punc
 <p>1.自己安排通信的替代方法。 2.在单个调用中执行阻塞发送和接收。 3.dest
 和 source 可以相同也可以不同。 4.特别有用，因为 MPI
 安排通信以便程序不会挂起或崩溃。</p>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">int</span> <span class="token function">MPI_Sendrecv</span><span class="token punctuation">(</span>
-	<span class="token keyword">void</span><span class="token operator">*</span> 				send_buf_p<span class="token punctuation">;</span>
-    <span class="token keyword">int</span> 				send_buf_size<span class="token punctuation">;</span>
-    MPI_Datatype		send_buf_type<span class="token punctuation">;</span>
-    <span class="token keyword">int</span> 				dest<span class="token punctuation">;</span>
-    <span class="token keyword">int</span> 				send_tag<span class="token punctuation">;</span>
-    <span class="token keyword">void</span><span class="token operator">*</span> 				recv_buf_p<span class="token punctuation">;</span>
-    <span class="token keyword">int</span> 				recv_buf_size<span class="token punctuation">;</span>
-    MPI_Datatype		recv_buf_type<span class="token punctuation">;</span>
-    <span class="token keyword">int</span>					source<span class="token punctuation">;</span>
-    <span class="token keyword">int</span> 				recv_tag<span class="token punctuation">;</span>
-    MPI_Comm			communicator<span class="token punctuation">;</span>
-    MPI_Status<span class="token operator">*</span>			status_p<span class="token punctuation">;</span>		
-<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre></div></figure>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">int MPI_Sendrecv(
+	void* 				send_buf_p;
+    int 				send_buf_size;
+    MPI_Datatype		send_buf_type;
+    int 				dest;
+    int 				send_tag;
+    void* 				recv_buf_p;
+    int 				recv_buf_size;
+    MPI_Datatype		recv_buf_type;
+    int					source;
+    int 				recv_tag;
+    MPI_Comm			communicator;
+    MPI_Status*			status_p;		
+);</code></pre></div></figure>
 <h3 id="集群通信和点到点通信">集群通信和点到点通信</h3>
 <p>1.在通讯子中全部进程必须调用相同的集合函数</p>
 <ul>
@@ -610,54 +610,54 @@ out_data_p，即使它只是空值.</p>
 <li>他们被匹配仅仅在通信子的基础和他们被调用的顺序</li>
 </ul>
 <h2 id="块行矩阵io并行代码">块行矩阵I/O并行代码</h2>
-<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">int</span> <span class="token function">main</span> <span class="token punctuation">(</span><span class="token keyword">int</span> argc<span class="token punctuation">,</span> <span class="token keyword">char</span> <span class="token operator">*</span>argv<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-    dtype<span class="token operator">*</span><span class="token operator">*</span>	a<span class="token punctuation">;</span> 		<span class="token comment">/*doubly-subscripted array*/</span>
-    dtype<span class="token operator">*</span> 	storage<span class="token punctuation">;</span> <span class="token comment">/*Loacl portion of array elements*/</span>
-    <span class="token keyword">int</span> i<span class="token punctuation">,</span>j<span class="token punctuation">,</span>k<span class="token punctuation">;</span>
-    <span class="token keyword">int</span> id<span class="token punctuation">;</span>
-    <span class="token keyword">int</span> m<span class="token punctuation">;</span><span class="token comment">/*rows in maxtrix*/</span>
-    <span class="token keyword">int</span> n<span class="token punctuation">;</span><span class="token comment">/*columns in maxtrix*/</span>
-    <span class="token keyword">int</span> p<span class="token punctuation">;</span><span class="token comment">/*number of processes*/</span>
-    <span class="token keyword">double</span> time<span class="token punctuation">,</span>max_time<span class="token punctuation">;</span>
-    <span class="token keyword">void</span> <span class="token function">compute_shortest_paths</span><span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">,</span><span class="token keyword">int</span><span class="token punctuation">,</span><span class="token keyword">int</span><span class="token operator">*</span><span class="token operator">*</span><span class="token punctuation">,</span><span class="token keyword">int</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">MPI_Init</span> <span class="token punctuation">(</span><span class="token operator">&amp;</span>argc<span class="token punctuation">,</span> <span class="token operator">&amp;</span>argv<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">MPI_Comm_rank</span><span class="token punctuation">(</span>MPI_COMM_WORLD<span class="token punctuation">,</span><span class="token operator">&amp;</span>id<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">MPI_Comm_size</span><span class="token punctuation">(</span>MPI_COMM_WORLD<span class="token punctuation">,</span><span class="token operator">&amp;</span>p<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">read_row_striped_matrix</span><span class="token punctuation">(</span>argv<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">,</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token operator">*</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>a<span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token operator">*</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>storage<span class="token punctuation">,</span>MPI_TYPE<span class="token punctuation">,</span><span class="token operator">&amp;</span>m<span class="token punctuation">,</span><span class="token operator">&amp;</span>n<span class="token punctuation">,</span>MPI_COMM_WORLD<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span><span class="token punctuation">(</span>m<span class="token operator">!=</span>n<span class="token punctuation">)</span> <span class="token function">terminate</span><span class="token punctuation">(</span>id<span class="token punctuation">,</span><span class="token string">"Matrix must be square\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">pirnt_row_striped_matrix</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token operator">*</span><span class="token operator">*</span><span class="token punctuation">)</span> a<span class="token punctuation">,</span>MPI_TYPE<span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">,</span>MPI_COMM_WORLD<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">MPI_Barrier</span><span class="token punctuation">(</span>MPI_COMMON_WORLD<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    time <span class="token operator">=</span><span class="token operator">-</span>MPI_Wtime<span class="token punctuation">;</span>
-    <span class="token function">compute_shortest_paths</span><span class="token punctuation">(</span>id<span class="token punctuation">,</span>p<span class="token punctuation">,</span><span class="token punctuation">(</span>dtype<span class="token operator">*</span><span class="token operator">*</span><span class="token punctuation">)</span> a<span class="token punctuation">,</span>n<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    time<span class="token operator">+=</span>MPI_Wtime<span class="token punctuation">;</span>
-    <span class="token function">MPI_Reduce</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>time<span class="token punctuation">,</span><span class="token operator">&amp;</span>max_time<span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">,</span>MPI_DOUBLE<span class="token punctuation">,</span>MPI_MAX<span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">,</span>MPI_COMM_WORLD<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token operator">!</span>id<span class="token punctuation">)</span> <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"Floyd,matrix size %d,%d processes:%6.2f seconds\n"</span><span class="token punctuation">,</span>n<span class="token punctuation">,</span>p<span class="token punctuation">,</span>max_time<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">pirnt_row_striped_matrix</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token operator">*</span><span class="token operator">*</span><span class="token punctuation">)</span> a<span class="token punctuation">,</span>MPI_TYPE<span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">,</span>MPI_COMM_WORLD<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">MPI_Finalize</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span>
-<span class="token keyword">void</span> <span class="token function">compute_shortest_paths</span><span class="token punctuation">(</span><span class="token keyword">int</span> id<span class="token punctuation">,</span><span class="token keyword">int</span> p<span class="token punctuation">,</span>dtype<span class="token operator">*</span><span class="token operator">*</span> a<span class="token punctuation">,</span><span class="token keyword">int</span> n<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-    <span class="token keyword">int</span> i<span class="token punctuation">,</span>j<span class="token punctuation">,</span>k<span class="token punctuation">;</span>
-    <span class="token keyword">int</span> offset<span class="token punctuation">;</span><span class="token comment">//local index of broadcast row</span>
-    <span class="token keyword">int</span> root<span class="token punctuation">;</span><span class="token comment">//process controlling row to be cast;</span>
-    <span class="token keyword">int</span> <span class="token operator">*</span>tmp<span class="token punctuation">;</span><span class="token comment">//holds the broadcast row;</span>
-    tmp<span class="token operator">=</span><span class="token punctuation">(</span>dtype <span class="token operator">*</span><span class="token punctuation">)</span><span class="token function">malloc</span> <span class="token punctuation">(</span>n<span class="token operator">*</span><span class="token keyword">sizeof</span><span class="token punctuation">(</span>dtype<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">for</span><span class="token punctuation">(</span>k<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span>k<span class="token operator">&lt;</span>n<span class="token punctuation">;</span>k<span class="token operator">++</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-        root<span class="token operator">=</span><span class="token function">BLOCK_OWNER</span><span class="token punctuation">(</span>id<span class="token punctuation">,</span>p<span class="token punctuation">,</span>n<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">if</span><span class="token punctuation">(</span>root<span class="token operator">==</span>id<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-            offset<span class="token operator">=</span>k<span class="token operator">-</span><span class="token function">BLOCK_LOW</span><span class="token punctuation">(</span>id<span class="token punctuation">,</span>p<span class="token punctuation">,</span>n<span class="token punctuation">)</span><span class="token punctuation">;</span>
-            <span class="token keyword">for</span><span class="token punctuation">(</span>j<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span>j<span class="token operator">&lt;</span>n<span class="token punctuation">;</span>j<span class="token operator">++</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-                temp<span class="token punctuation">[</span>j<span class="token punctuation">]</span><span class="token operator">=</span>a<span class="token punctuation">[</span>offset<span class="token punctuation">]</span><span class="token punctuation">[</span>l<span class="token punctuation">]</span><span class="token punctuation">;</span>
-            <span class="token punctuation">&#125;</span>
-            <span class="token function">MPI_Bcast</span><span class="token punctuation">(</span>tmp<span class="token punctuation">,</span>n<span class="token punctuation">,</span>MPI_TYPE<span class="token punctuation">,</span>root<span class="token punctuation">,</span>MPI_COMM_WORLD<span class="token punctuation">)</span><span class="token punctuation">;</span>
-            <span class="token keyword">for</span><span class="token punctuation">(</span>i<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span>i<span class="token operator">&lt;</span><span class="token function">BLOCK_SIZE</span><span class="token punctuation">(</span>id<span class="token punctuation">,</span>p<span class="token punctuation">,</span>n<span class="token punctuation">)</span><span class="token punctuation">;</span>i<span class="token operator">++</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-                <span class="token keyword">for</span><span class="token punctuation">(</span>j<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span>j<span class="token operator">&lt;</span>n<span class="token punctuation">;</span>j<span class="token operator">++</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-                    a<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">[</span>j<span class="token punctuation">]</span><span class="token operator">=</span><span class="token function">MIN</span><span class="token punctuation">(</span>a<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">[</span>j<span class="token punctuation">]</span><span class="token punctuation">,</span>a<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">[</span>k<span class="token punctuation">]</span><span class="token operator">+</span>temp<span class="token punctuation">[</span>j<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-                <span class="token punctuation">&#125;</span>
-            <span class="token punctuation">&#125;</span>
-        <span class="token punctuation">&#125;</span>
-        <span class="token function">free</span> <span class="token punctuation">(</span>tmp<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">int main (int argc, char *argv[])&#123;
+    dtype**	a; 		&#x2F;*doubly-subscripted array*&#x2F;
+    dtype* 	storage; &#x2F;*Loacl portion of array elements*&#x2F;
+    int i,j,k;
+    int id;
+    int m;&#x2F;*rows in maxtrix*&#x2F;
+    int n;&#x2F;*columns in maxtrix*&#x2F;
+    int p;&#x2F;*number of processes*&#x2F;
+    double time,max_time;
+    void compute_shortest_paths(int,int,int**,int);
+    MPI_Init (&amp;argc, &amp;argv);
+    MPI_Comm_rank(MPI_COMM_WORLD,&amp;id);
+    MPI_Comm_size(MPI_COMM_WORLD,&amp;p);
+    read_row_striped_matrix(argv[1],(void*) &amp;a),(void*) &amp;storage,MPI_TYPE,&amp;m,&amp;n,MPI_COMM_WORLD);
+    if(m!&#x3D;n) terminate(id,&quot;Matrix must be square\n&quot;);
+    pirnt_row_striped_matrix((void**) a,MPI_TYPE,0,MPI_COMM_WORLD);
+    MPI_Barrier(MPI_COMMON_WORLD);
+    time &#x3D;-MPI_Wtime;
+    compute_shortest_paths(id,p,(dtype**) a,n);
+    time+&#x3D;MPI_Wtime;
+    MPI_Reduce(&amp;time,&amp;max_time,1,MPI_DOUBLE,MPI_MAX,0,MPI_COMM_WORLD);
+    if(!id) printf(&quot;Floyd,matrix size %d,%d processes:%6.2f seconds\n&quot;,n,p,max_time);
+    pirnt_row_striped_matrix((void**) a,MPI_TYPE,0,MPI_COMM_WORLD);
+    MPI_Finalize();
+&#125;
+void compute_shortest_paths(int id,int p,dtype** a,int n)&#123;
+    int i,j,k;
+    int offset;&#x2F;&#x2F;local index of broadcast row
+    int root;&#x2F;&#x2F;process controlling row to be cast;
+    int *tmp;&#x2F;&#x2F;holds the broadcast row;
+    tmp&#x3D;(dtype *)malloc (n*sizeof(dtype));
+    for(k&#x3D;0;k&lt;n;k++)&#123;
+        root&#x3D;BLOCK_OWNER(id,p,n);
+        if(root&#x3D;&#x3D;id)&#123;
+            offset&#x3D;k-BLOCK_LOW(id,p,n);
+            for(j&#x3D;0;j&lt;n;j++)&#123;
+                temp[j]&#x3D;a[offset][l];
+            &#125;
+            MPI_Bcast(tmp,n,MPI_TYPE,root,MPI_COMM_WORLD);
+            for(i&#x3D;0;i&lt;BLOCK_SIZE(id,p,n);i++)&#123;
+                for(j&#x3D;0;j&lt;n;j++)&#123;
+                    a[i][j]&#x3D;MIN(a[i][j],a[i][k]+temp[j]);
+                &#125;
+            &#125;
+        &#125;
+        free (tmp);
+    &#125;
+&#125;
 
 </code></pre></div></figure>
 <h2 id="分析和基准测试程序">分析和基准测试程序</h2>
@@ -1059,6 +1059,10 @@ n 次 4.总体复杂度 Θ(n3/p)</p>
   });
 </script>
 
+
+  <script  src="https://lib.baomitu.com/prism/1.27.0/components/prism-core.min.js" ></script>
+
+  <script  src="https://lib.baomitu.com/prism/1.27.0/plugins/autoloader/prism-autoloader.min.js" ></script>
 
   <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
 
