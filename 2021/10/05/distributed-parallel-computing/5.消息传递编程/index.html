@@ -231,7 +231,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          5.6k 字
+          5.5k 字
         
       </span>
     
@@ -242,7 +242,7 @@
         
         
         
-          47 分钟
+          46 分钟
         
       </span>
     
@@ -386,11 +386,11 @@ Ridge</strong> 国家实验室开发的并行虚拟机 （PVM）
 <h3 id="包含的文件include-files">包含的文件（Include Files）</h3>
 <p>MPI header file:<code>#include &lt;mpi.h&gt;</code> nStandard I/O
 header file:<code>#include &lt;stdio.h&gt;</code></p>
-<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">main</span> <span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span> *argv[])</span> &#123;
-   <span class="hljs-type">int</span> i;
-   <span class="hljs-type">int</span> id; <span class="hljs-comment">/* Process rank */</span>
-   <span class="hljs-type">int</span> p;  <span class="hljs-comment">/* Number of processes */</span>
-   <span class="hljs-type">void</span> <span class="hljs-title function_">check_circuit</span> <span class="hljs-params">(<span class="hljs-type">int</span>, <span class="hljs-type">int</span>)</span>;</code></pre></div>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">int</span> <span class="token function">main</span> <span class="token punctuation">(</span><span class="token keyword">int</span> argc<span class="token punctuation">,</span> <span class="token keyword">char</span> <span class="token operator">*</span>argv<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+   <span class="token keyword">int</span> i<span class="token punctuation">;</span>
+   <span class="token keyword">int</span> id<span class="token punctuation">;</span> <span class="token comment">/* Process rank */</span>
+   <span class="token keyword">int</span> p<span class="token punctuation">;</span>  <span class="token comment">/* Number of processes */</span>
+   <span class="token keyword">void</span> <span class="token function">check_circuit</span> <span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">,</span> <span class="token keyword">int</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre></div></figure>
 <p>argc and argv 参数: 初始化MPI的时候需要
 每个运行此程序的进程的每个变量的一个副本</p>
 <h3 id="初始化mpi">初始化MPI</h3>
@@ -423,17 +423,17 @@ header file:<code>#include &lt;stdio.h&gt;</code></p>
 <h3 id="自动变量的赋值">自动变量的赋值</h3>
 <p><img src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/87.png" srcset="/img/loading.gif" lazyload alt="87" style="zoom:50%;" /></p>
 <h3 id="外部变量">外部变量</h3>
-<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">int</span> total;
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">int</span> total<span class="token punctuation">;</span>
 
-<span class="hljs-type">int</span> <span class="hljs-title function_">main</span> <span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span> *argv[])</span> &#123;
-   <span class="hljs-type">int</span> i;
-   <span class="hljs-type">int</span> id;
-   <span class="hljs-type">int</span> p;
-   …</code></pre></div>
+<span class="token keyword">int</span> <span class="token function">main</span> <span class="token punctuation">(</span><span class="token keyword">int</span> argc<span class="token punctuation">,</span> <span class="token keyword">char</span> <span class="token operator">*</span>argv<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+   <span class="token keyword">int</span> i<span class="token punctuation">;</span>
+   <span class="token keyword">int</span> id<span class="token punctuation">;</span>
+   <span class="token keyword">int</span> p<span class="token punctuation">;</span>
+   …</code></pre></div></figure>
 <p>全局变量分配在静态存储区。</p>
 <h3 id="工作循环分配">工作循环分配</h3>
-<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-keyword">for</span> (i = id; i &lt; <span class="hljs-number">65536</span>; i += p)
-   check_circuit (id, i);</code></pre></div>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">for</span> <span class="token punctuation">(</span>i <span class="token operator">=</span> id<span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">65536</span><span class="token punctuation">;</span> i <span class="token operator">+=</span> p<span class="token punctuation">)</span>
+   <span class="token function">check_circuit</span> <span class="token punctuation">(</span>id<span class="token punctuation">,</span> i<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre></div></figure>
 <ul>
 <li>外部功能检查电路具有并行性</li>
 <li>它可以是一个普通的、顺序的功能</li>
@@ -445,46 +445,46 @@ header file:<code>#include &lt;stdio.h&gt;</code></p>
 <li>允许吸引释放掉MPI资源</li>
 </ul>
 <h3 id="完整的mpi代码">完整的MPI代码</h3>
-<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;mpi.h&gt;</span></span>
-<span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span>
-<span class="hljs-type">int</span> <span class="hljs-title function_">main</span> <span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span> *argv[])</span> &#123; 
-	<span class="hljs-type">int</span> i;
-	<span class="hljs-type">int</span> id;
-	<span class="hljs-type">int</span> p;
-	<span class="hljs-type">void</span> <span class="hljs-title function_">check_circuit</span> <span class="hljs-params">(<span class="hljs-type">int</span>, <span class="hljs-type">int</span>)</span>;
-    MPI_Init (&amp;argc, &amp;argv);
-    MPI_Comm_rank (MPI_COMM_WORLD, &amp;id);
-    MPI_Comm_size (MPI_COMM_WORLD, &amp;p);
-    <span class="hljs-keyword">for</span> (i = id; i &lt; <span class="hljs-number">65536</span>; i += p)
-    check_circuit (id, i);
-    <span class="hljs-built_in">printf</span> (<span class="hljs-string">&quot;Process %d is done\n&quot;</span>, id);
-    fflush (<span class="hljs-built_in">stdout</span>);<span class="hljs-comment">//put fflush() after every printf</span>
-    MPI_Finalize();
-    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>
-<span class="hljs-comment">/* Return 1 if &#x27;i&#x27;th bit of &#x27;n&#x27; is 1; 0 otherwise */</span>
-<span class="hljs-meta">#<span class="hljs-keyword">define</span> EXTRACT_BIT(n,i) ((n&amp;(1&lt;&lt;i))?1:0)</span>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;mpi.h></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h></span></span>
+<span class="token keyword">int</span> <span class="token function">main</span> <span class="token punctuation">(</span><span class="token keyword">int</span> argc<span class="token punctuation">,</span> <span class="token keyword">char</span> <span class="token operator">*</span>argv<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> 
+	<span class="token keyword">int</span> i<span class="token punctuation">;</span>
+	<span class="token keyword">int</span> id<span class="token punctuation">;</span>
+	<span class="token keyword">int</span> p<span class="token punctuation">;</span>
+	<span class="token keyword">void</span> <span class="token function">check_circuit</span> <span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">,</span> <span class="token keyword">int</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">MPI_Init</span> <span class="token punctuation">(</span><span class="token operator">&amp;</span>argc<span class="token punctuation">,</span> <span class="token operator">&amp;</span>argv<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">MPI_Comm_rank</span> <span class="token punctuation">(</span>MPI_COMM_WORLD<span class="token punctuation">,</span> <span class="token operator">&amp;</span>id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">MPI_Comm_size</span> <span class="token punctuation">(</span>MPI_COMM_WORLD<span class="token punctuation">,</span> <span class="token operator">&amp;</span>p<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span>i <span class="token operator">=</span> id<span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">65536</span><span class="token punctuation">;</span> i <span class="token operator">+=</span> p<span class="token punctuation">)</span>
+    <span class="token function">check_circuit</span> <span class="token punctuation">(</span>id<span class="token punctuation">,</span> i<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">printf</span> <span class="token punctuation">(</span><span class="token string">"Process %d is done\n"</span><span class="token punctuation">,</span> id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">fflush</span> <span class="token punctuation">(</span><span class="token constant">stdout</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//put fflush() after every printf</span>
+    <span class="token function">MPI_Finalize</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token number">0</span>
+<span class="token comment">/* Return 1 if 'i'th bit of 'n' is 1; 0 otherwise */</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name function">EXTRACT_BIT</span><span class="token expression"><span class="token punctuation">(</span>n<span class="token punctuation">,</span>i<span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>n<span class="token operator">&amp;</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token operator">&lt;&lt;</span>i<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token operator">?</span><span class="token number">1</span><span class="token operator">:</span><span class="token number">0</span><span class="token punctuation">)</span></span></span>
 
-<span class="hljs-type">void</span> check_circuit (<span class="hljs-type">int</span> id, <span class="hljs-type">int</span> z) &#123;
-   <span class="hljs-type">int</span> v[<span class="hljs-number">16</span>];        <span class="hljs-comment">/* Each element is a bit of z */</span>
-   <span class="hljs-type">int</span> i;
+<span class="token keyword">void</span> <span class="token function">check_circuit</span> <span class="token punctuation">(</span><span class="token keyword">int</span> id<span class="token punctuation">,</span> <span class="token keyword">int</span> z<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+   <span class="token keyword">int</span> v<span class="token punctuation">[</span><span class="token number">16</span><span class="token punctuation">]</span><span class="token punctuation">;</span>        <span class="token comment">/* Each element is a bit of z */</span>
+   <span class="token keyword">int</span> i<span class="token punctuation">;</span>
 
-   <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">16</span>; i++) v[i] = EXTRACT_BIT(z,i);
+   <span class="token keyword">for</span> <span class="token punctuation">(</span>i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">16</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> v<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token function">EXTRACT_BIT</span><span class="token punctuation">(</span>z<span class="token punctuation">,</span>i<span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-   <span class="hljs-keyword">if</span> ((v[<span class="hljs-number">0</span>] || v[<span class="hljs-number">1</span>]) &amp;&amp; (!v[<span class="hljs-number">1</span>] || !v[<span class="hljs-number">3</span>]) &amp;&amp; (v[<span class="hljs-number">2</span>] || v[<span class="hljs-number">3</span>])
-      &amp;&amp; (!v[<span class="hljs-number">3</span>] || !v[<span class="hljs-number">4</span>]) &amp;&amp; (v[<span class="hljs-number">4</span>] || !v[<span class="hljs-number">5</span>])
-      &amp;&amp; (v[<span class="hljs-number">5</span>] || !v[<span class="hljs-number">6</span>]) &amp;&amp; (v[<span class="hljs-number">5</span>] || v[<span class="hljs-number">6</span>])
-      &amp;&amp; (v[<span class="hljs-number">6</span>] || !v[<span class="hljs-number">15</span>]) &amp;&amp; (v[<span class="hljs-number">7</span>] || !v[<span class="hljs-number">8</span>])
-      &amp;&amp; (!v[<span class="hljs-number">7</span>] || !v[<span class="hljs-number">13</span>]) &amp;&amp; (v[<span class="hljs-number">8</span>] || v[<span class="hljs-number">9</span>])
-      &amp;&amp; (v[<span class="hljs-number">8</span>] || !v[<span class="hljs-number">9</span>]) &amp;&amp; (!v[<span class="hljs-number">9</span>] || !v[<span class="hljs-number">10</span>])
-      &amp;&amp; (v[<span class="hljs-number">9</span>] || v[<span class="hljs-number">11</span>]) &amp;&amp; (v[<span class="hljs-number">10</span>] || v[<span class="hljs-number">11</span>])
-      &amp;&amp; (v[<span class="hljs-number">12</span>] || v[<span class="hljs-number">13</span>]) &amp;&amp; (v[<span class="hljs-number">13</span>] || !v[<span class="hljs-number">14</span>])
-      &amp;&amp; (v[<span class="hljs-number">14</span>] || v[<span class="hljs-number">15</span>])) &#123;
-      <span class="hljs-built_in">printf</span> (<span class="hljs-string">&quot;%d) %d%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d\n&quot;</span>, id,
-         v[<span class="hljs-number">0</span>],v[<span class="hljs-number">1</span>],v[<span class="hljs-number">2</span>],v[<span class="hljs-number">3</span>],v[<span class="hljs-number">4</span>],v[<span class="hljs-number">5</span>],v[<span class="hljs-number">6</span>],v[<span class="hljs-number">7</span>],v[<span class="hljs-number">8</span>],v[<span class="hljs-number">9</span>],
-         v[<span class="hljs-number">10</span>],v[<span class="hljs-number">11</span>],v[<span class="hljs-number">12</span>],v[<span class="hljs-number">13</span>],v[<span class="hljs-number">14</span>],v[<span class="hljs-number">15</span>]);
-      fflush (<span class="hljs-built_in">stdout</span>);
-   &#125;
-&#125;</code></pre></div>
+   <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>v<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">||</span> v<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span><span class="token operator">!</span>v<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">||</span> <span class="token operator">!</span>v<span class="token punctuation">[</span><span class="token number">3</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>v<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span> <span class="token operator">||</span> v<span class="token punctuation">[</span><span class="token number">3</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+      <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span><span class="token operator">!</span>v<span class="token punctuation">[</span><span class="token number">3</span><span class="token punctuation">]</span> <span class="token operator">||</span> <span class="token operator">!</span>v<span class="token punctuation">[</span><span class="token number">4</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>v<span class="token punctuation">[</span><span class="token number">4</span><span class="token punctuation">]</span> <span class="token operator">||</span> <span class="token operator">!</span>v<span class="token punctuation">[</span><span class="token number">5</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+      <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>v<span class="token punctuation">[</span><span class="token number">5</span><span class="token punctuation">]</span> <span class="token operator">||</span> <span class="token operator">!</span>v<span class="token punctuation">[</span><span class="token number">6</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>v<span class="token punctuation">[</span><span class="token number">5</span><span class="token punctuation">]</span> <span class="token operator">||</span> v<span class="token punctuation">[</span><span class="token number">6</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+      <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>v<span class="token punctuation">[</span><span class="token number">6</span><span class="token punctuation">]</span> <span class="token operator">||</span> <span class="token operator">!</span>v<span class="token punctuation">[</span><span class="token number">15</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>v<span class="token punctuation">[</span><span class="token number">7</span><span class="token punctuation">]</span> <span class="token operator">||</span> <span class="token operator">!</span>v<span class="token punctuation">[</span><span class="token number">8</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+      <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span><span class="token operator">!</span>v<span class="token punctuation">[</span><span class="token number">7</span><span class="token punctuation">]</span> <span class="token operator">||</span> <span class="token operator">!</span>v<span class="token punctuation">[</span><span class="token number">13</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>v<span class="token punctuation">[</span><span class="token number">8</span><span class="token punctuation">]</span> <span class="token operator">||</span> v<span class="token punctuation">[</span><span class="token number">9</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+      <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>v<span class="token punctuation">[</span><span class="token number">8</span><span class="token punctuation">]</span> <span class="token operator">||</span> <span class="token operator">!</span>v<span class="token punctuation">[</span><span class="token number">9</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span><span class="token operator">!</span>v<span class="token punctuation">[</span><span class="token number">9</span><span class="token punctuation">]</span> <span class="token operator">||</span> <span class="token operator">!</span>v<span class="token punctuation">[</span><span class="token number">10</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+      <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>v<span class="token punctuation">[</span><span class="token number">9</span><span class="token punctuation">]</span> <span class="token operator">||</span> v<span class="token punctuation">[</span><span class="token number">11</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>v<span class="token punctuation">[</span><span class="token number">10</span><span class="token punctuation">]</span> <span class="token operator">||</span> v<span class="token punctuation">[</span><span class="token number">11</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+      <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>v<span class="token punctuation">[</span><span class="token number">12</span><span class="token punctuation">]</span> <span class="token operator">||</span> v<span class="token punctuation">[</span><span class="token number">13</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>v<span class="token punctuation">[</span><span class="token number">13</span><span class="token punctuation">]</span> <span class="token operator">||</span> <span class="token operator">!</span>v<span class="token punctuation">[</span><span class="token number">14</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+      <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>v<span class="token punctuation">[</span><span class="token number">14</span><span class="token punctuation">]</span> <span class="token operator">||</span> v<span class="token punctuation">[</span><span class="token number">15</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token function">printf</span> <span class="token punctuation">(</span><span class="token string">"%d) %d%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d\n"</span><span class="token punctuation">,</span> id<span class="token punctuation">,</span>
+         v<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">,</span>v<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">,</span>v<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">,</span>v<span class="token punctuation">[</span><span class="token number">3</span><span class="token punctuation">]</span><span class="token punctuation">,</span>v<span class="token punctuation">[</span><span class="token number">4</span><span class="token punctuation">]</span><span class="token punctuation">,</span>v<span class="token punctuation">[</span><span class="token number">5</span><span class="token punctuation">]</span><span class="token punctuation">,</span>v<span class="token punctuation">[</span><span class="token number">6</span><span class="token punctuation">]</span><span class="token punctuation">,</span>v<span class="token punctuation">[</span><span class="token number">7</span><span class="token punctuation">]</span><span class="token punctuation">,</span>v<span class="token punctuation">[</span><span class="token number">8</span><span class="token punctuation">]</span><span class="token punctuation">,</span>v<span class="token punctuation">[</span><span class="token number">9</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+         v<span class="token punctuation">[</span><span class="token number">10</span><span class="token punctuation">]</span><span class="token punctuation">,</span>v<span class="token punctuation">[</span><span class="token number">11</span><span class="token punctuation">]</span><span class="token punctuation">,</span>v<span class="token punctuation">[</span><span class="token number">12</span><span class="token punctuation">]</span><span class="token punctuation">,</span>v<span class="token punctuation">[</span><span class="token number">13</span><span class="token punctuation">]</span><span class="token punctuation">,</span>v<span class="token punctuation">[</span><span class="token number">14</span><span class="token punctuation">]</span><span class="token punctuation">,</span>v<span class="token punctuation">[</span><span class="token number">15</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token function">fflush</span> <span class="token punctuation">(</span><span class="token constant">stdout</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+   <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre></div></figure>
 <h2 id="编译mpi程序">编译MPI程序</h2>
 <p><code>mpicc -O -o foo foo.c</code></p>
 <p>mpicc： 编写和链接 C+MPI 程序的脚本 标志：与C编译器的含义相同
@@ -503,7 +503,7 @@ band03.cs.ppu.edu band04.cs.ppu.edu</p>
 <blockquote>
 <p>1个CPU</p>
 </blockquote>
-<div class="code-wrapper"><pre><code class="hljs tex"><span class="hljs-comment">% mpirun -np 1 sat</span>
+<figure><div class="code-wrapper"><pre class="language-latex" data-language="latex"><code class="language-latex"><span class="token comment">% mpirun -np 1 sat</span>
 0) 1010111110011001
 0) 0110111110011001
 0) 1110111110011001
@@ -513,11 +513,11 @@ band03.cs.ppu.edu band04.cs.ppu.edu</p>
 0) 1010111110111001
 0) 0110111110111001
 0) 1110111110111001
-Process 0 is done</code></pre></div>
+Process 0 is done</code></pre></div></figure>
 <blockquote>
 <p>两个CPU</p>
 </blockquote>
-<div class="code-wrapper"><pre><code class="hljs tex"><span class="hljs-comment">% mpirun -np 2 sat</span>
+<figure><div class="code-wrapper"><pre class="language-latex" data-language="latex"><code class="language-latex"><span class="token comment">% mpirun -np 2 sat</span>
 0) 0110111110011001
 0) 0110111111011001
 0) 0110111110111001
@@ -528,11 +528,11 @@ Process 0 is done</code></pre></div>
 1) 1010111110111001
 1) 1110111110111001
 Process 0 is done
-Process 1 is done</code></pre></div>
+Process 1 is done</code></pre></div></figure>
 <blockquote>
 <p>3个CPU</p>
 </blockquote>
-<div class="code-wrapper"><pre><code class="hljs tex"><span class="hljs-comment">% mpirun -np 3 sat</span>
+<figure><div class="code-wrapper"><pre class="language-latex" data-language="latex"><code class="language-latex"><span class="token comment">% mpirun -np 3 sat</span>
 0) 0110111110011001
 0) 1110111111011001
 2) 1010111110011001
@@ -544,7 +544,7 @@ Process 1 is done</code></pre></div>
 2) 1110111110111001
 Process 1 is done
 Process 2 is done
-Process 0 is done</code></pre></div>
+Process 0 is done</code></pre></div></figure>
 <h3 id="解释输出">解释输出</h3>
 <ul>
 <li>输出清单仅部分反映并行计算机内的输出事件顺序</li>
@@ -569,28 +569,28 @@ B 消息之前显示</li>
 <li>在每一次循环之后进行规约</li>
 </ul>
 <h3 id="新的声明和代码">新的声明和代码</h3>
-<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">int</span> count;  <span class="hljs-comment">/* Local sum */</span>
-<span class="hljs-type">int</span> global_count; <span class="hljs-comment">/* Global sum */</span>
-<span class="hljs-type">int</span> <span class="hljs-title function_">check_circuit</span> <span class="hljs-params">(<span class="hljs-type">int</span>, <span class="hljs-type">int</span>)</span>;
-count = <span class="hljs-number">0</span>;
-<span class="hljs-keyword">for</span> (i = id; i &lt; <span class="hljs-number">65536</span>; i += p)
-   count += check_circuit (id, i);</code></pre></div>
-<p>MPI_Reduce <div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">MPI_Reduce</span> <span class="hljs-params">(<span class="hljs-type">void</span>         *operand,</span>
-<span class="hljs-params">                <span class="hljs-comment">/* addr of 1st reduction element */</span></span>
-<span class="hljs-params">                <span class="hljs-type">void</span>         *result,</span>
-<span class="hljs-params">                <span class="hljs-comment">/* addr of 1st reduction result */</span>  </span>
-<span class="hljs-params">                <span class="hljs-type">int</span>          count,</span>
-<span class="hljs-params">                <span class="hljs-comment">/* reductions to perform */</span></span>
-<span class="hljs-params">                MPI_Datatype type,</span>
-<span class="hljs-params">                <span class="hljs-comment">/* type of elements */</span></span>
-<span class="hljs-params">                MPI_Op       operator,</span>
-<span class="hljs-params">                <span class="hljs-comment">/* reduction operator */</span></span>
-<span class="hljs-params">  				 <span class="hljs-type">int</span>          root,</span>
-<span class="hljs-params">                <span class="hljs-comment">/* process getting result(s) */</span></span>
-<span class="hljs-params">   				MPI_Comm     comm</span>
-<span class="hljs-params">                <span class="hljs-comment">/* communicator */</span></span>
-<span class="hljs-params">)</span></code></pre></div></p>
-<p>MPI_DATATYPE OPTIONS <div class="code-wrapper"><pre><code class="hljs c">MPI_CHAR
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">int</span> count<span class="token punctuation">;</span>  <span class="token comment">/* Local sum */</span>
+<span class="token keyword">int</span> global_count<span class="token punctuation">;</span> <span class="token comment">/* Global sum */</span>
+<span class="token keyword">int</span> <span class="token function">check_circuit</span> <span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">,</span> <span class="token keyword">int</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+count <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token keyword">for</span> <span class="token punctuation">(</span>i <span class="token operator">=</span> id<span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">65536</span><span class="token punctuation">;</span> i <span class="token operator">+=</span> p<span class="token punctuation">)</span>
+   count <span class="token operator">+=</span> <span class="token function">check_circuit</span> <span class="token punctuation">(</span>id<span class="token punctuation">,</span> i<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre></div></figure>
+<p>MPI_Reduce <figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">int</span> <span class="token function">MPI_Reduce</span> <span class="token punctuation">(</span><span class="token keyword">void</span>         <span class="token operator">*</span>operand<span class="token punctuation">,</span>
+                <span class="token comment">/* addr of 1st reduction element */</span>
+                <span class="token keyword">void</span>         <span class="token operator">*</span>result<span class="token punctuation">,</span>
+                <span class="token comment">/* addr of 1st reduction result */</span>  
+                <span class="token keyword">int</span>          count<span class="token punctuation">,</span>
+                <span class="token comment">/* reductions to perform */</span>
+                MPI_Datatype type<span class="token punctuation">,</span>
+                <span class="token comment">/* type of elements */</span>
+                MPI_Op       operator<span class="token punctuation">,</span>
+                <span class="token comment">/* reduction operator */</span>
+  				 <span class="token keyword">int</span>          root<span class="token punctuation">,</span>
+                <span class="token comment">/* process getting result(s) */</span>
+   				MPI_Comm     comm
+                <span class="token comment">/* communicator */</span>
+<span class="token punctuation">)</span></code></pre></div></figure></p>
+<p>MPI_DATATYPE OPTIONS <figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">MPI_CHAR
 MPI_DOUBLE
 MPI_FLOAT
 MPI_INT
@@ -600,9 +600,9 @@ MPI_SHORT
 MPI_UNSIGNED_CHAR
 MPI_UNSIGNED
 MPI_UNSIGNED_LONG
-MPI_UNSIGNED_SHORT</code></pre></div></p>
+MPI_UNSIGNED_SHORT</code></pre></div></figure></p>
 <p>MPI_OP OPTIONS</p>
-<div class="code-wrapper"><pre><code class="hljs c">MPI_BAND
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">MPI_BAND
 MPI_BOR
 MPI_BXOR
 MPI_LAND
@@ -613,18 +613,18 @@ MPI_MAXLOC
 MPI_MIN
 MPI_MINLOC
 MPI_PROD
-MPI_SUM</code></pre></div>
+MPI_SUM</code></pre></div></figure>
 <h3 id="调用mpi_reduce">调用MPI_Reduce</h3>
-<div class="code-wrapper"><pre><code class="hljs c">MPI_Reduce (&amp;count,
-            &amp;global_count,
-            <span class="hljs-number">1</span>,
-            MPI_INT,
-            MPI_SUM,
-            <span class="hljs-number">0</span>,<span class="hljs-comment">//Only process 0 will get the result</span>
-            MPI_COMM_WORLD);
-<span class="hljs-keyword">if</span> (!id) <span class="hljs-built_in">printf</span> (<span class="hljs-string">&quot;There are %d different solutions\n&quot;</span>,global_count);</code></pre></div>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token function">MPI_Reduce</span> <span class="token punctuation">(</span><span class="token operator">&amp;</span>count<span class="token punctuation">,</span>
+            <span class="token operator">&amp;</span>global_count<span class="token punctuation">,</span>
+            <span class="token number">1</span><span class="token punctuation">,</span>
+            MPI_INT<span class="token punctuation">,</span>
+            MPI_SUM<span class="token punctuation">,</span>
+            <span class="token number">0</span><span class="token punctuation">,</span><span class="token comment">//Only process 0 will get the result</span>
+            MPI_COMM_WORLD<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>id<span class="token punctuation">)</span> <span class="token function">printf</span> <span class="token punctuation">(</span><span class="token string">"There are %d different solutions\n"</span><span class="token punctuation">,</span>global_count<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre></div></figure>
 <h3 id="执行第二个程序">执行第二个程序</h3>
-<div class="code-wrapper"><pre><code class="hljs tex"><span class="hljs-comment">% mpirun -np 3 seq2</span>
+<figure><div class="code-wrapper"><pre class="language-latex" data-language="latex"><code class="language-latex"><span class="token comment">% mpirun -np 3 seq2</span>
 0) 0110111110011001
 0) 1110111111011001
 1) 1110111110011001
@@ -637,7 +637,7 @@ MPI_SUM</code></pre></div>
 Process 1 is done
 Process 2 is done
 Process 0 is done
-There are 9 different solutions</code></pre></div>
+There are 9 different solutions</code></pre></div></figure>
 <h2 id="mpi基准测试程序">MPI基准测试程序</h2>
 <ul>
 <li>MPI_Barrier - barrier synchronization（障碍同步）</li>
@@ -657,13 +657,13 @@ CPU time（挂钟时间vsCPU时间）</h3>
 <li>/usr/bin/time</li>
 </ul>
 <h3 id="基准测试代码">基准测试代码</h3>
-<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">double</span> elapsed_time;
-MPI_Init (&amp;argc, &amp;argv);
-MPI_Barrier (MPI_COMM_WORLD);
-elapsed_time = - MPI_Wtime();
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">double</span> elapsed_time<span class="token punctuation">;</span>
+<span class="token function">MPI_Init</span> <span class="token punctuation">(</span><span class="token operator">&amp;</span>argc<span class="token punctuation">,</span> <span class="token operator">&amp;</span>argv<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">MPI_Barrier</span> <span class="token punctuation">(</span>MPI_COMM_WORLD<span class="token punctuation">)</span><span class="token punctuation">;</span>
+elapsed_time <span class="token operator">=</span> <span class="token operator">-</span> <span class="token function">MPI_Wtime</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 …
-MPI_Reduce (…);
-elapsed_time += MPI_Wtime();</code></pre></div>
+<span class="token function">MPI_Reduce</span> <span class="token punctuation">(</span>…<span class="token punctuation">)</span><span class="token punctuation">;</span>
+elapsed_time <span class="token operator">+=</span> <span class="token function">MPI_Wtime</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre></div></figure>
 <h3 id="基准测试结果">基准测试结果</h3>
 <table>
 <thead>

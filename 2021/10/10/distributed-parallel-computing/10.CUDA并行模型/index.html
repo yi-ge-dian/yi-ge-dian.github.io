@@ -242,7 +242,7 @@
         
         
         
-          33 分钟
+          32 分钟
         
       </span>
     
@@ -309,29 +309,29 @@ alt="145" />
 <figcaption aria-hidden="true">145</figcaption>
 </figure>
 <p>源代码图片内核</p>
-<div class="code-wrapper"><pre><code class="hljs c">__global__ <span class="hljs-type">void</span> <span class="hljs-title function_">PictureKernel</span><span class="hljs-params">(<span class="hljs-type">float</span>* d_Pin, <span class="hljs-type">float</span>* d_Pout, <span class="hljs-type">int</span> height, <span class="hljs-type">int</span> width)</span>&#123;
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">__global__ <span class="token keyword">void</span> <span class="token function">PictureKernel</span><span class="token punctuation">(</span><span class="token keyword">float</span><span class="token operator">*</span> d_Pin<span class="token punctuation">,</span> <span class="token keyword">float</span><span class="token operator">*</span> d_Pout<span class="token punctuation">,</span> <span class="token keyword">int</span> height<span class="token punctuation">,</span> <span class="token keyword">int</span> width<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
 
-  <span class="hljs-comment">// Calculate the row # of the d_Pin and d_Pout element</span>
-  <span class="hljs-type">int</span> Row = blockIdx.y*blockDim.y + threadIdx.y;
+  <span class="token comment">// Calculate the row # of the d_Pin and d_Pout element</span>
+  <span class="token keyword">int</span> Row <span class="token operator">=</span> blockIdx<span class="token punctuation">.</span>y<span class="token operator">*</span>blockDim<span class="token punctuation">.</span>y <span class="token operator">+</span> threadIdx<span class="token punctuation">.</span>y<span class="token punctuation">;</span>
   
-  <span class="hljs-comment">// Calculate the column # of the d_Pin and d_Pout element</span>
-  <span class="hljs-type">int</span> Col = blockIdx.x*blockDim.x + threadIdx.x;
+  <span class="token comment">// Calculate the column # of the d_Pin and d_Pout element</span>
+  <span class="token keyword">int</span> Col <span class="token operator">=</span> blockIdx<span class="token punctuation">.</span>x<span class="token operator">*</span>blockDim<span class="token punctuation">.</span>x <span class="token operator">+</span> threadIdx<span class="token punctuation">.</span>x<span class="token punctuation">;</span>
 
-  <span class="hljs-comment">// each thread computes one element of d_Pout if in range</span>
-  <span class="hljs-keyword">if</span> ((Row &lt; height) &amp;&amp; (Col &lt; width)) &#123;
-    d_Pout[Row*width+Col] = <span class="hljs-number">2.0</span>*d_Pin[Row*width+Col];
-  &#125;
-&#125;</code></pre></div>
+  <span class="token comment">// each thread computes one element of d_Pout if in range</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>Row <span class="token operator">&lt;</span> height<span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>Col <span class="token operator">&lt;</span> width<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    d_Pout<span class="token punctuation">[</span>Row<span class="token operator">*</span>width<span class="token operator">+</span>Col<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">2.0</span><span class="token operator">*</span>d_Pin<span class="token punctuation">[</span>Row<span class="token operator">*</span>width<span class="token operator">+</span>Col<span class="token punctuation">]</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre></div></figure>
 <p>启动PictureKernel的HOST代码</p>
-<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-comment">// assume that the picture is m × n, </span>
-<span class="hljs-comment">// m pixels in y dimension and n pixels in x dimension</span>
-<span class="hljs-comment">// input d_Pin has been allocated on and copied to device</span>
-<span class="hljs-comment">// output d_Pout has been allocated on device</span>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token comment">// assume that the picture is m × n, </span>
+<span class="token comment">// m pixels in y dimension and n pixels in x dimension</span>
+<span class="token comment">// input d_Pin has been allocated on and copied to device</span>
+<span class="token comment">// output d_Pout has been allocated on device</span>
 …
-dim3 <span class="hljs-title function_">DimGrid</span><span class="hljs-params">((n<span class="hljs-number">-1</span>)/<span class="hljs-number">16</span> + <span class="hljs-number">1</span>, (m<span class="hljs-number">-1</span>)/<span class="hljs-number">16</span>+<span class="hljs-number">1</span>, <span class="hljs-number">1</span>)</span>;<span class="hljs-comment">//网格，线程块的个数</span>
-dim3 <span class="hljs-title function_">DimBlock</span><span class="hljs-params">(<span class="hljs-number">16</span>, <span class="hljs-number">16</span>, <span class="hljs-number">1</span>)</span>;<span class="hljs-comment">//块，每个线程块中线程的个数</span>
-PictureKernel&lt;&lt;&lt;DimGrid,DimBlock&gt;&gt;&gt;(d_Pin, d_Pout, m, n);
-…</code></pre></div>
+dim3 <span class="token function">DimGrid</span><span class="token punctuation">(</span><span class="token punctuation">(</span>n<span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token operator">/</span><span class="token number">16</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token punctuation">(</span>m<span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token operator">/</span><span class="token number">16</span><span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//网格，线程块的个数</span>
+dim3 <span class="token function">DimBlock</span><span class="token punctuation">(</span><span class="token number">16</span><span class="token punctuation">,</span> <span class="token number">16</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//块，每个线程块中线程的个数</span>
+PictureKernel<span class="token operator">&lt;&lt;</span><span class="token operator">&lt;</span>DimGrid<span class="token punctuation">,</span>DimBlock<span class="token operator">>></span><span class="token operator">></span><span class="token punctuation">(</span>d_Pin<span class="token punctuation">,</span> d_Pout<span class="token punctuation">,</span> m<span class="token punctuation">,</span> n<span class="token punctuation">)</span><span class="token punctuation">;</span>
+…</code></pre></div></figure>
 <p>并非 Block 中的所有线程都将遵循相同的控制流路径。</p>
 <figure>
 <img
@@ -374,26 +374,26 @@ alt="149" />
 <figcaption aria-hidden="true">149</figcaption>
 </figure>
 <h3 id="rgb到灰度转换代码">RGB到灰度转换代码</h3>
-<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">define</span> CHANNELS 3 <span class="hljs-comment">// we have 3 channels corresponding to RGB</span></span>
-<span class="hljs-comment">// The input image is encoded as unsigned characters [0, 255]</span>
-__global__ <span class="hljs-type">void</span> <span class="hljs-title function_">colorConvert</span><span class="hljs-params">(<span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> * grayImage, <span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> * rgbImage,<span class="hljs-type">int</span> width, <span class="hljs-type">int</span> height)</span> &#123;
- <span class="hljs-type">int</span> x = threadIdx.x + blockIdx.x * blockDim.x;
- <span class="hljs-type">int</span> y = threadIdx.y + blockIdx.y * blockDim.y;
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">CHANNELS</span> <span class="token expression"><span class="token number">3</span> </span><span class="token comment">// we have 3 channels corresponding to RGB</span></span>
+<span class="token comment">// The input image is encoded as unsigned characters [0, 255]</span>
+__global__ <span class="token keyword">void</span> <span class="token function">colorConvert</span><span class="token punctuation">(</span><span class="token keyword">unsigned</span> <span class="token keyword">char</span> <span class="token operator">*</span> grayImage<span class="token punctuation">,</span> <span class="token keyword">unsigned</span> <span class="token keyword">char</span> <span class="token operator">*</span> rgbImage<span class="token punctuation">,</span><span class="token keyword">int</span> width<span class="token punctuation">,</span> <span class="token keyword">int</span> height<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+ <span class="token keyword">int</span> x <span class="token operator">=</span> threadIdx<span class="token punctuation">.</span>x <span class="token operator">+</span> blockIdx<span class="token punctuation">.</span>x <span class="token operator">*</span> blockDim<span class="token punctuation">.</span>x<span class="token punctuation">;</span>
+ <span class="token keyword">int</span> y <span class="token operator">=</span> threadIdx<span class="token punctuation">.</span>y <span class="token operator">+</span> blockIdx<span class="token punctuation">.</span>y <span class="token operator">*</span> blockDim<span class="token punctuation">.</span>y<span class="token punctuation">;</span>
 
- <span class="hljs-keyword">if</span> (x &lt; width &amp;&amp; y &lt; height) &#123;
-    <span class="hljs-comment">// get 1D coordinate for the grayscale image</span>
-    <span class="hljs-type">int</span> grayOffset = y*width + x;
-    <span class="hljs-comment">// one can think of the RGB image having</span>
-    <span class="hljs-comment">// CHANNEL times columns than the gray scale image</span>
-    <span class="hljs-type">int</span> rgbOffset = grayOffset*CHANNELS;
-    <span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> r =  rgbImage[rgbOffset     ]; <span class="hljs-comment">// red value for pixel</span>
-    <span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> g = rgbImage[rgbOffset + <span class="hljs-number">1</span>]; <span class="hljs-comment">// green value for pixel</span>
-    <span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> b = rgbImage[rgbOffset + <span class="hljs-number">2</span>]; <span class="hljs-comment">// blue value for pixel</span>
-    <span class="hljs-comment">// perform the rescaling and store it</span>
-    <span class="hljs-comment">// We multiply by floating point constants</span>
-    grayImage[grayOffset] = <span class="hljs-number">0.21f</span>*r + <span class="hljs-number">0.71f</span>*g + <span class="hljs-number">0.07f</span>*b;
- &#125;
-&#125;</code></pre></div>
+ <span class="token keyword">if</span> <span class="token punctuation">(</span>x <span class="token operator">&lt;</span> width <span class="token operator">&amp;&amp;</span> y <span class="token operator">&lt;</span> height<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// get 1D coordinate for the grayscale image</span>
+    <span class="token keyword">int</span> grayOffset <span class="token operator">=</span> y<span class="token operator">*</span>width <span class="token operator">+</span> x<span class="token punctuation">;</span>
+    <span class="token comment">// one can think of the RGB image having</span>
+    <span class="token comment">// CHANNEL times columns than the gray scale image</span>
+    <span class="token keyword">int</span> rgbOffset <span class="token operator">=</span> grayOffset<span class="token operator">*</span>CHANNELS<span class="token punctuation">;</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">char</span> r <span class="token operator">=</span>  rgbImage<span class="token punctuation">[</span>rgbOffset     <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token comment">// red value for pixel</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">char</span> g <span class="token operator">=</span> rgbImage<span class="token punctuation">[</span>rgbOffset <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token comment">// green value for pixel</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">char</span> b <span class="token operator">=</span> rgbImage<span class="token punctuation">[</span>rgbOffset <span class="token operator">+</span> <span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token comment">// blue value for pixel</span>
+    <span class="token comment">// perform the rescaling and store it</span>
+    <span class="token comment">// We multiply by floating point constants</span>
+    grayImage<span class="token punctuation">[</span>grayOffset<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0.21f</span><span class="token operator">*</span>r <span class="token operator">+</span> <span class="token number">0.71f</span><span class="token operator">*</span>g <span class="token operator">+</span> <span class="token number">0.07f</span><span class="token operator">*</span>b<span class="token punctuation">;</span>
+ <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre></div></figure>
 <h2 id="模糊图像处理示例">模糊图像处理示例</h2>
 <figure>
 <img
@@ -409,30 +409,30 @@ alt="151" />
 <figcaption aria-hidden="true">151</figcaption>
 </figure>
 <p>图像模糊作为 2D 内核</p>
-<div class="code-wrapper"><pre><code class="hljs c">__global__ 
-  <span class="hljs-type">void</span> <span class="hljs-title function_">blurKernel</span><span class="hljs-params">(<span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> * in, <span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> * out, <span class="hljs-type">int</span> w, <span class="hljs-type">int</span> h)</span> &#123;
-    <span class="hljs-type">int</span> Col  = blockIdx.x * blockDim.x + threadIdx.x;
-    <span class="hljs-type">int</span> Row  = blockIdx.y * blockDim.y + threadIdx.y;
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">__global__ 
+  <span class="token keyword">void</span> <span class="token function">blurKernel</span><span class="token punctuation">(</span><span class="token keyword">unsigned</span> <span class="token keyword">char</span> <span class="token operator">*</span> in<span class="token punctuation">,</span> <span class="token keyword">unsigned</span> <span class="token keyword">char</span> <span class="token operator">*</span> out<span class="token punctuation">,</span> <span class="token keyword">int</span> w<span class="token punctuation">,</span> <span class="token keyword">int</span> h<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">int</span> Col  <span class="token operator">=</span> blockIdx<span class="token punctuation">.</span>x <span class="token operator">*</span> blockDim<span class="token punctuation">.</span>x <span class="token operator">+</span> threadIdx<span class="token punctuation">.</span>x<span class="token punctuation">;</span>
+    <span class="token keyword">int</span> Row  <span class="token operator">=</span> blockIdx<span class="token punctuation">.</span>y <span class="token operator">*</span> blockDim<span class="token punctuation">.</span>y <span class="token operator">+</span> threadIdx<span class="token punctuation">.</span>y<span class="token punctuation">;</span>
 
-    <span class="hljs-keyword">if</span> (Col &lt; w &amp;&amp; Row &lt; h) &#123;
-          <span class="hljs-type">int</span> pixVal = <span class="hljs-number">0</span>;
-          <span class="hljs-type">int</span> pixels = <span class="hljs-number">0</span>;
-          <span class="hljs-comment">// Get the average of the surrounding 2xBLUR_SIZE x 2xBLUR_SIZE box</span>
-  <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> blurRow = -BLUR_SIZE; blurRow &lt; BLUR_SIZE+<span class="hljs-number">1</span>; ++blurRow)&#123;
-    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> blurCol = -BLUR_SIZE; blurCol &lt; BLUR_SIZE+<span class="hljs-number">1</span>; ++blurCol) &#123;
-                  <span class="hljs-type">int</span> curRow = Row + blurRow;
-                  <span class="hljs-type">int</span> curCol = Col + blurCol;
-                  <span class="hljs-comment">// Verify we have a valid image pixel</span>
-         <span class="hljs-keyword">if</span>(curRow &gt; <span class="hljs-number">-1</span> &amp;&amp; curRow &lt; h &amp;&amp; curCol &gt; <span class="hljs-number">-1</span> &amp;&amp; curCol &lt; w) &#123;
-                      pixVal += in[curRow * w + curCol];
-                      pixels++; <span class="hljs-comment">// Keep track of number of pixels in the accumulated total</span>
-                  &#125;
-              &#125;
-          &#125;
-          <span class="hljs-comment">// Write our new pixel value out</span>
-          out[Row * w + Col] = (<span class="hljs-type">unsigned</span> <span class="hljs-type">char</span>)(pixVal / pixels);
-    &#125;
-&#125;</code></pre></div>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>Col <span class="token operator">&lt;</span> w <span class="token operator">&amp;&amp;</span> Row <span class="token operator">&lt;</span> h<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+          <span class="token keyword">int</span> pixVal <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+          <span class="token keyword">int</span> pixels <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+          <span class="token comment">// Get the average of the surrounding 2xBLUR_SIZE x 2xBLUR_SIZE box</span>
+  <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">int</span> blurRow <span class="token operator">=</span> <span class="token operator">-</span>BLUR_SIZE<span class="token punctuation">;</span> blurRow <span class="token operator">&lt;</span> BLUR_SIZE<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">;</span> <span class="token operator">++</span>blurRow<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">int</span> blurCol <span class="token operator">=</span> <span class="token operator">-</span>BLUR_SIZE<span class="token punctuation">;</span> blurCol <span class="token operator">&lt;</span> BLUR_SIZE<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">;</span> <span class="token operator">++</span>blurCol<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                  <span class="token keyword">int</span> curRow <span class="token operator">=</span> Row <span class="token operator">+</span> blurRow<span class="token punctuation">;</span>
+                  <span class="token keyword">int</span> curCol <span class="token operator">=</span> Col <span class="token operator">+</span> blurCol<span class="token punctuation">;</span>
+                  <span class="token comment">// Verify we have a valid image pixel</span>
+         <span class="token keyword">if</span><span class="token punctuation">(</span>curRow <span class="token operator">></span> <span class="token operator">-</span><span class="token number">1</span> <span class="token operator">&amp;&amp;</span> curRow <span class="token operator">&lt;</span> h <span class="token operator">&amp;&amp;</span> curCol <span class="token operator">></span> <span class="token operator">-</span><span class="token number">1</span> <span class="token operator">&amp;&amp;</span> curCol <span class="token operator">&lt;</span> w<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                      pixVal <span class="token operator">+=</span> in<span class="token punctuation">[</span>curRow <span class="token operator">*</span> w <span class="token operator">+</span> curCol<span class="token punctuation">]</span><span class="token punctuation">;</span>
+                      pixels<span class="token operator">++</span><span class="token punctuation">;</span> <span class="token comment">// Keep track of number of pixels in the accumulated total</span>
+                  <span class="token punctuation">&#125;</span>
+              <span class="token punctuation">&#125;</span>
+          <span class="token punctuation">&#125;</span>
+          <span class="token comment">// Write our new pixel value out</span>
+          out<span class="token punctuation">[</span>Row <span class="token operator">*</span> w <span class="token operator">+</span> Col<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">unsigned</span> <span class="token keyword">char</span><span class="token punctuation">)</span><span class="token punctuation">(</span>pixVal <span class="token operator">/</span> pixels<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre></div></figure>
 <h2 id="线程调度">线程调度</h2>
 <p>SP：最基本的处理单元，streaming processor，也称为CUDA
 core。最后具体的指令和任务都是在SP上处理的。GPU进行并行计算，也就是很多个SP同时做处理。

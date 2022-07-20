@@ -288,22 +288,22 @@
                 <h2 id="内存访问效率">内存访问效率</h2>
 <h3 id="例矩阵相乘">例：矩阵相乘</h3>
 <p>一个基本的矩阵乘法：</p>
-<div class="code-wrapper"><pre><code class="hljs c">__global__ <span class="hljs-type">void</span> <span class="hljs-title function_">MatrixMulKernel</span><span class="hljs-params">(<span class="hljs-type">float</span>* M, <span class="hljs-type">float</span>* N, <span class="hljs-type">float</span>* P, <span class="hljs-type">int</span> Width)</span> &#123;
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">__global__ <span class="token keyword">void</span> <span class="token function">MatrixMulKernel</span><span class="token punctuation">(</span><span class="token keyword">float</span><span class="token operator">*</span> M<span class="token punctuation">,</span> <span class="token keyword">float</span><span class="token operator">*</span> N<span class="token punctuation">,</span> <span class="token keyword">float</span><span class="token operator">*</span> P<span class="token punctuation">,</span> <span class="token keyword">int</span> Width<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
 
-  <span class="hljs-comment">// Calculate the row index of the P element and M</span>
-  <span class="hljs-type">int</span> Row = blockIdx.y*blockDim.y+threadIdx.y;
+  <span class="token comment">// Calculate the row index of the P element and M</span>
+  <span class="token keyword">int</span> Row <span class="token operator">=</span> blockIdx<span class="token punctuation">.</span>y<span class="token operator">*</span>blockDim<span class="token punctuation">.</span>y<span class="token operator">+</span>threadIdx<span class="token punctuation">.</span>y<span class="token punctuation">;</span>
 
-  <span class="hljs-comment">// Calculate the column index of P and N</span>
-  <span class="hljs-type">int</span> Col = blockIdx.x*blockDim.x+threadIdx.x;
+  <span class="token comment">// Calculate the column index of P and N</span>
+  <span class="token keyword">int</span> Col <span class="token operator">=</span> blockIdx<span class="token punctuation">.</span>x<span class="token operator">*</span>blockDim<span class="token punctuation">.</span>x<span class="token operator">+</span>threadIdx<span class="token punctuation">.</span>x<span class="token punctuation">;</span>
 
-  <span class="hljs-keyword">if</span> ((Row &lt; Width) &amp;&amp; (Col &lt; Width)) &#123;
-    <span class="hljs-type">float</span> Pvalue = <span class="hljs-number">0</span>;
-    <span class="hljs-comment">// each thread computes one element of the block sub-matrix</span>
-    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> k = <span class="hljs-number">0</span>; k &lt; Width; ++k) &#123;
-      Pvalue += M[Row*Width+k]*N[k*Width+Col];
-    &#125;
-    P[Row*Width+Col] = Pvalue;
-  &#125;</code></pre></div>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>Row <span class="token operator">&lt;</span> Width<span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>Col <span class="token operator">&lt;</span> Width<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">float</span> Pvalue <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token comment">// each thread computes one element of the block sub-matrix</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> k <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> k <span class="token operator">&lt;</span> Width<span class="token punctuation">;</span> <span class="token operator">++</span>k<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      Pvalue <span class="token operator">+=</span> M<span class="token punctuation">[</span>Row<span class="token operator">*</span>Width<span class="token operator">+</span>k<span class="token punctuation">]</span><span class="token operator">*</span>N<span class="token punctuation">[</span>k<span class="token operator">*</span>Width<span class="token operator">+</span>Col<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    P<span class="token punctuation">[</span>Row<span class="token operator">*</span>Width<span class="token operator">+</span>Col<span class="token punctuation">]</span> <span class="token operator">=</span> Pvalue<span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span></code></pre></div></figure>
 <p>GPU的性能如何?</p>
 <blockquote>
 <p>CGMA比率(计算与全局内存访问比率):在CUDA内核的一个区域内，每次访问全局内存所执行的浮点计算的数量。
@@ -359,10 +359,10 @@ alt="157" />
 <p>自动变量
 住在一个寄存器中，自动数组变量并不在寄存器中，相反他们存储在全局存储器中。</p>
 <p>例：共享内存变量声明</p>
-<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">void</span> <span class="hljs-title function_">blurKernel</span><span class="hljs-params">(<span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> * in, <span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> * out, <span class="hljs-type">int</span> w, <span class="hljs-type">int</span> h)</span> &#123;
-  __shared__ <span class="hljs-type">float</span> ds_in[TILE_WIDTH][TILE_WIDTH];
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">blurKernel</span><span class="token punctuation">(</span><span class="token keyword">unsigned</span> <span class="token keyword">char</span> <span class="token operator">*</span> in<span class="token punctuation">,</span> <span class="token keyword">unsigned</span> <span class="token keyword">char</span> <span class="token operator">*</span> out<span class="token punctuation">,</span> <span class="token keyword">int</span> w<span class="token punctuation">,</span> <span class="token keyword">int</span> h<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  __shared__ <span class="token keyword">float</span> ds_in<span class="token punctuation">[</span>TILE_WIDTH<span class="token punctuation">]</span><span class="token punctuation">[</span>TILE_WIDTH<span class="token punctuation">]</span><span class="token punctuation">;</span>
  …
-&#125;</code></pre></div>
+<span class="token punctuation">&#125;</span></code></pre></div></figure>
 <p>在哪声明变量：</p>
 <figure>
 <img
@@ -486,40 +486,40 @@ alt="164" />
 <h2 id="处理块的边界条件">处理块的边界条件</h2>
 <h3 id="加载mn的输入图块0phase-0">加载M,N的输入图块0（Phase 0）</h3>
 <p>让每个线程在其P元素相同的相对位置加载一个M元素和一个N元素。</p>
-<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-type">int</span> Row = by * blockDim.y + ty;
-<span class="hljs-type">int</span> Col = bx * blockDim.x + tx;</code></pre></div>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">int</span> Row <span class="token operator">=</span> by <span class="token operator">*</span> blockDim<span class="token punctuation">.</span>y <span class="token operator">+</span> ty<span class="token punctuation">;</span>
+<span class="token keyword">int</span> Col <span class="token operator">=</span> bx <span class="token operator">*</span> blockDim<span class="token punctuation">.</span>x <span class="token operator">+</span> tx<span class="token punctuation">;</span></code></pre></div></figure>
 <p>用于访问Tile
 0的2维索引:<code>M[Row][tx]</code>,<code>N[ty][Col]</code></p>
 <h3 id="加载n的输入图块1phase-1">加载N的输入图块1（Phase 1）</h3>
 <p>用于访问Tile
 0的2维索引:<code>M[Row][1*TILE_WIDTH + tx]</code>,<code>N[1*TILE*WIDTH + ty][Col]</code></p>
 <h3 id="代码">代码</h3>
-<div class="code-wrapper"><pre><code class="hljs c">__global__ <span class="hljs-type">void</span> <span class="hljs-title function_">MatrixMulKernel</span><span class="hljs-params">(<span class="hljs-type">float</span>* M, <span class="hljs-type">float</span>* N, <span class="hljs-type">float</span>* P, <span class="hljs-type">int</span> Width)</span>&#123;
-  __shared__ <span class="hljs-type">float</span> ds_M[TILE_WIDTH][TILE_WIDTH];
-  __shared__ <span class="hljs-type">float</span> ds_N[TILE_WIDTH][TILE_WIDTH];
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c">__global__ <span class="token keyword">void</span> <span class="token function">MatrixMulKernel</span><span class="token punctuation">(</span><span class="token keyword">float</span><span class="token operator">*</span> M<span class="token punctuation">,</span> <span class="token keyword">float</span><span class="token operator">*</span> N<span class="token punctuation">,</span> <span class="token keyword">float</span><span class="token operator">*</span> P<span class="token punctuation">,</span> <span class="token keyword">int</span> Width<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+  __shared__ <span class="token keyword">float</span> ds_M<span class="token punctuation">[</span>TILE_WIDTH<span class="token punctuation">]</span><span class="token punctuation">[</span>TILE_WIDTH<span class="token punctuation">]</span><span class="token punctuation">;</span>
+  __shared__ <span class="token keyword">float</span> ds_N<span class="token punctuation">[</span>TILE_WIDTH<span class="token punctuation">]</span><span class="token punctuation">[</span>TILE_WIDTH<span class="token punctuation">]</span><span class="token punctuation">;</span>
 
-  <span class="hljs-type">int</span> bx = blockIdx.x;  <span class="hljs-type">int</span> by = blockIdx.y;
-  <span class="hljs-type">int</span> tx = threadIdx.x; <span class="hljs-type">int</span> ty = threadIdx.y;
+  <span class="token keyword">int</span> bx <span class="token operator">=</span> blockIdx<span class="token punctuation">.</span>x<span class="token punctuation">;</span>  <span class="token keyword">int</span> by <span class="token operator">=</span> blockIdx<span class="token punctuation">.</span>y<span class="token punctuation">;</span>
+  <span class="token keyword">int</span> tx <span class="token operator">=</span> threadIdx<span class="token punctuation">.</span>x<span class="token punctuation">;</span> <span class="token keyword">int</span> ty <span class="token operator">=</span> threadIdx<span class="token punctuation">.</span>y<span class="token punctuation">;</span>
 
-  <span class="hljs-type">int</span> Row = by * blockDim.y + ty;
-  <span class="hljs-type">int</span> Col = bx * blockDim.x + tx;
-  <span class="hljs-type">float</span> Pvalue = <span class="hljs-number">0</span>;
+  <span class="token keyword">int</span> Row <span class="token operator">=</span> by <span class="token operator">*</span> blockDim<span class="token punctuation">.</span>y <span class="token operator">+</span> ty<span class="token punctuation">;</span>
+  <span class="token keyword">int</span> Col <span class="token operator">=</span> bx <span class="token operator">*</span> blockDim<span class="token punctuation">.</span>x <span class="token operator">+</span> tx<span class="token punctuation">;</span>
+  <span class="token keyword">float</span> Pvalue <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
 
- <span class="hljs-comment">// Loop over the M and N tiles required to compute the P element</span>
- <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> p = <span class="hljs-number">0</span>; p &lt; WIDHT/TILE_WIDTH; ++p) &#123;
-    <span class="hljs-comment">// Collaborative loading of M and N tiles into shared memory</span>
-    ds_M[ty][tx] = M[Row*Width + p*TILE_WIDTH+tx];
-    ds_N[ty][tx] = N[(p*TILE_WIDTH+ty)*Width + Col];
-    __syncthreads();
+ <span class="token comment">// Loop over the M and N tiles required to compute the P element</span>
+ <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> p <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> p <span class="token operator">&lt;</span> WIDHT<span class="token operator">/</span>TILE_WIDTH<span class="token punctuation">;</span> <span class="token operator">++</span>p<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// Collaborative loading of M and N tiles into shared memory</span>
+    ds_M<span class="token punctuation">[</span>ty<span class="token punctuation">]</span><span class="token punctuation">[</span>tx<span class="token punctuation">]</span> <span class="token operator">=</span> M<span class="token punctuation">[</span>Row<span class="token operator">*</span>Width <span class="token operator">+</span> p<span class="token operator">*</span>TILE_WIDTH<span class="token operator">+</span>tx<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    ds_N<span class="token punctuation">[</span>ty<span class="token punctuation">]</span><span class="token punctuation">[</span>tx<span class="token punctuation">]</span> <span class="token operator">=</span> N<span class="token punctuation">[</span><span class="token punctuation">(</span>p<span class="token operator">*</span>TILE_WIDTH<span class="token operator">+</span>ty<span class="token punctuation">)</span><span class="token operator">*</span>Width <span class="token operator">+</span> Col<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token function">__syncthreads</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; TILE_WIDTH; ++i)<span class="hljs-comment">//迭代TILE_WIDTH </span>
-        Pvalue += ds_M[ty][i] * ds_N[i][tx];
-    __synchthreads();
-	<span class="hljs-comment">//第一个同步：确保shared memory中的M，N完成加载</span>
-	<span class="hljs-comment">//第二个同步：确保shared memory中的M，N完成使用</span>
-  &#125;	
-  P[Row*Width+Col] = Pvalue;
-&#125;</code></pre></div>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> TILE_WIDTH<span class="token punctuation">;</span> <span class="token operator">++</span>i<span class="token punctuation">)</span><span class="token comment">//迭代TILE_WIDTH </span>
+        Pvalue <span class="token operator">+=</span> ds_M<span class="token punctuation">[</span>ty<span class="token punctuation">]</span><span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">*</span> ds_N<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">[</span>tx<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token function">__synchthreads</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token comment">//第一个同步：确保shared memory中的M，N完成加载</span>
+	<span class="token comment">//第二个同步：确保shared memory中的M，N完成使用</span>
+  <span class="token punctuation">&#125;</span>	
+  P<span class="token punctuation">[</span>Row<span class="token operator">*</span>Width<span class="token operator">+</span>Col<span class="token punctuation">]</span> <span class="token operator">=</span> Pvalue<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre></div></figure>
 <h3 id="平铺线程块大小注意事项">平铺线程块大小注意事项</h3>
 <p>每个 线程块 应该有很多线程 1.16 的 TILE_WIDTH 给出
 <code>16*  16  =  256</code> 个线程</p>
@@ -618,28 +618,28 @@ alt="166" />
 <li><code>If true, load N element</code>，<code>Else , load 0</code></li>
 </ul>
 <p><strong>加载元素 - 带边界检查</strong></p>
-<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> p = <span class="hljs-number">0</span>; p &lt; (Width<span class="hljs-number">-1</span>) / TILE_WIDTH + <span class="hljs-number">1</span>; ++p) &#123;
-	<span class="hljs-keyword">if</span>(Row &lt; Width &amp;&amp; t * TILE_WIDTH+tx &lt; Width) &#123;
-   	ds_M[ty][tx] = M[Row * Width + p * TILE_WIDTH + tx];
- &#125; <span class="hljs-keyword">else</span> &#123;
-    	ds_M[ty][tx] = <span class="hljs-number">0.0</span>;
-   &#125;
-  <span class="hljs-keyword">if</span> (p*TILE_WIDTH+ty &lt; Width &amp;&amp; Col &lt; Width) &#123;
-   	ds_N[ty][tx] = N[(p*TILE_WIDTH + ty) * Width + Col];
-    &#125; <span class="hljs-keyword">else</span> &#123;
-    	ds_N[ty][tx] = <span class="hljs-number">0.0</span>;
-    &#125;
-__syncthreads();</code></pre></div>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> p <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> p <span class="token operator">&lt;</span> <span class="token punctuation">(</span>Width<span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">/</span> TILE_WIDTH <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">;</span> <span class="token operator">++</span>p<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	<span class="token keyword">if</span><span class="token punctuation">(</span>Row <span class="token operator">&lt;</span> Width <span class="token operator">&amp;&amp;</span> t <span class="token operator">*</span> TILE_WIDTH<span class="token operator">+</span>tx <span class="token operator">&lt;</span> Width<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+   	ds_M<span class="token punctuation">[</span>ty<span class="token punctuation">]</span><span class="token punctuation">[</span>tx<span class="token punctuation">]</span> <span class="token operator">=</span> M<span class="token punctuation">[</span>Row <span class="token operator">*</span> Width <span class="token operator">+</span> p <span class="token operator">*</span> TILE_WIDTH <span class="token operator">+</span> tx<span class="token punctuation">]</span><span class="token punctuation">;</span>
+ <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+    	ds_M<span class="token punctuation">[</span>ty<span class="token punctuation">]</span><span class="token punctuation">[</span>tx<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0.0</span><span class="token punctuation">;</span>
+   <span class="token punctuation">&#125;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>p<span class="token operator">*</span>TILE_WIDTH<span class="token operator">+</span>ty <span class="token operator">&lt;</span> Width <span class="token operator">&amp;&amp;</span> Col <span class="token operator">&lt;</span> Width<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+   	ds_N<span class="token punctuation">[</span>ty<span class="token punctuation">]</span><span class="token punctuation">[</span>tx<span class="token punctuation">]</span> <span class="token operator">=</span> N<span class="token punctuation">[</span><span class="token punctuation">(</span>p<span class="token operator">*</span>TILE_WIDTH <span class="token operator">+</span> ty<span class="token punctuation">)</span> <span class="token operator">*</span> Width <span class="token operator">+</span> Col<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+    	ds_N<span class="token punctuation">[</span>ty<span class="token punctuation">]</span><span class="token punctuation">[</span>tx<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0.0</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token function">__syncthreads</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre></div></figure>
 <p><strong>内积-前和后</strong></p>
-<div class="code-wrapper"><pre><code class="hljs c"><span class="hljs-keyword">if</span>(Row &lt; Width &amp;&amp; Col &lt; Width) &#123;
-	<span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; TILE_WIDTH; ++i) &#123;
-	 	Pvalue += ds_M[ty][i] * ds_N[i][tx];
-     &#125;
-   __syncthreads();
- &#125; <span class="hljs-comment">/* end of outer for loop */</span>
-  <span class="hljs-keyword">if</span> (Row &lt; Width &amp;&amp; Col &lt; Width)&#123;
-  	P[Row*Width + Col] = Pvalue;
- &#125; <span class="hljs-comment">/* end of kernel */</span></code></pre></div>
+<figure><div class="code-wrapper"><pre class="language-c" data-language="c"><code class="language-c"><span class="token keyword">if</span><span class="token punctuation">(</span>Row <span class="token operator">&lt;</span> Width <span class="token operator">&amp;&amp;</span> Col <span class="token operator">&lt;</span> Width<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> TILE_WIDTH<span class="token punctuation">;</span> <span class="token operator">++</span>i<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	 	Pvalue <span class="token operator">+=</span> ds_M<span class="token punctuation">[</span>ty<span class="token punctuation">]</span><span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">*</span> ds_N<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">[</span>tx<span class="token punctuation">]</span><span class="token punctuation">;</span>
+     <span class="token punctuation">&#125;</span>
+   <span class="token function">__syncthreads</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+ <span class="token punctuation">&#125;</span> <span class="token comment">/* end of outer for loop */</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>Row <span class="token operator">&lt;</span> Width <span class="token operator">&amp;&amp;</span> Col <span class="token operator">&lt;</span> Width<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+  	P<span class="token punctuation">[</span>Row<span class="token operator">*</span>Width <span class="token operator">+</span> Col<span class="token punctuation">]</span> <span class="token operator">=</span> Pvalue<span class="token punctuation">;</span>
+ <span class="token punctuation">&#125;</span> <span class="token comment">/* end of kernel */</span></code></pre></div></figure>
 <h3 id="一些要点">一些要点</h3>
 <p>对于每个线程，条件是不同的</p>
 <ul>
