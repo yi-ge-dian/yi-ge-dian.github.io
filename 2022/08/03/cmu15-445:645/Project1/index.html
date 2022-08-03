@@ -1,0 +1,1256 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="yi-ge-dian">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Project Secification TASK #1 - LRU REPLACEMENT POLICY  LRU 算法策略：最近最久未用  实现LRU替换策略来维护 buffer pool 中的页面使用情况，在src&#x2F;include&#x2F;buffer&#x2F;lru_replacer.h 中实现一个名为 LRUReplacer 的新子类，并在 src&#x2F;buffer&#x2F;lru_replacer.cpp中完成其">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CMU15-445&#x2F;645 Project1">
+<meta property="og:url" content="http://onepoint.link/2022/08/03/cmu15-445:645/Project1/index.html">
+<meta property="og:site_name" content="onepoint">
+<meta property="og:description" content="Project Secification TASK #1 - LRU REPLACEMENT POLICY  LRU 算法策略：最近最久未用  实现LRU替换策略来维护 buffer pool 中的页面使用情况，在src&#x2F;include&#x2F;buffer&#x2F;lru_replacer.h 中实现一个名为 LRUReplacer 的新子类，并在 src&#x2F;buffer&#x2F;lru_replacer.cpp中完成其">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/image-20220720112527295.png">
+<meta property="article:published_time" content="2022-08-02T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-08-02T16:00:00.000Z">
+<meta property="article:author" content="yi-ge-dian">
+<meta property="article:tag" content="c++">
+<meta property="article:tag" content="datebase">
+<meta property="article:tag" content="cmu">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/image-20220720112527295.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>CMU15-445/645 Project1 - onepoint</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/indeximg-hover.css">
+<link rel="stylesheet" href="/css/macpanel.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"onepoint.link","root":"/","version":"1.9.2","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":"dd82cbda8f486148a18105c55a23ec08","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>OnePoint</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="CMU15-445/645 Project1"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-08-03 00:00" pubdate>
+          2022年8月3日 凌晨
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          15k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          122 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">CMU15-445/645 Project1</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="project-secification">Project Secification</h2>
+<h3 id="task-1---lru-replacement-policy">TASK #1 - LRU REPLACEMENT
+POLICY</h3>
+<blockquote>
+<p>LRU 算法策略：最近最久未用</p>
+</blockquote>
+<p>实现LRU替换策略来维护 buffer pool
+中的页面使用情况，在<code>src/include/buffer/lru_replacer.h</code>
+中实现一个名为 LRUReplacer 的新子类，并在
+<code>src/buffer/lru_replacer.cpp</code>中完成其实现。</p>
+<p><code>LRUReplacer</code> 的最大页面数和 buffer
+pool的大小相同，因为它包含了<code>BufferPoolManager</code>的所有帧，然而在给定的任一时刻，所有的帧并不一定都在<code>LRUReplacer</code>中，初始化时，没有帧在其中。只有那些新被
+<strong>unpin</strong> 的页面才在其中。</p>
+<p>需要实现几个方法：</p>
+<ul>
+<li><code>bool Victim(frame_id_t*)</code>：<strong>删除</strong>
+最近没有访问的页面，将其内容存储在输入参数中并返回 <code>True</code>
+，如果 <code>Replacer</code> 是空的，则返回 <code>False</code>。</li>
+<li><code>Pin (frame_id_t)</code>：在<code>BufferPoolManager</code>中一个页面被<strong>pin</strong>从而成为帧时，才调用此方法，从<code>LRUReplacer</code>中移除此页。</li>
+<li><code>Unpin(frame_id_t)</code>：这个方法只有当页面的<code>pin_count</code>变成0后才会被调用，这个方法应该将包含未固定页面的帧添加到
+<code>LRUReplacer</code>。</li>
+<li><code>Size()</code> ：返回 LRUReplacer 的页面大小。</li>
+</ul>
+<p>可以使用STL内置容器，可以假设不超内存但是确保操作是线程安全的。</p>
+<p>只需实现LRU策略，不必管项目中的clock置换策略。</p>
+<h3 id="task-2---buffer-pool-manager-instance">TASK #2 - BUFFER POOL
+MANAGER INSTANCE</h3>
+<p>实现缓冲池管理器(<code>BufferPoolManager</code>)。<code>BufferPoolManagerInstance</code>负责从<code>DiskManager</code>获取数据库页面并将它们存储在内存中。<code>BufferPoolManagerInstance</code>还可以在要求它把脏页写入磁盘，或当它需要驱逐一个页以便为新页腾出空间时，将脏页写入磁盘。</p>
+<p>为了确保您的实现能够正确地与系统的其余部分一起工作，我们将为您提供一些已经填写好的功能。您也不需要实现实际读写数据到磁盘的代码(即<code>DiskManager</code>)。我们将为您提供这一功能。</p>
+<p>系统中的所有内存页面均由<code>Page</code>对象表示。<code>BufferPoolManagerInstance</code>不需要了解这些页面的内容。
+但是，作为系统开发人员，重要的是要了解<code>Page</code>对象只是一个容器，它用于存储内存的容器，因此并不特定于唯一页面。
+也就是说，每个<code>Page</code>对象都包含一块内存，<code>DiskManager</code>会将其作为用来「复制从磁盘读取的物理页面内容」的地点。
+<code>BufferPoolManagerInstance</code>将在将其来回移动到磁盘时重用相同的Page对象来存储数据。
+这意味着在系统的整个生命周期中，相同的<code>Page</code>对象可能包含不同的物理页面。<code>Page</code>对象的标识符<code>page_id</code>可以跟踪其包含的物理页面。
+如果<code>Page</code>对象不包含物理页面即磁盘上的页面，则必须将其<code>page_id</code>设置为<code>INVALID_PAGE_ID</code>。</p>
+<p>每个Page对象还维护一个计数器，以显示“固定”该页面的线程数。<code>BufferPoolManagerInstance</code>不许释放已被pinned
+的页面，每个<code>Page</code>对象还跟踪其脏标记。您的工作是判断页面在解除固定之前是否已经被修改（若已经被修改，则把脏标记置为1）。<code>BufferPoolManagerInstance</code>必须将脏页的内容写回磁盘，然后才能重用该对象。</p>
+<p><code>BufferPoolManager</code>的实现将使用在此分配的前面步骤中创建的<code>LRUReplacer</code>类。它将使用<code>LRUReplacer</code>来跟踪何时访问页对象，以便在必须释放一个帧以为从磁盘复制新的物理页腾出空间时，它可以决定取消哪个页对象。</p>
+<p>需要实现在(<code>src/buffer/buffer_pool_manager.cpp</code>)的以下函数
+- <code>FetchPageImpl(page_id)</code> -
+<code>NewPageImpl(page_id)</code> -
+<code>UnpinPageImpl(page_id, is_dirty)</code> -
+<code>FlushPageImpl(page_id)</code> -
+<code>DeletePageImpl(page_id)</code> -
+<code>FlushAllPagesImpl()</code></p>
+<p><code>FetchPgImp</code>，如果空闲链表中没有可用的页面，并且当前所有其他页面都被固定，则应返回
+NULL。</p>
+<p><code>FlushPgImp</code> 应该刷新一个页面而不管它是pin 还是unpin</p>
+<p><code>UnpinPgImp</code>，is_dirty
+参数跟踪页面在固定时是否被修改。</p>
+<p>上述函数所需要的一些具体的实现在你即将实现的代码中做了明确的需求，可以进行查看。</p>
+<blockquote>
+<p>Pin 和 Unpin 在 LRUReplacer 和
+BufferpoolManagerInstance的上下文中具有相反的含义，在 LRUReplacer
+的上下文中，pin一个页面意味着我们不应该在内存中驱逐该页面，因为它正在使用。这意味着我们应该从
+LRUReplace 中移除它。另一方面，在 BufferPoolManagerInstance
+中pin一个页面意味着我们希望使用一个页面，并且不应该从缓冲池中删除该页面。</p>
+</blockquote>
+<h3 id="task-3---parallel-buffer-pool-manager">TASK #3 - PARALLEL BUFFER
+POOL MANAGER</h3>
+<p>单个缓冲池管理器实例需要采用锁存器，以保证线程安全。而当每个线程在与缓冲池进行交互时，都会争用一个锁存器，这会导致大量的争用。一个可能的解决方案是在系统中有多个缓冲池，每个缓冲池都有自己的锁存器。</p>
+<p><code>ParallelBufferPoolManager</code> 是一个包含多个
+<code>BufferPoolManagerInstance</code>
+的类。对于每个操作，<code>ParallelBufferPoolManager</code> 选择一个
+<code>BufferPoolManagerInstance</code> 并委托给该实例。</p>
+<p>我们使用给定的page id 来确定要使用哪个特定的
+<code>BufferPoolManagerInstance</code>。如果我们有
+<code>num_ instance</code>个
+<code>BufferPoolManagerInstance</code>，那么我们需要一些方法来将给定的page
+id 映射到范围[0，num_
+instance)中的一个数字。对于这个项目，我们将使用模运算符，<code>page_id mod num_instance</code>
+将把给定的 page _ id 映射到正确的范围。</p>
+<p>当第一次实例化 <code>ParallelBufferPoolManager</code>
+时，它的起始索引应该为0。每次创建一个新页面时，您将尝试每个
+<code>BufferPoolManagerInstance</code>，从起始索引开始，直到一个成功。然后将起始索引增加一。</p>
+<p>确保在创建单独的 <code>BufferPoolManagerInstances</code> 时使用接受
+<code>uint32_t num_instance</code> 和
+<code>uint32_t instance_index</code> 的构造函数，以便正确创建pages
+id。</p>
+<p>实现<code>src/buffer/parallel_buffer_pool_manager.cpp</code></p>
+<ul>
+<li><code>ParallelBufferPoolManager(num_instances, pool_size, disk_manager, log_manager)</code></li>
+<li><code>~ParallelBufferPoolManager()</code></li>
+<li><code>GetPoolSize()</code></li>
+<li><code>GetBufferPoolManager(page_id)</code></li>
+<li><code>FetchPgImp(page_id)</code></li>
+<li><code>UnpinPgImp(page_id, is_dirty)</code></li>
+<li><code>FlushPgImp(page_id)</code></li>
+<li><code>NewPgImp(page_id)</code></li>
+<li><code>DeletePgImp(page_id)</code></li>
+<li><code>FlushAllPagesImpl()</code></li>
+</ul>
+<h2 id="project-solution">Project Solution</h2>
+<ol type="1">
+<li>关于 page 和 frame</li>
+</ol>
+<ul>
+<li><p>数据在磁盘上以文件形式存储，数据库的存储引擎通常以固定大小的page(有的数据库称为block)为单位组织文件，读写磁盘均以page为单位。</p></li>
+<li><p>数据库在内存的buffer pool便是用来缓存磁盘中读取上来的page。buffer
+pool 同样以page大小管理组织内存块，这样一块内存被称为frame。</p></li>
+<li><p>当DBMS需要时，会将磁盘中的page拷贝到一个frame中或者将frame写入到磁盘中的page去。</p></li>
+</ul>
+<ol start="2" type="1">
+<li>关于Buffer Pool的结构设计</li>
+</ol>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/image-20220803145119983.png" srcset="/img/loading.gif" lazyload
+alt="image-20220803145119983" />
+<figcaption aria-hidden="true">image-20220803145119983</figcaption>
+</figure>
+<h3 id="task-1---lru-replacement-policy-1">TASK #1 - LRU REPLACEMENT
+POLICY</h3>
+<p>这部分主要实现LRU替换算法，但该要求与传统的方法不同。</p>
+<h4 id="数据结构">数据结构</h4>
+<figure><div class="code-wrapper"><pre class="language-cpp" data-language="cpp"><code class="language-cpp"><span class="token comment">// 链表容量</span>
+size_t capacity_<span class="token punctuation">;</span>
+<span class="token comment">//使用一个双向链表list来插入和删除头尾元素，每次插入和删除的时候都要加锁，这样可以保证线程安全。</span>
+<span class="token comment">//为了map可以快速记住新加入元素的节点位置来存储对应的迭代器，新加入的放到链表的前面。</span>
+std<span class="token double-colon punctuation">::</span>list<span class="token operator">&lt;</span>frame_id_t<span class="token operator">></span> lru_list_<span class="token punctuation">;</span>
+<span class="token comment">//使用一个无序链表来存储frame_id_t的迭代器，可以查找对应的key，时间复杂度O(1)。</span>
+std<span class="token double-colon punctuation">::</span>unordered_map<span class="token operator">&lt;</span>frame_id_t<span class="token punctuation">,</span> std<span class="token double-colon punctuation">::</span>list<span class="token operator">&lt;</span>frame_id_t<span class="token operator">></span><span class="token double-colon punctuation">::</span>iterator<span class="token operator">></span> lru_map_<span class="token punctuation">;</span>
+<span class="token comment">//锁</span>
+std<span class="token double-colon punctuation">::</span>mutex latch_<span class="token punctuation">;</span></code></pre></div></figure>
+<h4 id="算法实现">算法实现</h4>
+<ol type="1">
+<li>构造函数，设定该LRUReplacer大小的容量</li>
+</ol>
+<figure><div class="code-wrapper"><pre class="language-cpp" data-language="cpp"><code class="language-cpp"><span class="token class-name">LRUReplacer</span><span class="token double-colon punctuation">::</span><span class="token function">LRUReplacer</span><span class="token punctuation">(</span>size_t num_pages<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> capacity_ <span class="token operator">=</span> num_pages<span class="token punctuation">;</span> <span class="token punctuation">&#125;</span></code></pre></div></figure>
+<ol start="2" type="1">
+<li>Victim 函数，选择一个受害者（就是最近最久未使用的）</li>
+</ol>
+<figure><div class="code-wrapper"><pre class="language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">auto</span> <span class="token class-name">LRUReplacer</span><span class="token double-colon punctuation">::</span><span class="token function">Victim</span><span class="token punctuation">(</span>frame_id_t <span class="token operator">*</span>frame_id<span class="token punctuation">)</span> <span class="token operator">-></span> <span class="token keyword">bool</span> <span class="token punctuation">&#123;</span>
+  std<span class="token double-colon punctuation">::</span>lock_guard<span class="token operator">&lt;</span>std<span class="token double-colon punctuation">::</span>mutex<span class="token operator">></span> <span class="token function">lock</span><span class="token punctuation">(</span>latch_<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token comment">// 如果map为空，则返回false</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>lru_map_<span class="token punctuation">.</span><span class="token function">empty</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token comment">// 删除链表最后面的元素</span>
+  <span class="token operator">*</span>frame_id <span class="token operator">=</span> lru_list_<span class="token punctuation">.</span><span class="token function">back</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  lru_list_<span class="token punctuation">.</span><span class="token function">pop_back</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  lru_map_<span class="token punctuation">.</span><span class="token function">erase</span><span class="token punctuation">(</span><span class="token operator">*</span>frame_id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre></div></figure>
+<ol start="3" type="1">
+<li>Pin
+函数，当进程执行锁定该页面时，调用该函数，需要删除该页面，使其不能称为LRU算法的对象。</li>
+</ol>
+<figure><div class="code-wrapper"><pre class="language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">void</span> <span class="token class-name">LRUReplacer</span><span class="token double-colon punctuation">::</span><span class="token function">Pin</span><span class="token punctuation">(</span>frame_id_t frame_id<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  std<span class="token double-colon punctuation">::</span>lock_guard<span class="token operator">&lt;</span>std<span class="token double-colon punctuation">::</span>mutex<span class="token operator">></span> <span class="token function">lock</span><span class="token punctuation">(</span>latch_<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token comment">// 如果不存在该页面</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>lru_map_<span class="token punctuation">.</span><span class="token function">find</span><span class="token punctuation">(</span>frame_id<span class="token punctuation">)</span> <span class="token operator">==</span> lru_map_<span class="token punctuation">.</span><span class="token function">end</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> <span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token comment">// 如果链表不为空，则删除该元素</span>
+  lru_list_<span class="token punctuation">.</span><span class="token function">erase</span><span class="token punctuation">(</span>lru_map_<span class="token punctuation">[</span>frame_id<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  lru_map_<span class="token punctuation">.</span><span class="token function">erase</span><span class="token punctuation">(</span>frame_id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre></div></figure>
+<ol start="4" type="1">
+<li>Unpin
+函数，当进程使用完毕后释放此页面，调用该函数，需要增加该页面，使其可以成为LRU算法的对象。</li>
+</ol>
+<figure><div class="code-wrapper"><pre class="language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">void</span> <span class="token class-name">LRUReplacer</span><span class="token double-colon punctuation">::</span><span class="token function">Unpin</span><span class="token punctuation">(</span>frame_id_t frame_id<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  std<span class="token double-colon punctuation">::</span>lock_guard<span class="token operator">&lt;</span>std<span class="token double-colon punctuation">::</span>mutex<span class="token operator">></span> <span class="token function">lock</span><span class="token punctuation">(</span>latch_<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token comment">// 如果frame在链表中（按lru算法是要放到链表的前部的，但实验中不进行这样的处理）</span>
+  <span class="token comment">// 什么也不做，使用map结构加快搜索速度</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>lru_map_<span class="token punctuation">.</span><span class="token function">find</span><span class="token punctuation">(</span>frame_id<span class="token punctuation">)</span> <span class="token operator">!=</span> lru_map_<span class="token punctuation">.</span><span class="token function">end</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token comment">// 如果frame不在链表中，看看链表是否已满</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>capacity_ <span class="token operator">==</span> <span class="token function">Size</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    <span class="token comment">// 删除对应的map中的迭代器</span>
+    lru_map_<span class="token punctuation">.</span><span class="token function">erase</span><span class="token punctuation">(</span>lru_list_<span class="token punctuation">.</span><span class="token function">back</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">// 如果链表已满，删除链表的最后一个元素</span>
+    lru_list_<span class="token punctuation">.</span><span class="token function">pop_back</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token comment">//插入新的元素到链表的前面</span>
+  lru_list_<span class="token punctuation">.</span><span class="token function">push_front</span><span class="token punctuation">(</span>frame_id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  lru_map_<span class="token punctuation">[</span>frame_id<span class="token punctuation">]</span> <span class="token operator">=</span> lru_list_<span class="token punctuation">.</span><span class="token function">begin</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre></div></figure>
+<ol start="5" type="1">
+<li>Size 函数，返回当前 LRU_Replacer 的大小</li>
+</ol>
+<figure><div class="code-wrapper"><pre class="language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">auto</span> <span class="token class-name">LRUReplacer</span><span class="token double-colon punctuation">::</span><span class="token function">Size</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-></span> size_t <span class="token punctuation">&#123;</span> <span class="token keyword">return</span> lru_list_<span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">&#125;</span></code></pre></div></figure>
+<h4 id="一些错误">一些错误</h4>
+<ol type="1">
+<li>为了保证线程安全，使用锁。<code>std::lock_guard&lt;std::mutex&gt; lock(latch_);</code></li>
+<li><code>Unpin()</code>这个方法只有当页面的<code>pin_count</code>变成0后才会被调用，这个思路在Task2中的<code>UnpinPgImp</code>会有体现。但值得注意的一点是，只有内存中不含此
+frame_id
+时，才会执行完整逻辑。<strong>如果含有此页面</strong>，并不会将此页面调用到最近的一页中，只会进行单纯的判断页面数目大小会不会超过其容量，超过了则删掉最久没用的，并把其插入到最新的一页。</li>
+<li>在查找时，多多利用数据结构设计的<code>unordered_map</code>，不然在进行分数检测时，可能会报
+timeout。</li>
+</ol>
+<h3 id="task-2---buffer-pool-manager-instance-1">TASK #2 - BUFFER POOL
+MANAGER INSTANCE</h3>
+<h4 id="数据结构-1">数据结构</h4>
+<p>代码框架中的数据结构即可。</p>
+<h4 id="算法实现-1">算法实现</h4>
+<p>可以从测试文件入手，逐个完成各个函数</p>
+<ol type="1">
+<li><code>NewPgImp</code>
+函数，这个函数主要用来创建页面。根据注释的提示，主要思想如下：</li>
+</ol>
+<ul>
+<li>如果所有的页面都被<code>pin</code> ，返回<code>nullptr</code></li>
+<li>否则先从<code>freelist</code>中找到空闲的<code>frame_id</code>，如果找到了，该页面即可加入到<code>pages</code></li>
+<li>如果<code>freelist</code>找不到，让<code>replacer_</code>调用<code>Victim</code>，驱逐出一个<code>frame_id</code>给其使用。</li>
+<li>剩下的小细节见代码注释</li>
+</ul>
+<figure><div class="code-wrapper"><pre class="language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">auto</span> <span class="token class-name">BufferPoolManagerInstance</span><span class="token double-colon punctuation">::</span><span class="token function">NewPgImp</span><span class="token punctuation">(</span>page_id_t <span class="token operator">*</span>page_id<span class="token punctuation">)</span> <span class="token operator">-></span> Page <span class="token operator">*</span> <span class="token punctuation">&#123;</span>
+  std<span class="token double-colon punctuation">::</span>lock_guard<span class="token operator">&lt;</span>std<span class="token double-colon punctuation">::</span>mutex<span class="token operator">></span> <span class="token function">lock</span><span class="token punctuation">(</span>latch_<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token comment">// 0.   Make sure you call AllocatePage!</span>
+  <span class="token comment">// 1.   If all the pages in the buffer pool are pinned, return nullptr.</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>free_list_<span class="token punctuation">.</span><span class="token function">empty</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token number">0</span> <span class="token operator">==</span> replacer_<span class="token operator">-></span><span class="token function">Size</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> <span class="token keyword">nullptr</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token comment">// 2.   Pick a victim page P from either the free list or the replacer. Always pick from the free list first.</span>
+  <span class="token operator">*</span>page_id <span class="token operator">=</span> <span class="token function">AllocatePage</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  Page <span class="token operator">*</span>p <span class="token operator">=</span> <span class="token keyword">nullptr</span><span class="token punctuation">;</span>
+  frame_id_t frame_id_temp<span class="token punctuation">;</span>
+  <span class="token comment">// 如果free_list不空，从中拿到对应的frame_id</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>free_list_<span class="token punctuation">.</span><span class="token function">empty</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    frame_id_temp <span class="token operator">=</span> free_list_<span class="token punctuation">.</span><span class="token function">front</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    free_list_<span class="token punctuation">.</span><span class="token function">pop_front</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    p <span class="token operator">=</span> <span class="token operator">&amp;</span>pages_<span class="token punctuation">[</span>frame_id_temp<span class="token punctuation">]</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// 驱逐未成功</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>replacer_<span class="token operator">-></span><span class="token function">Victim</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>frame_id_temp<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">return</span> <span class="token keyword">nullptr</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token comment">// 驱逐成功，拿到对应的页面信息</span>
+    p <span class="token operator">=</span> <span class="token operator">&amp;</span>pages_<span class="token punctuation">[</span>frame_id_temp<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>p<span class="token operator">-></span>is_dirty_<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      disk_manager_<span class="token operator">-></span><span class="token function">WritePage</span><span class="token punctuation">(</span>p<span class="token operator">-></span>page_id_<span class="token punctuation">,</span> p<span class="token operator">-></span>data_<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    page_table_<span class="token punctuation">.</span><span class="token function">erase</span><span class="token punctuation">(</span>p<span class="token operator">-></span>page_id_<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token comment">// 3.   Update P's metadata, zero out memory and add P to the page table.</span>
+  p<span class="token operator">-></span>page_id_ <span class="token operator">=</span> <span class="token operator">*</span>page_id<span class="token punctuation">;</span>
+  p<span class="token operator">-></span>is_dirty_ <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+  p<span class="token operator">-></span>pin_count_<span class="token operator">++</span><span class="token punctuation">;</span>
+  p<span class="token operator">-></span><span class="token function">ResetMemory</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  page_table_<span class="token punctuation">[</span><span class="token operator">*</span>page_id<span class="token punctuation">]</span> <span class="token operator">=</span> frame_id_temp<span class="token punctuation">;</span>
+  <span class="token comment">// 4.   Set the page ID output parameter. Return a pointer to P.</span>
+  <span class="token keyword">return</span> p<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre></div></figure>
+<ol start="2" type="1">
+<li>UnpinPgImp 函数</li>
+</ol>
+<ul>
+<li>观察pageable是否含有该page，没有直接返回</li>
+<li>有的话对该page进行unpin操作，注意如果该页面上脏的，需要写回磁盘</li>
+<li>剩下的小细节见代码注释</li>
+</ul>
+<figure><div class="code-wrapper"><pre class="language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">auto</span> <span class="token class-name">BufferPoolManagerInstance</span><span class="token double-colon punctuation">::</span><span class="token function">UnpinPgImp</span><span class="token punctuation">(</span>page_id_t page_id<span class="token punctuation">,</span> <span class="token keyword">bool</span> is_dirty<span class="token punctuation">)</span> <span class="token operator">-></span> <span class="token keyword">bool</span> <span class="token punctuation">&#123;</span>
+  std<span class="token double-colon punctuation">::</span>lock_guard<span class="token operator">&lt;</span>std<span class="token double-colon punctuation">::</span>mutex<span class="token operator">></span> <span class="token function">lock</span><span class="token punctuation">(</span>latch_<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token comment">// 是否在page_table中,如果没找到</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>page_table_<span class="token punctuation">.</span><span class="token function">find</span><span class="token punctuation">(</span>page_id<span class="token punctuation">)</span> <span class="token operator">==</span> page_table_<span class="token punctuation">.</span><span class="token function">end</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token comment">// 如果找到了，得到frame_id，修改对应的信息</span>
+  <span class="token keyword">auto</span> frame_id_tmp <span class="token operator">=</span> page_table_<span class="token punctuation">[</span>page_id<span class="token punctuation">]</span><span class="token punctuation">;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>pages_<span class="token punctuation">[</span>frame_id_tmp<span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">GetPinCount</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&lt;=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>is_dirty<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    pages_<span class="token punctuation">[</span>frame_id_tmp<span class="token punctuation">]</span><span class="token punctuation">.</span>is_dirty_ <span class="token operator">=</span> is_dirty<span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+
+  pages_<span class="token punctuation">[</span>frame_id_tmp<span class="token punctuation">]</span><span class="token punctuation">.</span>pin_count_ <span class="token operator">-=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>pages_<span class="token punctuation">[</span>frame_id_tmp<span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">GetPinCount</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    replacer_<span class="token operator">-></span><span class="token function">Unpin</span><span class="token punctuation">(</span>frame_id_tmp<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre></div></figure>
+<ol start="3" type="1">
+<li>FetchPgImp 函数，取得一个页面</li>
+</ol>
+<ul>
+<li>与NewPgImp 类似，见注释即可</li>
+</ul>
+<figure><div class="code-wrapper"><pre class="language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">auto</span> <span class="token class-name">BufferPoolManagerInstance</span><span class="token double-colon punctuation">::</span><span class="token function">FetchPgImp</span><span class="token punctuation">(</span>page_id_t page_id<span class="token punctuation">)</span> <span class="token operator">-></span> Page <span class="token operator">*</span> <span class="token punctuation">&#123;</span>
+  std<span class="token double-colon punctuation">::</span>lock_guard<span class="token operator">&lt;</span>std<span class="token double-colon punctuation">::</span>mutex<span class="token operator">></span> <span class="token function">lock</span><span class="token punctuation">(</span>latch_<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token comment">// 1.     Search the page table for the requested page (P).</span>
+  <span class="token keyword">auto</span> it <span class="token operator">=</span> page_table_<span class="token punctuation">.</span><span class="token function">find</span><span class="token punctuation">(</span>page_id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  frame_id_t frame_id_temp<span class="token punctuation">;</span>
+  <span class="token comment">// 1.1    If P exists, pin it and return it immediately.</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>it <span class="token operator">!=</span> page_table_<span class="token punctuation">.</span><span class="token function">end</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    frame_id_temp <span class="token operator">=</span> it<span class="token operator">-></span>second<span class="token punctuation">;</span>
+    pages_<span class="token punctuation">[</span>frame_id_temp<span class="token punctuation">]</span><span class="token punctuation">.</span>pin_count_<span class="token operator">++</span><span class="token punctuation">;</span>
+    replacer_<span class="token operator">-></span><span class="token function">Pin</span><span class="token punctuation">(</span>frame_id_temp<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token operator">&amp;</span>pages_<span class="token punctuation">[</span>frame_id_temp<span class="token punctuation">]</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token comment">// 1.2    If P does not exist, find a replacement page (R) from either the free list or the replacer.</span>
+  <span class="token comment">//        Note that pages are always found from the free list first.</span>
+  Page <span class="token operator">*</span>r <span class="token operator">=</span> <span class="token keyword">nullptr</span><span class="token punctuation">;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>free_list_<span class="token punctuation">.</span><span class="token function">empty</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    frame_id_temp <span class="token operator">=</span> free_list_<span class="token punctuation">.</span><span class="token function">front</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    free_list_<span class="token punctuation">.</span><span class="token function">pop_front</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    r <span class="token operator">=</span> <span class="token operator">&amp;</span>pages_<span class="token punctuation">[</span>frame_id_temp<span class="token punctuation">]</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// 驱逐未成功</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>replacer_<span class="token operator">-></span><span class="token function">Victim</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>frame_id_temp<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">return</span> <span class="token keyword">nullptr</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token comment">// 驱逐成功，拿到对应的页面信息</span>
+    r <span class="token operator">=</span> <span class="token operator">&amp;</span>pages_<span class="token punctuation">[</span>frame_id_temp<span class="token punctuation">]</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token comment">// 2.     If R is dirty, write it back to the disk.</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>r<span class="token operator">-></span>is_dirty_<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    disk_manager_<span class="token operator">-></span><span class="token function">WritePage</span><span class="token punctuation">(</span>r<span class="token operator">-></span>page_id_<span class="token punctuation">,</span> r<span class="token operator">-></span><span class="token function">GetData</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token comment">// 3.     Delete R from the page table and insert P.</span>
+  page_table_<span class="token punctuation">.</span><span class="token function">erase</span><span class="token punctuation">(</span>r<span class="token operator">-></span>page_id_<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  page_table_<span class="token punctuation">[</span>page_id<span class="token punctuation">]</span> <span class="token operator">=</span> frame_id_temp<span class="token punctuation">;</span>
+  <span class="token comment">// 4.     Update P's metadata, read in the page content from disk, and then return a pointer to P.</span>
+  r<span class="token operator">-></span>page_id_ <span class="token operator">=</span> page_id<span class="token punctuation">;</span>
+  r<span class="token operator">-></span>is_dirty_ <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+  disk_manager_<span class="token operator">-></span><span class="token function">ReadPage</span><span class="token punctuation">(</span>r<span class="token operator">-></span>page_id_<span class="token punctuation">,</span> r<span class="token operator">-></span><span class="token function">GetData</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  r<span class="token operator">-></span>pin_count_<span class="token operator">++</span><span class="token punctuation">;</span>
+  replacer_<span class="token operator">-></span><span class="token function">Pin</span><span class="token punctuation">(</span>frame_id_temp<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> r<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>	</code></pre></div></figure>
+<ol start="4" type="1">
+<li>FlushPgImp 函数，把页面写回磁盘</li>
+</ol>
+<figure><div class="code-wrapper"><pre class="language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">auto</span> <span class="token class-name">BufferPoolManagerInstance</span><span class="token double-colon punctuation">::</span><span class="token function">FlushPgImp</span><span class="token punctuation">(</span>page_id_t page_id<span class="token punctuation">)</span> <span class="token operator">-></span> <span class="token keyword">bool</span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">// Make sure you call DiskManager::WritePage!</span>
+  std<span class="token double-colon punctuation">::</span>lock_guard<span class="token operator">&lt;</span>std<span class="token double-colon punctuation">::</span>mutex<span class="token operator">></span> <span class="token function">lock</span><span class="token punctuation">(</span>latch_<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token comment">// 如果page没在内存中</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>page_table_<span class="token punctuation">.</span><span class="token function">find</span><span class="token punctuation">(</span>page_id<span class="token punctuation">)</span> <span class="token operator">==</span> page_table_<span class="token punctuation">.</span><span class="token function">end</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token comment">// page在内存中</span>
+  frame_id_t frame_id_temp <span class="token operator">=</span> page_table_<span class="token punctuation">[</span>page_id<span class="token punctuation">]</span><span class="token punctuation">;</span>
+  Page <span class="token operator">*</span>p <span class="token operator">=</span> <span class="token operator">&amp;</span>pages_<span class="token punctuation">[</span>frame_id_temp<span class="token punctuation">]</span><span class="token punctuation">;</span>
+  disk_manager_<span class="token operator">-></span><span class="token function">WritePage</span><span class="token punctuation">(</span>page_id<span class="token punctuation">,</span> p<span class="token operator">-></span><span class="token function">GetData</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  p<span class="token operator">-></span>is_dirty_ <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre></div></figure>
+<ol start="5" type="1">
+<li>FlushAllPgsImp 函数，把所有页面写回磁盘</li>
+</ol>
+<figure><div class="code-wrapper"><pre class="language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">void</span> <span class="token class-name">BufferPoolManagerInstance</span><span class="token double-colon punctuation">::</span><span class="token function">FlushAllPgsImp</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">// You can do it!</span>
+  std<span class="token double-colon punctuation">::</span>lock_guard<span class="token operator">&lt;</span>std<span class="token double-colon punctuation">::</span>mutex<span class="token operator">></span> <span class="token function">lock</span><span class="token punctuation">(</span>latch_<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span>size_t i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> pool_size_<span class="token punctuation">;</span> <span class="token operator">++</span>i<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>pages_<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span>is_dirty_<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      disk_manager_<span class="token operator">-></span><span class="token function">WritePage</span><span class="token punctuation">(</span>pages_<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">GetPageId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> pages_<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">GetData</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      pages_<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span>is_dirty_ <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre></div></figure>
+<ol start="6" type="1">
+<li>DeletePgImp 函数，删除页面实现</li>
+</ol>
+<figure><div class="code-wrapper"><pre class="language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">auto</span> <span class="token class-name">BufferPoolManagerInstance</span><span class="token double-colon punctuation">::</span><span class="token function">DeletePgImp</span><span class="token punctuation">(</span>page_id_t page_id<span class="token punctuation">)</span> <span class="token operator">-></span> <span class="token keyword">bool</span> <span class="token punctuation">&#123;</span>
+  std<span class="token double-colon punctuation">::</span>lock_guard<span class="token operator">&lt;</span>std<span class="token double-colon punctuation">::</span>mutex<span class="token operator">></span> <span class="token function">lock</span><span class="token punctuation">(</span>latch_<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token comment">// 0.   Make sure you call DeallocatePage!</span>
+  <span class="token comment">// 1.   Search the page table for the requested page (P).</span>
+  <span class="token keyword">auto</span> it <span class="token operator">=</span> page_table_<span class="token punctuation">.</span><span class="token function">find</span><span class="token punctuation">(</span>page_id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  frame_id_t frame_id_temp<span class="token punctuation">;</span>
+  <span class="token comment">// 1.   If P does not exist, return true.</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>it <span class="token operator">==</span> page_table_<span class="token punctuation">.</span><span class="token function">end</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token comment">// 2.   If P exists, but has a non-zero pin-count, return false. Someone is using the page.</span>
+  frame_id_temp <span class="token operator">=</span> it<span class="token operator">-></span>second<span class="token punctuation">;</span>
+  Page <span class="token operator">*</span>p <span class="token operator">=</span> <span class="token operator">&amp;</span>pages_<span class="token punctuation">[</span>frame_id_temp<span class="token punctuation">]</span><span class="token punctuation">;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>p<span class="token operator">-></span>pin_count_ <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>p<span class="token operator">-></span>is_dirty_<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    disk_manager_<span class="token operator">-></span><span class="token function">WritePage</span><span class="token punctuation">(</span>p<span class="token operator">-></span>page_id_<span class="token punctuation">,</span> p<span class="token operator">-></span><span class="token function">GetData</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token comment">// 3.   Otherwise, P can be deleted. Remove P from the page table, reset its metadata and return it to the free list.</span>
+  <span class="token function">DeallocatePage</span><span class="token punctuation">(</span>page_id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  page_table_<span class="token punctuation">.</span><span class="token function">erase</span><span class="token punctuation">(</span>page_id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  p<span class="token operator">-></span>is_dirty_ <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+  p<span class="token operator">-></span>pin_count_ <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+  p<span class="token operator">-></span>page_id_ <span class="token operator">=</span> INVALID_PAGE_ID<span class="token punctuation">;</span>
+  p<span class="token operator">-></span><span class="token function">ResetMemory</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  free_list_<span class="token punctuation">.</span><span class="token function">emplace_back</span><span class="token punctuation">(</span>frame_id_temp<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre></div></figure>
+<h4 id="一些错误-1">一些错误</h4>
+<ol type="1">
+<li><p>FlushPgImp 函数中，写回磁盘记得把脏位设置为false。</p></li>
+<li><p>FlushAllPgsImp
+函数，为了不timeout，只把脏了的那些写回磁盘即可。</p></li>
+<li><p>NewPgImp
+函数中，只有当真正可以创建页面时才调用<code>AllocatePage</code>函数，不然<code>next_page_id</code>会改变。</p></li>
+<li><p>调用<code>replacer_-&gt;Victim(&amp;frame_id_temp)</code>函数时，记得对返回结果进行一次处理，会存在驱逐失败的情况。</p></li>
+<li><p><code>pages[xxxx]</code>中的xxxx填的是<code>frame_id</code>，不是<code>page_id</code>，需要使用<code>page table</code>进行映射。一开始不大懂，到后面debug两小时发现这个地方填错了。</p></li>
+<li><p><code>New Page</code>和<code>Fetch Page</code>的时候都需要<code>pin_count ++</code>；</p></li>
+<li><p>UnpinPgImp
+函数，只有脏了<code>is dirty=true</code>的时候，才需要把对应的属性设置为脏，对应的代码块如下：</p></li>
+</ol>
+<figure><div class="code-wrapper"><pre class="language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">if</span> <span class="token punctuation">(</span>is_dirty<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+  pages_<span class="token punctuation">[</span>frame_id_tmp<span class="token punctuation">]</span><span class="token punctuation">.</span>is_dirty_ <span class="token operator">=</span> is_dirty<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre></div></figure>
+<h3 id="task-3---parallel-buffer-pool-manager-1">TASK #3 - PARALLEL
+BUFFER POOL MANAGER</h3>
+<p>实现一个可以并发的TASK2，基本上调用TASK2的组件即可，有两个小的地方需要注意。</p>
+<h4 id="数据结构-2">数据结构</h4>
+<figure><div class="code-wrapper"><pre class="language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">private</span><span class="token operator">:</span>
+ BufferPoolManager<span class="token operator">*</span><span class="token operator">*</span> parallel_buffer_pool_managers_<span class="token punctuation">;</span>
+ <span class="token keyword">uint32_t</span> num_instances_<span class="token punctuation">;</span>
+ size_t pool_size_<span class="token punctuation">;</span>
+ size_t index_<span class="token punctuation">;</span>
+ std<span class="token double-colon punctuation">::</span>mutex latch_<span class="token punctuation">;</span></code></pre></div></figure>
+<p>记得引入实现task2 的头文件</p>
+<h4 id="算法实现-2">算法实现</h4>
+<ol type="1">
+<li>构造函数，网站提到了「确保在创建单独的
+<code>BufferPoolManagerInstances</code> 时使用接受
+<code>uint32_t num_instance</code> 和
+<code>uint32_t instance_index</code> 的构造函数，以便正确创建pages
+id。」也就是单个实例的第二种构造方法。</li>
+</ol>
+<figure><div class="code-wrapper"><pre class="language-cpp" data-language="cpp"><code class="language-cpp"><span class="token class-name">ParallelBufferPoolManager</span><span class="token double-colon punctuation">::</span><span class="token function">ParallelBufferPoolManager</span><span class="token punctuation">(</span>size_t num_instances<span class="token punctuation">,</span> size_t pool_size<span class="token punctuation">,</span> DiskManager <span class="token operator">*</span>disk_manager<span class="token punctuation">,</span>
+                                                     LogManager <span class="token operator">*</span>log_manager<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">// Allocate and create individual BufferPoolManagerInstances</span>
+  num_instances_ <span class="token operator">=</span> num_instances<span class="token punctuation">;</span>
+  pool_size_ <span class="token operator">=</span> pool_size<span class="token punctuation">;</span>
+  index_ <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+  parallel_buffer_pool_managers_ <span class="token operator">=</span> <span class="token keyword">new</span> BufferPoolManager <span class="token operator">*</span><span class="token punctuation">[</span>num_instances<span class="token punctuation">]</span><span class="token punctuation">;</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span>size_t i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> num_instances_<span class="token punctuation">;</span> <span class="token operator">++</span>i<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    parallel_buffer_pool_managers_<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span>
+        <span class="token keyword">new</span> <span class="token function">BufferPoolManagerInstance</span><span class="token punctuation">(</span>pool_size_<span class="token punctuation">,</span> num_instances_<span class="token punctuation">,</span> i<span class="token punctuation">,</span> disk_manager<span class="token punctuation">,</span> log_manager<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre></div></figure>
+<ol start="2" type="1">
+<li>析构函数</li>
+</ol>
+<figure><div class="code-wrapper"><pre class="language-cpp" data-language="cpp"><code class="language-cpp"><span class="token class-name">ParallelBufferPoolManager</span><span class="token double-colon punctuation">::</span><span class="token operator">~</span><span class="token function">ParallelBufferPoolManager</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span>size_t i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> num_instances_<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>  <span class="token comment">// 释放指针所指对象空间</span>
+    <span class="token keyword">delete</span> parallel_buffer_pool_managers_<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">delete</span><span class="token punctuation">[</span><span class="token punctuation">]</span> parallel_buffer_pool_managers_<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre></div></figure>
+<ol start="3" type="1">
+<li>GetPoolSize 函数</li>
+</ol>
+<figure><div class="code-wrapper"><pre class="language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">auto</span> <span class="token class-name">ParallelBufferPoolManager</span><span class="token double-colon punctuation">::</span><span class="token function">GetPoolSize</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-></span> size_t <span class="token punctuation">&#123;</span>
+  <span class="token comment">// Get size of all BufferPoolManagerInstances</span>
+  size_t res <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span>size_t i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> num_instances_<span class="token punctuation">;</span> <span class="token operator">++</span>i<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    res <span class="token operator">+=</span> parallel_buffer_pool_managers_<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token operator">-></span><span class="token function">GetPoolSize</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">return</span> res<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre></div></figure>
+<ol start="4" type="1">
+<li>GetBufferPoolManager 函数，通过page_id，找到对应的buffer pool
+manager，使用的方法官网有提到。</li>
+</ol>
+<figure><div class="code-wrapper"><pre class="language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">auto</span> <span class="token class-name">ParallelBufferPoolManager</span><span class="token double-colon punctuation">::</span><span class="token function">GetBufferPoolManager</span><span class="token punctuation">(</span>page_id_t page_id<span class="token punctuation">)</span> <span class="token operator">-></span> BufferPoolManager <span class="token operator">*</span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">// Get BufferPoolManager responsible for handling given page id. You can use this method in your other methods.</span>
+  <span class="token keyword">return</span> parallel_buffer_pool_managers_<span class="token punctuation">[</span>page_id <span class="token operator">%</span> num_instances_<span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre></div></figure>
+<ol start="5" type="1">
+<li>FetchPgImp，UnpinPgImp，FlushPgImp，DeletePgImp，FlushAllPgsImp函数类似</li>
+</ol>
+<figure><div class="code-wrapper"><pre class="language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">auto</span> <span class="token class-name">ParallelBufferPoolManager</span><span class="token double-colon punctuation">::</span><span class="token function">FetchPgImp</span><span class="token punctuation">(</span>page_id_t page_id<span class="token punctuation">)</span> <span class="token operator">-></span> Page <span class="token operator">*</span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">// Fetch page for page_id from responsible BufferPoolManagerInstance</span>
+  BufferPoolManager <span class="token operator">*</span>bpm <span class="token operator">=</span> <span class="token function">GetBufferPoolManager</span><span class="token punctuation">(</span>page_id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> bpm<span class="token operator">-></span><span class="token function">FetchPage</span><span class="token punctuation">(</span>page_id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">auto</span> <span class="token class-name">ParallelBufferPoolManager</span><span class="token double-colon punctuation">::</span><span class="token function">UnpinPgImp</span><span class="token punctuation">(</span>page_id_t page_id<span class="token punctuation">,</span> <span class="token keyword">bool</span> is_dirty<span class="token punctuation">)</span> <span class="token operator">-></span> <span class="token keyword">bool</span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">// Unpin page_id from responsible BufferPoolManagerInstance</span>
+  BufferPoolManager <span class="token operator">*</span>bpm <span class="token operator">=</span> <span class="token function">GetBufferPoolManager</span><span class="token punctuation">(</span>page_id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> bpm<span class="token operator">-></span><span class="token function">UnpinPage</span><span class="token punctuation">(</span>page_id<span class="token punctuation">,</span> is_dirty<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">auto</span> <span class="token class-name">ParallelBufferPoolManager</span><span class="token double-colon punctuation">::</span><span class="token function">FlushPgImp</span><span class="token punctuation">(</span>page_id_t page_id<span class="token punctuation">)</span> <span class="token operator">-></span> <span class="token keyword">bool</span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">// Flush page_id from responsible BufferPoolManagerInstance</span>
+  BufferPoolManager <span class="token operator">*</span>bpm <span class="token operator">=</span> <span class="token function">GetBufferPoolManager</span><span class="token punctuation">(</span>page_id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> bpm<span class="token operator">-></span><span class="token function">FlushPage</span><span class="token punctuation">(</span>page_id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">auto</span> <span class="token class-name">ParallelBufferPoolManager</span><span class="token double-colon punctuation">::</span><span class="token function">DeletePgImp</span><span class="token punctuation">(</span>page_id_t page_id<span class="token punctuation">)</span> <span class="token operator">-></span> <span class="token keyword">bool</span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">// Delete page_id from responsible BufferPoolManagerInstance</span>
+  BufferPoolManager <span class="token operator">*</span>bpm <span class="token operator">=</span> <span class="token function">GetBufferPoolManager</span><span class="token punctuation">(</span>page_id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> bpm<span class="token operator">-></span><span class="token function">DeletePage</span><span class="token punctuation">(</span>page_id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">void</span> <span class="token class-name">ParallelBufferPoolManager</span><span class="token double-colon punctuation">::</span><span class="token function">FlushAllPgsImp</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">// flush all pages from all BufferPoolManagerInstances</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span>size_t i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> num_instances_<span class="token punctuation">;</span> <span class="token operator">++</span>i<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    parallel_buffer_pool_managers_<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token operator">-></span><span class="token function">FlushAllPages</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre></div></figure>
+<ol start="6" type="1">
+<li>NewPgImp 函数，官方的提示：</li>
+</ol>
+<blockquote>
+<p>我们将以循环方式从底层的BufferPoolManagerInstances中请求页面分配，从BPMI的一个起始索引开始，调用NewPageImpl，直到</p>
+<p>1）成功并返回</p>
+<p>2）循环到起始索引并返回nullptr</p>
+<p>每次调用此函数时，将起始索引（实例数的模数）移到不同的BPMI开始搜索。</p>
+</blockquote>
+<figure><div class="code-wrapper"><pre class="language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">auto</span> <span class="token class-name">ParallelBufferPoolManager</span><span class="token double-colon punctuation">::</span><span class="token function">NewPgImp</span><span class="token punctuation">(</span>page_id_t <span class="token operator">*</span>page_id<span class="token punctuation">)</span> <span class="token operator">-></span> Page <span class="token operator">*</span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">// create new page. We will request page allocation in a round-robin manner from the underlying</span>
+  <span class="token comment">// BufferPoolManagerInstances</span>
+  <span class="token comment">// 1.   From a starting index of the BPMIs, call NewPageImpl until either 1) success and return 2) looped around to</span>
+  <span class="token comment">// starting index and return nullptr</span>
+  <span class="token comment">// 2.   Bump the starting index (mod number of instances) to start search at a different BPMI each time this function</span>
+  <span class="token comment">// is called</span>
+  std<span class="token double-colon punctuation">::</span>lock_guard<span class="token operator">&lt;</span>std<span class="token double-colon punctuation">::</span>mutex<span class="token operator">></span> <span class="token function">lock</span><span class="token punctuation">(</span>latch_<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  size_t looping_index <span class="token operator">=</span> index_<span class="token punctuation">;</span>
+  <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">auto</span> bpm <span class="token operator">=</span> parallel_buffer_pool_managers_<span class="token punctuation">[</span>index_<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    Page <span class="token operator">*</span>p <span class="token operator">=</span> bpm<span class="token operator">-></span><span class="token function">NewPage</span><span class="token punctuation">(</span>page_id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>p <span class="token operator">!=</span> <span class="token keyword">nullptr</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      index_ <span class="token operator">=</span> <span class="token punctuation">(</span>index_ <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">%</span> num_instances_<span class="token punctuation">;</span>
+      <span class="token keyword">return</span> p<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    index_ <span class="token operator">=</span> <span class="token punctuation">(</span>index_ <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">%</span> num_instances_<span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>index_ <span class="token operator">==</span> looping_index<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">return</span> <span class="token keyword">nullptr</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre></div></figure>
+<h4 id="一些错误-2">一些错误</h4>
+<ol type="1">
+<li>NewPgImp 记得加锁，其他的函数没必要加锁了。</li>
+<li>关于NewPgImp中，有一段代码是<code>Page *p = bpm-&gt;NewPage(page_id)</code>，这个NewPage函数是打分函数，我直接拿来用了，因为<code>NewPgImp</code>是一个受保护的函数而这个函数可以用，后面如果有商讨的话把这个再改过来。</li>
+</ol>
+<h3 id="local-pass">Local Pass</h3>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/image-20220803155859321.png" srcset="/img/loading.gif" lazyload
+alt="image-20220803155859321" />
+<figcaption aria-hidden="true">image-20220803155859321</figcaption>
+</figure>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/image-20220803155947685.png" srcset="/img/loading.gif" lazyload
+alt="image-20220803155947685" />
+<figcaption aria-hidden="true">image-20220803155947685</figcaption>
+</figure>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/image-20220803160014655.png" srcset="/img/loading.gif" lazyload
+alt="image-20220803160014655" />
+<figcaption aria-hidden="true">image-20220803160014655</figcaption>
+</figure>
+<h3 id="site-pass">Site Pass</h3>
+<figure>
+<img
+src="https://cdn.jsdelivr.net/gh/yi-ge-dian/image-hosting-service/image-20220803161320391.png" srcset="/img/loading.gif" lazyload
+alt="image-20220803161320391" />
+<figcaption aria-hidden="true">image-20220803161320391</figcaption>
+</figure>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/cmu15-445-645/" class="category-chain-item">cmu15-445/645</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/c/">#c++</a>
+      
+        <a href="/tags/datebase/">#datebase</a>
+      
+        <a href="/tags/cmu/">#cmu</a>
+      
+    </div>
+  
+</div>
+
+	      
+	      <! -- 添加捐赠图标 -->
+<div class ="post-donate">
+    <div id="donate_board" class="donate_bar center">
+        <span class="donate_txt">
+		   请我喝杯咖啡☕️～
+        </span>
+		<input type="button" id="btn_donate" style="background-color: red; color: white; border: none; height=35; width=80" value="打赏"/>
+        <br>
+      </div>  
+	<div id="donate_guide" class="donate_bar center" style="display: none">
+		<!-- 支付宝打赏图案 -->
+		<img src="/img/ali_pay.png" srcset="/img/loading.gif" lazyload alt="支付宝打赏"> 
+		<!-- 微信打赏图案 -->
+		<img src="/img/wechat_pay.png" srcset="/img/loading.gif" lazyload alt="微信打赏">  
+    </div>
+	<script type="text/javascript">
+		document.getElementById('btn_donate').onclick = function(){
+			var qr=document.getElementById("donate_guide");
+			"none"===qr.style.display?qr.style.display="block":qr.style.display="none"
+		}
+	</script>
+</div>
+<! -- 添加捐赠图标 -->
+	      
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>CMU15-445/645 Project1</div>
+      <div>http://onepoint.link/2022/08/03/cmu15-445:645/Project1/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>yi-ge-dian</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年8月3日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/07/24/environment/Macos%E4%B8%8BClion%E5%BC%80%E5%8F%91Qt%E9%A1%B9%E7%9B%AE/" title="CLion+Qt在macos下开发">
+                        <span class="hidden-mobile">CLion+Qt在macos下开发</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="lv-container" data-id="city" data-uid="MTAyMC81NjY1My8zMzExNw">
+    <script type="text/javascript">
+      Fluid.utils.loadComments('#lv-container', function() {
+        Fluid.utils.createScript('https://cdn-city.livere.com/js/embed.dist.js');
+      });
+    </script>
+    <noscript>Please enable JavaScript to view the comments</noscript>
+  </div>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+    <!-- 备案信息 ICP for China -->
+    <div class="beian">
+  <span>
+    <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+      蜀ICP备2022013781号
+    </a>
+  </span>
+  
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
