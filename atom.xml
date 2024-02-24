@@ -6,7 +6,7 @@
   <link href="https://onepoint.link/atom.xml" rel="self"/>
   
   <link href="https://onepoint.link/"/>
-  <updated>2024-02-24T08:03:22.801Z</updated>
+  <updated>2024-02-24T08:27:15.019Z</updated>
   <id>https://onepoint.link/</id>
   
   <author>
@@ -15,6 +15,33 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>2023年终总结</title>
+    <link href="https://onepoint.link/2024/02/24/%E9%9A%8F%E8%AE%B0/2023%E5%B9%B4%E7%BB%88%E6%80%BB%E7%BB%93/"/>
+    <id>https://onepoint.link/2024/02/24/%E9%9A%8F%E8%AE%B0/2023%E5%B9%B4%E7%BB%88%E6%80%BB%E7%BB%93/</id>
+    <published>2024-02-24T08:13:35.335Z</published>
+    <updated>2024-02-24T08:27:15.019Z</updated>
+    
+    <content type="html"><![CDATA[<p>写一篇博客来记录一下自己的2023年吧，「虽然已经2024年了」。</p><p>完成了研一下到研二上的要求学分。</p><p>去年和师兄、詹哥参与的比赛也开奖了，在两位大佬的带领下混了个冠军。</p><p>暑期参与了开源之夏，在 @张海立老师的帮助下，顺利完成了项目——为 KubeSphere社区OpenFunction项目贡献代码，使其FaaS支持状态管理能力，同时完成其基于 KinD 的端到端测试。</p><p>而后和 周x，贺xx 参加了2023 云原生编程挑战赛1：针对 Serverless 场景冷启动问题弹性优化比赛，取得了第四名的成绩。</p><p>确定了自己的研究方向。</p><p>临近寒假和同学们去花水湾和西陵雪山旅了游。</p><p>今年要开始找工作了，希望可以找到一个合适的工作吧。</p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;p&gt;写一篇博客来记录一下自己的2023年吧，「虽然已经2024年了」。&lt;/p&gt;
+&lt;p&gt;完成了研一下到研二上的要求学分。&lt;/p&gt;
+&lt;p&gt;去年和师兄、詹哥参与的比赛也开奖了，在两位大佬的带领下混了个冠军。&lt;/p&gt;
+&lt;p&gt;暑期参与了开源之夏，在 @张海立老师的帮助下，顺利完成了项目—</summary>
+      
+    
+    
+    
+    <category term="随记" scheme="https://onepoint.link/categories/%E9%9A%8F%E8%AE%B0/"/>
+    
+    
+    <category term="年终总结" scheme="https://onepoint.link/tags/%E5%B9%B4%E7%BB%88%E6%80%BB%E7%BB%93/"/>
+    
+  </entry>
   
   <entry>
     <title>Hello World</title>
