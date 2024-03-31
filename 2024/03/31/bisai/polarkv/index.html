@@ -1,0 +1,176 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content=""><title>第四届全球数据库大赛赛道1：云原生共享内存数据库性能优化 | 一个·点</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=1.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/latest/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/latest/pure-min.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/latest/grids-responsive-min.min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/latest/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicons/favicon.svg"><link rel="Shortcut Icon" type="image/x-icon" href="/favicons/favicon.svg"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><link rel="alternate" type="application/atom+xml" href="/atom.xml"><script src="https://www.googletagmanager.com/gtag/js?id=G-S0DFMT45WP" async></script><script>window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-S0DFMT45WP');
+</script><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement('script');
+  hm.src = 'https://hm.baidu.com/hm.js?' + 'b72a57f57feba03e27771dd56d52bb1d';
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+  })();</script><script>(function(c,l,a,r,i,t,y){
+    c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+    t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+    y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+})(window, document, "clarity", "script", "l6nb5eap36");
+</script><script type="text/javascript" src="//lib.baomitu.com/clipboard.js/latest/clipboard.min.js"></script><script type="text/javascript" src="//lib.baomitu.com/toastr.js/latest/toastr.min.js"></script><link rel="stylesheet" href="//lib.baomitu.com/toastr.js/latest/toastr.min.css"><div class="darkmode-toggle">🌓</div><script>var prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)');
+var toggle = document.querySelector('.darkmode-toggle');
+var html = document.querySelector('html');
+
+html.dataset.dark = localStorage.dark || prefersDarkMode.matches;
+
+toggle.addEventListener('click', () => {
+localStorage.dark = !(html.dataset.dark == 'true');
+html.dataset.dark = localStorage.dark;
+});</script><meta name="generator" content="Hexo 7.1.1"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">第四届全球数据库大赛赛道1：云原生共享内存数据库性能优化</h1><a id="logo" href="/.">一个·点</a><p class="description">我想要一杯卡布奇诺☕️</p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/tags/"><i class="fa fa-tag"> 标签</i></a><a href="/tools/"><i class="fa fa-wrench"> 工具</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">第四届全球数据库大赛赛道1：云原生共享内存数据库性能优化</h1><div class="post-meta">2024-03-31<span> | </span><span class="category"><a href="/categories/%E6%AF%94%E8%B5%9B/">比赛</a></span><script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> 阅读</span></span></div><a class="disqus-comment-count" data-disqus-identifier="2024/03/31/bisai/polarkv/" href="/2024/03/31/bisai/polarkv/#disqus_thread"></a><div class="post-content"><p>官网链接：<a target="_blank" rel="noopener" href="https://tianchi.aliyun.com/competition/entrance/531979/introduction?spm=a2c22.12281925.0.0.1e557137HsIUXu">第四届全球数据库大赛赛道1：云原生共享内存数据库性能优化</a></p>
+<p>QPS：百万级别</p>
+<h1 id="初赛"><a href="#初赛" class="headerlink" title="初赛"></a>初赛</h1><p>初赛要求实现一个支持远程内存池的高性能数据库。我们将提供以下的运行环境（共两个节点：节点A和节点B。节点A包含 16 vCPU和 8 GB内存，节点B包含 4 vCPU和 32 GB的远程内存池，节点A和节点B之间通过eRDMA互联）。</p>
+<p>选手需要实现一个高效的 kv 存储引擎，支持 Write、Read 接口。测试程序将部署在节点A上，因此选手程序需要优先利用节点A的内存。当内存不足时，选手程序需要支持通过 eRDMA 访问节点B 32 GB的远程内存池。虽然RDMA编程与传统网络编程有非常多的相似之处，但考虑到很多选手未接触过RDMA，我们会提供Sample Codes（包含eRDMA实现和接口标准），实现节点A和节点B的RDMA互联，支持基本的内存读写操作。</p>
+<p>引擎使用的本地内存和远端内存限制在 8 GB 和 32 GB。 每个线程分别插入 12 M个Key大小为 16 Bytes，Value为 128 Bytes的KV对象，接着以 7 ：1 的读写比例访问调用 64 M次。数据符合Zipfian热点分布，其中90% 的读访问具有热点的特征，大部分的读访问集中在少量的Key上面。</p>
+<p>初赛：Write、Read 接口</p>
+<p>复赛：Delete 接口</p>
+<h2 id="Demo-架构"><a href="#Demo-架构" class="headerlink" title="Demo 架构"></a>Demo 架构</h2><p><img src="https://github.com/yi-ge-dian/picx-images-hosting/raw/master/20240331/demo.231n302gc2.webp" alt="demo"></p>
+<p>Local Engine 由索引、远程内存管理模块和 RDMA 通信模块组成。</p>
+<p>Remote Engine 由 RDMA 通信模块和内存管理模块组成。</p>
+<p>Demo 是一种 K&#x2F;V 分离架构，将 Key 及索引保存在本地节点，将 Value 保存在远程内存池中，通过远程内存地址进行读写。</p>
+<h2 id="存在的问题"><a href="#存在的问题" class="headerlink" title="存在的问题"></a>存在的问题</h2><p>在性能上，首先，并发性能弱，虽然为索引做了 Hash 分区，但是远程内存管理模块和 RDMA 模块都不支持多线程同时操作。</p>
+<p>其次，RDMA 通信开销大。每条 K&#x2F;V 数据的读写都需要进行一次 RDMA 通信，通信次数过高。而在内存开销上，其使用的索引需要的内存超过了本地的 8GB 内存，也就无法在测试平台运行。</p>
+<h2 id="如何进行优化"><a href="#如何进行优化" class="headerlink" title="如何进行优化"></a>如何进行优化</h2><ol>
+<li>减少索引的内存占用。我们在初赛前期，选用了 HAT-trie 这样一个前缀树方案作为我们的索引。</li>
+<li>其次我们优化了部分并发，将 RDMA 模块也分为了多个实例，根据 Hash 进行分区，提高了并发度。</li>
+<li>最后我们队伍也是最快出分的几支队伍之一。</li>
+</ol>
+<h2 id="遇到的瓶颈"><a href="#遇到的瓶颈" class="headerlink" title="遇到的瓶颈"></a>遇到的瓶颈</h2><p>但是，我们很快到达了性能瓶颈，我们在 Demo 的架构上不断进行修改，例如使用 LRU 缓存、批量写数据等，但效果都不好。我们在这个分数段挣扎了半个月之久。</p>
+<p>RDMA 的特性可以看到其写 128  字节大小数据块和写 4K 字节数据块的延迟基本是一样的。 </p>
+<p>应用程序使用 RDMA 传输的不应该是消息，而应该是数据，整页整页的数据。这和传统的 TCP&#x2F;IP 协议下的通信是完全不同的。</p>
+<p>设计出了一个新的基于 RDMA 的 KV 存储架构 </p>
+<ul>
+<li>以页为单位进行远程内存读写</li>
+<li>将本地空闲的内存作为页缓存</li>
+</ul>
+<h2 id="新的架构"><a href="#新的架构" class="headerlink" title="新的架构"></a>新的架构</h2><p>首先我们对于 key 做了 hash，分为不同的 Shard 做并发。</p>
+<p><img src="https://github.com/yi-ge-dian/picx-images-hosting/raw/master/20240331/shard.3go671fuob.webp" alt="shard"></p>
+<p>而在每一个 Shard 内部</p>
+<p><img src="https://github.com/yi-ge-dian/picx-images-hosting/raw/master/20240331/%E5%86%85%E9%83%A8.5tqso8uio3.webp" alt="内部"></p>
+<p>在 Shard 内部，有多个模块，我们将这些模块分为索引层和存储管理层。</p>
+<h3 id="索引层"><a href="#索引层" class="headerlink" title="索引层"></a>索引层</h3><p>Index 是数据的索引，索引存储每个 KV entry 的元数据，包括 Value 所在的 Page_id，在<br>Page 中的偏移量和 Value 的长度</p>
+<p>我们对数据进行了分页管理，所以我们需要这样一个页表，页表会记录该页在远程内存中的起始地址，记录这块地址的 rkey，并且如果该页被本地缓存了的话，会记录其在本地的 frame id</p>
+<h3 id="存储管理层"><a href="#存储管理层" class="headerlink" title="存储管理层"></a>存储管理层</h3><p>Frame 页帧，即数据页在本地的缓存，Value 所在的页面如果在本地缓存中，则通过 frame_id + 偏移量读取 Value，</p>
+<p>如果不在本地缓存中，则通过 RDMA 通信层从远程内存中将页面读取到本地缓存。</p>
+<p>Cache replacement 是缓存淘汰算法，其根据淘汰算法选择被淘汰的页面。</p>
+<p>Write Cache 是用于写新数据的流程，其在一页数据被写满后，向远程节点申请一块新的内存，并将数据写进去。</p>
+<h2 id="新架构所带来的性能"><a href="#新架构所带来的性能" class="headerlink" title="新架构所带来的性能"></a>新架构所带来的性能</h2><p>在实现了新架构后，性能得到了极大的提高，到达了 demo 性能的 20 倍左右。这证明了我们团队目前设计的方向是正确的，但是想要达到更好的成绩，我们需要更多更为细致的努力。</p>
+<p>我们做了以下几方面的努力，包括并发的设计，索引结构的设计，RDMA 的优化，淘汰策略优化，KV&#x2F;Cache 的设计。这里我们只介绍前两个。 </p>
+<h3 id="并发的设计"><a href="#并发的设计" class="headerlink" title="并发的设计"></a>并发的设计</h3><p>shard 级别的并发已经不能够满足需求了，需要做到更加细粒度的并发。于是我们为 Shard 内每个模块单独设计了并发控制，并使用原子变量等方式减少并发的开销。</p>
+<ul>
+<li>索引：使用分段锁进行并发</li>
+<li>Page Table：为每个 Page 做细粒度的并发</li>
+<li>Write Cache：使用原子变量进行并发 append</li>
+<li>Frame Manager：依靠 Page Table 的锁做并发。</li>
+</ul>
+<h3 id="索引的设计"><a href="#索引的设计" class="headerlink" title="索引的设计"></a>索引的设计</h3><ul>
+<li>我们考虑两个要素：性能和内存消耗。索引的性能会影响 K&#x2F;V 数据读写的速度，而索引的内存消耗越少，我们就能将更多的数据缓存在本地节点，同样能提高性能。</li>
+<li>在初赛以及复赛阶段，我们调研了许多不同类型的索引实现，把重点主要放在了两类索引上：哈希索引和前缀树索引</li>
+<li>初赛就采用了简单单哈希</li>
+</ul>
+<h1 id="复赛"><a href="#复赛" class="headerlink" title="复赛"></a>复赛</h1><p>复赛增加了对数据进行加密的需求。在云计算时代，数据的安全性至关重要，要求内存中的 Value 处于加密状态，满足云数据库安全方面的需求。</p>
+<p>其次，复赛需要实现 Delete 接口。模拟共享内存池按需使用回收的效果。</p>
+<p>第三，复赛增加了对变长 Value 的支持。复赛的 Value 大小为 80-1024 字节，并且会有 Value 的变长更新。</p>
+<h2 id="架构修改"><a href="#架构修改" class="headerlink" title="架构修改"></a>架构修改</h2><p>第一部分是数据加密上的修改。在数据加密的实现上我们依托于 “Intel Ice Lake 第三代可拓展处理器” 和 Intel IPP-Crypto 库，很快的实现了数据加密功能，并且获得了非常强的加解密性能。而在架构上，我们将加密模块放在最上层，使数据更加安全。</p>
+<p>在删除数据的实现上，我们采用的是&#x3D;&#x3D;类似 mysql optimize table 的方式， 也就是在进行删除 K&#x2F;V 操作时，并不会直接将数据从远程内存池中删除，而是为数据打上删除标记。&#x3D;&#x3D;而后，我们在远程内存管理模块加入了 optimize table 的触发机制，当远程内存的使用达到一定比例时，触发 optimize table 动作，对数据进行实际删除。</p>
+<h2 id="多线程异步设计"><a href="#多线程异步设计" class="headerlink" title="多线程异步设计"></a>多线程异步设计</h2><p><img src="https://github.com/yi-ge-dian/picx-images-hosting/raw/master/20240331/%E5%A4%9A%E7%BA%BF%E7%A8%8B.7egjnptifc.webp" alt="多线程"></p>
+<p>异步将数据写到远程内存： </p>
+<ul>
+<li>主线程从 Buffer 池中获取一块 Buffer 用于写数据</li>
+<li>当前 Buffer 写满后，将写 Buffer 到内存池的任务加入任务队列，然后从 Buffer 池中获取一块新 Buffer</li>
+<li>Write Buffer 任务将被线程池中的工作线程执行，调用 RDMA Write 将 Buffer 数据写入远端</li>
+<li>完成后工作线程将 Buffer 清空，并放回 Buffer 池中</li>
+</ul>
+<h2 id="索引优化"><a href="#索引优化" class="headerlink" title="索引优化"></a>索引优化</h2><p>在索引的设计上，我们借鉴了 Google 的 Faster 这篇论文提出的 Hash 索引结构，结合我们实际的理解和需求进行了改进。</p>
+<p>我们设计了这样一个Hash 索引结构，其有两个特点： </p>
+<ul>
+<li>Cache友好–64 字节</li>
+<li>无锁并发—-CAS</li>
+</ul>
+<p>具体结构是这样的：</p>
+<p><img src="https://github.com/yi-ge-dian/picx-images-hosting/raw/master/20240331/%E7%B4%A2%E5%BC%95.7p2advtve.webp" alt="索引"></p>
+<p>Hash Table 由一个个的 Bucket 组成，每个 Bucket 为 64 字节，而一个 Bucket 内部是 7 个 Entry，每个 Entry 长度为 8 字节，最后一个 Entry 用来指向下一个 Bucket。</p>
+<p>Entry中会存放 1bit 探测位，40 bit Tag ，和 23 bit Offset。该 Offset 会指向 K&#x2F;V 数组。 </p>
+<h3 id="插入过程"><a href="#插入过程" class="headerlink" title="插入过程"></a>插入过程</h3><p>在插入的时候，首先将 KV 数据写入 K&#x2F;V 数组，然后根据 Hash 值找到对应的 Bucket，遍历<br>Bucket 中的 Entry，找到未使用的Entry，将哈希值的 低 40 位写入 Tag，将 KV 数据在数组的偏移量写入 Offset。</p>
+<h3 id="查找过程"><a href="#查找过程" class="headerlink" title="查找过程"></a>查找过程</h3><p>在查找的时候，根据 Hash 值定位到Bucket，遍历 Bucket 找到 Entry，然后找到 K&#x2F;V 数据。</p>
+<h2 id="数据压缩"><a href="#数据压缩" class="headerlink" title="数据压缩"></a>数据压缩</h2><ul>
+<li>游程编码</li>
+<li>通用压缩</li>
+</ul>
+<h2 id="读写热点"><a href="#读写热点" class="headerlink" title="读写热点"></a>读写热点</h2><p>针对读，设计了 KV Cache。针对写，设计了 Write Cache。</p>
+<h1 id="最终架构"><a href="#最终架构" class="headerlink" title="最终架构"></a>最终架构</h1><p><img src="https://github.com/yi-ge-dian/picx-images-hosting/raw/master/20240331/%E6%9E%B6%E6%9E%84.39kybly3ka.webp" alt="架构"></p>
+<blockquote>
+<p>PS：得益于两个大佬，拿了个第一</p>
+</blockquote>
+</div><script type="text/javascript" src="/js/share.js?v=1.0.0" async></script><a class="article-share-link" data-url="https://onepoint.link/2024/03/31/bisai/polarkv/" data-id="clueyi1pu0004ex0k42dc5zm7" data-qrcode="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMYAAADGCAAAAACs8KCBAAACIklEQVR42u3aQY7CMAwFUO5/aUaa1UiI8H/SjkTyskJQaF4Xxo79eMTr+bte3/m7xte/vv/6+t2vXbYwMDC+lvEcrvG2xsj80/F9x9dgYGCcw8iD49x3kweUPz4MDAyM5AZJqndHsMbAwMBofy5PBNsUEAMDA2PlNnmCOE74VtJKDAyM0xhtY+A/X9/Y38DAwPgSxnNq3ZEaruwKAwNjb0aSqF0157ByZRSIMTAwtmbkYa5NFufaDG1QxsDAOIHRBruWtzJqVvwNYGBgbMoYb2JlzGJlpKwmYWBgbM24tmTNeXnheksjEwMD4wsZ7QF9O07RjpRNDn9gYGBsymi3tV5Lzo2jfXisGBgYBzCK2FwGzZVRsPxQDwMDY29GHl7nRsTmtt6W0BgYGGcy2kP5tli96vCu2AQGBsbXMubKznYsIw+ak81ODAyMrRntcfzKWEY+QJaHaQwMjBMY7Y3n2pbtdusEEQMDY2tG+xN5epevthkQjYVhYGBsyriqMdC2P9ua9NH+A2BgYGzHaEcu5o7b8sO+YjQNAwNja8YdbYP1sbALQjAGBsYWjLmCM29A5t9aOrbDwMDYmjGXX82laMlG26CMgYFxDiMPsiuNzLnmaFEGY2BgHMBoi9J22PSqkP327hgYGBhx2dkG6MtyWwwMDIy4kZmPq7bJ6IdkEQMD4wBGO3KxXoi246115oiBgbERY/1YPzniz5EtGwMDY2vGDxoUvCpKmdJ3AAAAAElFTkSuQmCC">分享</a><div class="tags"><ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RDMA/" rel="tag">RDMA</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag">数据库</a></li></ul></div><div class="post-nav"><a class="pre" href="/2024/03/31/bisai/scalar/">2023云原生编程挑战赛1：针对 Serverless 场景冷启动问题的弹性优化</a><a class="next" href="/2024/03/17/xiaolv/coding%20practice/">使用 CLion 插件 LeetCode with Labeldong 刷题</a></div><link rel="stylesheet" type="text/css" href="https://unpkg.com/disqusjs@1.3/dist/disqusjs.css"><script type="text/javascript" src="https://unpkg.com/disqusjs@1.3/dist/disqus.js"></script><script type="text/javascript" id="disqus-count-script">$(function() {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', '//disqus.com/next/config.json', true);
+  xhr.timeout = 2500;
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+      $('.post-meta .post-comments-count').show();
+      var s = document.createElement('script');
+      s.id = 'dsq-count-scr';
+      s.src = 'https://onepoint-1.disqus.com/count.js';
+      s.async = true;
+      (document.head || document.body).appendChild(s);
+    }
+  };
+  xhr.ontimeout = function () { xhr.abort(); };
+  xhr.send(null);
+});</script><div class="comments" id="disqus_thread"><script type="text/javascript">// Load comments with DisqusJS
+function loadComments() {
+  window.dsqjs = new DisqusJS({
+    shortname: 'onepoint-1',
+    siteName: '一个·点',
+    identifier: '2024/03/31/bisai/polarkv/',
+    url: 'https://onepoint.link/2024/03/31/bisai/polarkv/',
+    title: '第四届全球数据库大赛赛道1：云原生共享内存数据库性能优化',
+    api: '',
+    apikey: '',
+    admin: '',
+    adminLabel: ''
+  });
+}
+// Lazy load {# Credit: https://github.com/theme-next/hexo-theme-next/blob/master/layout/_third-party/comments/disqus.swig #}
+(function () {
+  var offsetTop = document.getElementById('disqus_thread').offsetTop - window.innerHeight;
+  if (offsetTop <= 0) {
+    // Load directly when there's no scrollbar
+    window.addEventListener('load', loadComments, false);
+  } else {
+    var disqusScroll = function () {
+      // offsetTop may changes because of manually resizing browser window or lazy loading images
+      var offsetTop = document.getElementById('disqus_thread').offsetTop - window.innerHeight;
+      var scrollTop = window.scrollY;
+
+      // Pre-load comments a bit? (margin or anything else)
+      if (offsetTop - scrollTop < 60) {
+        window.removeEventListener('scroll', disqusScroll);
+        loadComments();
+      }
+    };
+    window.addEventListener('scroll', disqusScroll);
+  }
+})();
+// Scroll to comments automatically if #comment-xxx anchor specified
+window.addEventListener('load', function () {
+  // I don't know why, it just works.
+  window.setTimeout(function () {
+    if (location.hash.indexOf('#comment-') !== -1) {
+      document.getElementById('disqus_thread').scrollIntoView(true);
+    }
+  }, 100);
+}, false);
+</script></div></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><div class="search-form"><input id="local-search-input" placeholder="Search" type="text" name="q" results="0"/><div id="local-search-result"></div></div></div><div class="widget"><div class="author-info"><a class="info-avatar" href="/about/" title="关于"><img class="nofancybox" src="/img/avatar.png"/></a><p>be simpler, be happier.</p><a class="info-icon" href="https://twitter.com/yi_ge_dian" title="Twitter" target="_blank" style="margin-inline:5px"> <i class="fa fa-twitter-square" style="margin-inline:5px"></i></a><a class="info-icon" href="mailto:wenldong666@outlook.com" title="Email" target="_blank" style="margin-inline:5px"> <i class="fa fa-envelope-square" style="margin-inline:5px"></i></a><a class="info-icon" href="https://github.com/yi-ge-dian" title="Github" target="_blank" style="margin-inline:5px"> <i class="fa fa-github-square" style="margin-inline:5px"></i></a><a class="info-icon" href="/atom.xml" title="RSS" target="_blank" style="margin-inline:5px"> <i class="fa fa-rss-square" style="margin-inline:5px"></i></a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%95%88%E7%8E%87/">效率</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%AF%94%E8%B5%9B/">比赛</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E9%9A%8F%E8%AE%B0/">随记</a><span class="category-list-count">1</span></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2024/03/31/bisai/scalar/">2023云原生编程挑战赛1：针对 Serverless 场景冷启动问题的弹性优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2024/03/31/bisai/polarkv/">第四届全球数据库大赛赛道1：云原生共享内存数据库性能优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2024/03/17/xiaolv/coding%20practice/">使用 CLion 插件 LeetCode with Labeldong 刷题</a></li><li class="post-list-item"><a class="post-list-link" href="/2024/03/16/suiji/overview2023/">砥砺前行中的梦幻旅程-2023年终总结</a></li></ul></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2024 <a href="/." rel="nofollow">一个·点.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=1.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/latest/jquery.fancybox.min.js"></script><script type="text/javascript" src="/js/fancybox.js?v=1.0.0"></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/latest/jquery.fancybox.min.css"><link rel="stylesheet" type="text/css" href="/css/search.css?v=1.0.0"><script type="text/javascript" src="/js/search.js?v=1.0.0"></script><script>var search_path = 'search.xml';
+if (search_path.length == 0) {
+  search_path = 'search.xml';
+}
+var path = '/' + search_path;
+searchFunc(path, 'local-search-input', 'local-search-result');
+</script><script type="text/javascript" src="/js/love.js?v=1.0.0"></script><script type="text/javascript" src="/js/copycode.js?v=1.0.0" successtext="复制成功！"></script><link rel="stylesheet" type="text/css" href="/css/copycode.css?v=1.0.0"><script type="text/javascript" src="/js/codeblock-resizer.js?v=1.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=1.0.0"></script></div></body></html>

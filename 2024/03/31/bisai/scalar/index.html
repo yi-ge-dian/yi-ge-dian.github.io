@@ -1,0 +1,142 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content=""><title>2023云原生编程挑战赛1：针对 Serverless 场景冷启动问题的弹性优化 | 一个·点</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=1.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/latest/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/latest/pure-min.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/latest/grids-responsive-min.min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/latest/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicons/favicon.svg"><link rel="Shortcut Icon" type="image/x-icon" href="/favicons/favicon.svg"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><link rel="alternate" type="application/atom+xml" href="/atom.xml"><script src="https://www.googletagmanager.com/gtag/js?id=G-S0DFMT45WP" async></script><script>window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-S0DFMT45WP');
+</script><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement('script');
+  hm.src = 'https://hm.baidu.com/hm.js?' + 'b72a57f57feba03e27771dd56d52bb1d';
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+  })();</script><script>(function(c,l,a,r,i,t,y){
+    c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+    t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+    y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+})(window, document, "clarity", "script", "l6nb5eap36");
+</script><script type="text/javascript" src="//lib.baomitu.com/clipboard.js/latest/clipboard.min.js"></script><script type="text/javascript" src="//lib.baomitu.com/toastr.js/latest/toastr.min.js"></script><link rel="stylesheet" href="//lib.baomitu.com/toastr.js/latest/toastr.min.css"><div class="darkmode-toggle">🌓</div><script>var prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)');
+var toggle = document.querySelector('.darkmode-toggle');
+var html = document.querySelector('html');
+
+html.dataset.dark = localStorage.dark || prefersDarkMode.matches;
+
+toggle.addEventListener('click', () => {
+localStorage.dark = !(html.dataset.dark == 'true');
+html.dataset.dark = localStorage.dark;
+});</script><meta name="generator" content="Hexo 7.1.1"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">2023云原生编程挑战赛1：针对 Serverless 场景冷启动问题的弹性优化</h1><a id="logo" href="/.">一个·点</a><p class="description">我想要一杯卡布奇诺☕️</p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/tags/"><i class="fa fa-tag"> 标签</i></a><a href="/tools/"><i class="fa fa-wrench"> 工具</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">2023云原生编程挑战赛1：针对 Serverless 场景冷启动问题的弹性优化</h1><div class="post-meta">2024-03-31<span> | </span><span class="category"><a href="/categories/%E6%AF%94%E8%B5%9B/">比赛</a></span><script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> 阅读</span></span></div><a class="disqus-comment-count" data-disqus-identifier="2024/03/31/bisai/scalar/" href="/2024/03/31/bisai/scalar/#disqus_thread"></a><div class="post-content"><h1 id="赛题背景"><a href="#赛题背景" class="headerlink" title="赛题背景"></a>赛题背景</h1><p>2019年，UC Berkeley 发布了一篇论文《Cloud Programming Simplified: A Berkeley View on Serverless Computing》，论文中指出Serverless将取代Serverful计算，成为云计算的计算新范式。其弹性伸缩、按需付费、开发人员专注于业务逻辑而无需关心服务器的运维饱受大家青睐。</p>
+<p>另一方面，得益于随着硬件技术的不断进步以及算法的不断优化，大模型人工智能技术在各行各业的应用中变得越来越火爆。</p>
+<p>同时在 AI 场景下，请求对资源的消耗特别大。应用实例启动之后只能小并发串行处理请求，所以需要非常精准的调度请求和实例数的匹配关系。</p>
+<p><a target="_blank" rel="noopener" href="https://help.aliyun.com/document_detail/86366.html?spm=a2c22.12281978.0.0.4ef03429NtHT5A">阿里云</a> <a target="_blank" rel="noopener" href="https://help.aliyun.com/document_detail/86366.html?spm=a2c22.12281978.0.0.4ef03429NtHT5A">ASK(Serverless Kubernetes )</a> 或 <a target="_blank" rel="noopener" href="https://www.aliyun.com/product/fc">阿里云函数计算</a> <a target="_blank" rel="noopener" href="https://www.aliyun.com/product/fc">FC</a>，都支持资源的按需调度和使用，可以根据应用实际需要资源自动伸缩。在伸缩的过程中涉及到资源的分配，在分配资源的时候会有冷启动问题。另外应用代码的初始化也有冷启动的情况，应用端到端冷启动的时长， 短则是毫秒级，长则分钟级，如果每次实时调用都行进行初始化&#x2F;销毁应用实例，调用的延时可能无法接受。所以 Serverless 框架会预热应用实例，且在调用结束后保留部分实例，闲置一段时间无调用后再释放，以降低冷启动的概率， 但更多空闲实例的存在，会增加资源成本。</p>
+<p>Serverless 场景需要有一个网关承接流量，请求到达网关后被转发到后端实例上。同时需要一个 Scaler 来控制后端实例数，使得实例数和请求对资源的诉求尽量匹配。</p>
+<p>Scalar需要遵循 gRPC 协议，实现Assign、Release两个接口</p>
+<ul>
+<li>Assign: 为请求分配一个应用实例，一个应用实例只能被分配给一个请求，如果无应用实例存在则需要冷启动，重新创建一个实例。</li>
+<li>Release: 释放请求占用的应用实例，这个实例如果没有被回收， 可以被下次调用请求复用</li>
+</ul>
+<h1 id="赛题优化"><a href="#赛题优化" class="headerlink" title="赛题优化"></a>赛题优化</h1><h2 id="生产者消费者模型引入"><a href="#生产者消费者模型引入" class="headerlink" title="生产者消费者模型引入"></a>生产者消费者模型引入</h2><ol>
+<li>首先对Demo进行分析</li>
+</ol>
+<p><img src="https://github.com/yi-ge-dian/picx-images-hosting/raw/master/20240331/demo.3uulxww8tz.webp" alt="demo"></p>
+<p>在 Assign 过程：<br>如果触发了冷启动，将创建新实例来执行当前请求，在创建实例的过程中，新加入空闲队列的实例无法被复用。</p>
+<h3 id="初步解决方案："><a href="#初步解决方案：" class="headerlink" title="初步解决方案："></a>初步解决方案：</h3><p>使用一个协程执行创建实例逻辑</p>
+<p>同时主协程轮询空闲实例列表，当存在空闲实例时，立即为请求分配实例，而不等待实例创建完成。<br>但是该方案仍然存有缺点，访问scalar的空闲实例列表需要获取锁，轮询会导致程序性能下降。</p>
+<h3 id="最终解决方案：使用生产者消费者模型"><a href="#最终解决方案：使用生产者消费者模型" class="headerlink" title="最终解决方案：使用生产者消费者模型"></a>最终解决方案：使用生产者消费者模型</h3><p>利用信号量机制阻塞请求对应的协程</p>
+<p>当空闲队列非空时，唤醒协程，并将实例分配到请求。</p>
+<h2 id="优化-GC「资源」"><a href="#优化-GC「资源」" class="headerlink" title="优化 GC「资源」"></a>优化 GC「资源」</h2><h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h3><p>大量实例释放时，空闲队列实例数量激增，而后续请求水平较低。</p>
+<p>资源（内存）消耗型的请求稀疏，实例空闲过久影响资源分</p>
+<h3 id="设计"><a href="#设计" class="headerlink" title="设计"></a>设计</h3><p>当空闲队列实例数超过10时，立即释放实例，而不等待GC_Time</p>
+<p>对资源占用较大的实例（2G），维持实例数 &lt;&#x3D; 1</p>
+<h2 id="预配置并发"><a href="#预配置并发" class="headerlink" title="预配置并发"></a>预配置并发</h2><h3 id="分析-1"><a href="#分析-1" class="headerlink" title="分析"></a>分析</h3><p>当在非常短的时间内有快速大量的实例被创建，这个实例会被认为是热点实例，并在接下来的时间内会被使用。这种实例需要提前创建好，减少冷启动发生的数目。</p>
+<h3 id="如何创建"><a href="#如何创建" class="headerlink" title="如何创建"></a>如何创建</h3><p>对于这种实例，每当因为冷启动而触发create时，为其多创建两个。</p>
+<h3 id="如何回收"><a href="#如何回收" class="headerlink" title="如何回收"></a>如何回收</h3><p>设置一个时间间隔，过一段时间后，预留两个作为备用。</p>
+<p>继续设置一个时间间隔，过了这个时间间隔后，如果没有被访问，将其释放。</p>
+<h2 id="优化-GC-Time"><a href="#优化-GC-Time" class="headerlink" title="优化 GC_Time"></a>优化 GC_Time</h2><p>方案采取了论文《Serverless in the Wild: Characterizing and Optimizing the Serverless Workload at a Large Cloud Provider》的思想。</p>
+<h3 id="分析-2"><a href="#分析-2" class="headerlink" title="分析"></a>分析</h3><p>统计发现，请求到来间隔存在一定的规律性，如 Roles1 为一个定时请求：每隔 30s 到来若干次。</p>
+<p>因此，可以根据请求到来的规律，在请求到来前即创建好实例，从而大幅减少甚至消除冷启动时间。</p>
+<h3 id="设计-1"><a href="#设计-1" class="headerlink" title="设计"></a>设计</h3><p>预热窗口：在得到应用请求间隔统计图基础上，实现实例预热。即请求执行结束后实例被立即释放，经过预热窗口大小后，再次创建实例。</p>
+<p>保活窗口：当实例被预热后持续运行时间</p>
+<h3 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h3><p>部分类型请求在线上与线下的请求到来的规律一致，即具有相同的分布，实验表明在该类型 key 上使用直方图策略具有较好效果。</p>
+<p>但仍存在大部分其他类型请求失效的情况，即直方图策略不起作用。</p>
+<p>分析以上问题的原因在于即使是同一类型的请求，其在线上与线下的分布并不一致，甚至存在较大偏差，从而使得策略无效。</p>
+<p>其实在论文中是讲了在线的整个流程的，但由于参加时间较短，进行完美的复现论文时间紧张，所以我们只针对数据进行了离线的处理，有兴趣的可以去看一下论文原文。</p>
+<h2 id="分数据集手动设定-GC-Time"><a href="#分数据集手动设定-GC-Time" class="headerlink" title="分数据集手动设定 GC_Time"></a>分数据集手动设定 GC_Time</h2><h3 id="分析-3"><a href="#分析-3" class="headerlink" title="分析"></a>分析</h3><p>不同数据集请求类型与频率具有明显差异。</p>
+<p>数据集一中的请求稀疏，但并发度较高（QPS大）。</p>
+<p>数据集二请求密集，但并发度较低，同时实例占用资源较小</p>
+<h3 id="设计-2"><a href="#设计-2" class="headerlink" title="设计"></a>设计</h3><p>针对数据集一，在请求释放后，设定 GC_Time 为较小值，避免大量空闲实例堆积。</p>
+<p>针对数据集二，实例占用资源较低，适当延长实例 GC_Time。</p>
+<h2 id="心得体会"><a href="#心得体会" class="headerlink" title="心得体会"></a>心得体会</h2><ol>
+<li>非常感谢大赛举办团队，感受到了阿里人对技术的追求</li>
+<li>比赛我们学会了如何更好的沟通与合作，加强了团队的协作能力和凝聚力</li>
+<li>大大提高了我们的技术能力和协作开发能力，在比赛过程中不断探索，不断成长</li>
+</ol>
+<p>[NOTE] 还能优化的点：</p>
+<p>看了其他组的优化后，还可以优化「执行时间」，对于哪些明显执行时间高于冷启动时间的实例，可以快速 gc 掉。</p>
+<blockquote>
+<p>PS: 拿了个第四，还是很开心的</p>
+</blockquote>
+</div><script type="text/javascript" src="/js/share.js?v=1.0.0" async></script><a class="article-share-link" data-url="https://onepoint.link/2024/03/31/bisai/scalar/" data-id="clueyi1pv0005ex0k4anpcot7" data-qrcode="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMYAAADGCAAAAACs8KCBAAACLElEQVR42u3azU7DQAxF4bz/SxcJsUCKSM61MxX1nKwqSpP5unD9dxz4en1fv1+fr7/eJXc7f/ZYccmQIeNjGa/L6/yw60def5bfmZ9NhgwZ+zBqQRY9AIRpEo5vzixDhgwZl4GVA0holiFDhox+wCU35eGYpJIyZMiQwYtYciDeOCNHX1KLy5Ah4wMZtcHAe14vn2/IkCHj3zPWNdF4UO6c5+cOMmTIGM0gQ8SnGnBp8pc24GTIkDGbQY7OA25a9JLSl3/RMmTImMdYvQr2VAOuOBKQIUPGOAa/dRoi+03/myfKkCFjG0Ynr+QlKB92tn43ZMiQMY6RJos8gJKSmKSbN+FbhgwZ2zDSIjZdleg05m7CtAwZMkYznm2lpY0zHqaDcYUMGTI2YKS1YXrQ2o6EDBkydmakxWRnLSPe/uD/L0OGjG0YPCGrrVOkrbpgnCBDhozRjNrR01CbDko7i2UyZMiYzUhLU37E2lpYOiqQIUPGDgxy6866WArj55EhQ8ZsBvlYLbtMF854wRz8VsiQIWMQIx1Y8uPW/hIHdxkyZIxm1BpqPHHkYbcTymXIkDGbUWt4pSldp0mHVmNlyJAxmtFfs3gqNSQHrY0uZMiQMYPRCbK8ccZTwFrKKEOGjB0YPMh2hpfpVxAkhTJkyJDRSON4OE7HBjJkyJBB2v21R/ICOPiCZMiQsQGDFLG1w9UadnFxK0OGjNGMWi8rHTHy5YxaoJchQ8ZQxhfm0ImHD+vlQwAAAABJRU5ErkJggg==">分享</a><div class="tags"><ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kubernetes/" rel="tag">Kubernetes</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Serverless/" rel="tag">Serverless</a></li></ul></div><div class="post-nav"><a class="next" href="/2024/03/31/bisai/polarkv/">第四届全球数据库大赛赛道1：云原生共享内存数据库性能优化</a></div><link rel="stylesheet" type="text/css" href="https://unpkg.com/disqusjs@1.3/dist/disqusjs.css"><script type="text/javascript" src="https://unpkg.com/disqusjs@1.3/dist/disqus.js"></script><script type="text/javascript" id="disqus-count-script">$(function() {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', '//disqus.com/next/config.json', true);
+  xhr.timeout = 2500;
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+      $('.post-meta .post-comments-count').show();
+      var s = document.createElement('script');
+      s.id = 'dsq-count-scr';
+      s.src = 'https://onepoint-1.disqus.com/count.js';
+      s.async = true;
+      (document.head || document.body).appendChild(s);
+    }
+  };
+  xhr.ontimeout = function () { xhr.abort(); };
+  xhr.send(null);
+});</script><div class="comments" id="disqus_thread"><script type="text/javascript">// Load comments with DisqusJS
+function loadComments() {
+  window.dsqjs = new DisqusJS({
+    shortname: 'onepoint-1',
+    siteName: '一个·点',
+    identifier: '2024/03/31/bisai/scalar/',
+    url: 'https://onepoint.link/2024/03/31/bisai/scalar/',
+    title: '2023云原生编程挑战赛1：针对 Serverless 场景冷启动问题的弹性优化',
+    api: '',
+    apikey: '',
+    admin: '',
+    adminLabel: ''
+  });
+}
+// Lazy load {# Credit: https://github.com/theme-next/hexo-theme-next/blob/master/layout/_third-party/comments/disqus.swig #}
+(function () {
+  var offsetTop = document.getElementById('disqus_thread').offsetTop - window.innerHeight;
+  if (offsetTop <= 0) {
+    // Load directly when there's no scrollbar
+    window.addEventListener('load', loadComments, false);
+  } else {
+    var disqusScroll = function () {
+      // offsetTop may changes because of manually resizing browser window or lazy loading images
+      var offsetTop = document.getElementById('disqus_thread').offsetTop - window.innerHeight;
+      var scrollTop = window.scrollY;
+
+      // Pre-load comments a bit? (margin or anything else)
+      if (offsetTop - scrollTop < 60) {
+        window.removeEventListener('scroll', disqusScroll);
+        loadComments();
+      }
+    };
+    window.addEventListener('scroll', disqusScroll);
+  }
+})();
+// Scroll to comments automatically if #comment-xxx anchor specified
+window.addEventListener('load', function () {
+  // I don't know why, it just works.
+  window.setTimeout(function () {
+    if (location.hash.indexOf('#comment-') !== -1) {
+      document.getElementById('disqus_thread').scrollIntoView(true);
+    }
+  }, 100);
+}, false);
+</script></div></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><div class="search-form"><input id="local-search-input" placeholder="Search" type="text" name="q" results="0"/><div id="local-search-result"></div></div></div><div class="widget"><div class="author-info"><a class="info-avatar" href="/about/" title="关于"><img class="nofancybox" src="/img/avatar.png"/></a><p>be simpler, be happier.</p><a class="info-icon" href="https://twitter.com/yi_ge_dian" title="Twitter" target="_blank" style="margin-inline:5px"> <i class="fa fa-twitter-square" style="margin-inline:5px"></i></a><a class="info-icon" href="mailto:wenldong666@outlook.com" title="Email" target="_blank" style="margin-inline:5px"> <i class="fa fa-envelope-square" style="margin-inline:5px"></i></a><a class="info-icon" href="https://github.com/yi-ge-dian" title="Github" target="_blank" style="margin-inline:5px"> <i class="fa fa-github-square" style="margin-inline:5px"></i></a><a class="info-icon" href="/atom.xml" title="RSS" target="_blank" style="margin-inline:5px"> <i class="fa fa-rss-square" style="margin-inline:5px"></i></a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%95%88%E7%8E%87/">效率</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%AF%94%E8%B5%9B/">比赛</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E9%9A%8F%E8%AE%B0/">随记</a><span class="category-list-count">1</span></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2024/03/31/bisai/scalar/">2023云原生编程挑战赛1：针对 Serverless 场景冷启动问题的弹性优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2024/03/31/bisai/polarkv/">第四届全球数据库大赛赛道1：云原生共享内存数据库性能优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2024/03/17/xiaolv/coding%20practice/">使用 CLion 插件 LeetCode with Labeldong 刷题</a></li><li class="post-list-item"><a class="post-list-link" href="/2024/03/16/suiji/overview2023/">砥砺前行中的梦幻旅程-2023年终总结</a></li></ul></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2024 <a href="/." rel="nofollow">一个·点.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=1.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/latest/jquery.fancybox.min.js"></script><script type="text/javascript" src="/js/fancybox.js?v=1.0.0"></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/latest/jquery.fancybox.min.css"><link rel="stylesheet" type="text/css" href="/css/search.css?v=1.0.0"><script type="text/javascript" src="/js/search.js?v=1.0.0"></script><script>var search_path = 'search.xml';
+if (search_path.length == 0) {
+  search_path = 'search.xml';
+}
+var path = '/' + search_path;
+searchFunc(path, 'local-search-input', 'local-search-result');
+</script><script type="text/javascript" src="/js/love.js?v=1.0.0"></script><script type="text/javascript" src="/js/copycode.js?v=1.0.0" successtext="复制成功！"></script><link rel="stylesheet" type="text/css" href="/css/copycode.css?v=1.0.0"><script type="text/javascript" src="/js/codeblock-resizer.js?v=1.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=1.0.0"></script></div></body></html>
