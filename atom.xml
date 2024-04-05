@@ -69,35 +69,6 @@
   </entry>
   
   <entry>
-    <title>使用 CLion 插件 LeetCode with Labeldong 刷题</title>
-    <link href="https://onepoint.link/2024/03/17/xiaolv/coding%20practice/"/>
-    <id>https://onepoint.link/2024/03/17/xiaolv/coding%20practice/</id>
-    <published>2024-03-17T11:51:34.586Z</published>
-    <updated>2024-03-18T14:24:04.863Z</updated>
-    
-    <content type="html"><![CDATA[<p>最近需要刷题了，准备一个优雅的刷题方式。前置准备需要安装语言环境那些，由于 mac系统内置了 clang ，git 等等这些基本环境，我准备使用 cpp，只需安装 CLion 即可。</p><ol><li>在本地使用 CLionProjects 文件夹。</li><li>创建一个 Github 仓库，名称随意，以 <a href="https://github.com/yi-ge-dian/Noing-Algorithm">Noing Algorithm</a> 为例，创建后，克隆仓库到CLionProjects 中去。</li><li>在 Noing-Algorithm 中创建文件 .gitinore，把不需要提交到仓库的文件忽略掉。</li></ol><figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Prerequisites</span></span><br><span class="line">*<span class="string">.d</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Compiled Object files</span></span><br><span class="line">*<span class="string">.slo</span></span><br><span class="line">*<span class="string">.lo</span></span><br><span class="line">*<span class="string">.o</span></span><br><span class="line">*<span class="string">.obj</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Precompiled Headers</span></span><br><span class="line">*<span class="string">.gch</span></span><br><span class="line">*<span class="string">.pch</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Compiled Dynamic libraries</span></span><br><span class="line">*<span class="string">.so</span></span><br><span class="line">*<span class="string">.dylib</span></span><br><span class="line">*<span class="string">.dll</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Fortran module files</span></span><br><span class="line">*<span class="string">.mod</span></span><br><span class="line">*<span class="string">.smod</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Compiled Static libraries</span></span><br><span class="line">*<span class="string">.lai</span></span><br><span class="line">*<span class="string">.la</span></span><br><span class="line">*<span class="string">.a</span></span><br><span class="line">*<span class="string">.lib</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Executables</span></span><br><span class="line">*<span class="string">.exe</span></span><br><span class="line">*<span class="string">.out</span></span><br><span class="line">*<span class="string">.app</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="string">.idea</span></span><br><span class="line"><span class="string">.vscode</span></span><br><span class="line">**<span class="string">/cmake-build-debug</span></span><br><span class="line"><span class="string">.DS_Store</span></span><br><span class="line">**<span class="string">/.DS_Store</span></span><br><span class="line"></span><br></pre></td></tr></table></figure><ol start="4"><li>CLion 中安装 LeetCode with Labeldong，关于如何登陆请查看视频讲解 <a href="https://www.bilibili.com/video/BV1ru4y1v7xv">labuladong Jetbrains IDE 算法刷题插件简介</a></li><li>在第四步中，需要对 cpp 语言进行一定的设置</li></ol><p><img src="https://github.com/yi-ge-dian/picx-images-hosting/raw/master/20240318/image.9nzjpahqor.png" alt="leetcode"></p><p>注意文件夹的名称选择和 Code Template 的设置「如果选择不加 \ 井号会丢失」，剩下的就是按照需求自己去添加模版了。</p><ol start="6"><li>CLion 是通过 CMakeLists 进行编译运行的，我们需要在插件自动生成的 leetcode 目录下创建 CMakeLists.txt 文件，对全局项目进行管理。</li></ol><figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">cmake_minimum_required</span>(VERSION <span class="number">3.27</span>)</span><br><span class="line"><span class="keyword">project</span>(leetcode)</span><br><span class="line"></span><br><span class="line"><span class="keyword">set</span>(CMAKE_CXX_STANDARD <span class="number">11</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">add_executable</span>(leetcode</span><br><span class="line">        editor/cn/[<span class="number">1</span>]两数之和.cpp</span><br><span class="line">        editor/cn/[<span class="number">15</span>]三数之和.cpp)</span><br></pre></td></tr></table></figure><p>目前的目录结构如下：</p><p><img src="https://github.com/yi-ge-dian/picx-images-hosting/raw/master/20240317/%E7%9B%AE%E5%BD%95.8ad0jp0oqm.webp" alt="目录"></p><p>这样以后就非常方便的进行代码提交和运行了。</p>]]></content>
-    
-    
-      
-      
-    <summary type="html">&lt;p&gt;最近需要刷题了，准备一个优雅的刷题方式。前置准备需要安装语言环境那些，由于 mac系统内置了 clang ，git 等等这些基本环境，我准备使用 cpp，只需安装 CLion 即可。&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;在本地使用 CLionProjects 文件夹。&lt;/li&gt;
-&lt;l</summary>
-      
-    
-    
-    
-    <category term="效率" scheme="https://onepoint.link/categories/%E6%95%88%E7%8E%87/"/>
-    
-    
-    <category term="刷题" scheme="https://onepoint.link/tags/%E5%88%B7%E9%A2%98/"/>
-    
-    <category term="代码" scheme="https://onepoint.link/tags/%E4%BB%A3%E7%A0%81/"/>
-    
-  </entry>
-  
-  <entry>
     <title>砥砺前行中的梦幻旅程-2023年终总结</title>
     <link href="https://onepoint.link/2024/03/16/suiji/overview2023/"/>
     <id>https://onepoint.link/2024/03/16/suiji/overview2023/</id>
