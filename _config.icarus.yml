@@ -7,7 +7,7 @@ logo: /img/logo.png
 # Page metadata configurations
 head:
     # URL or path to the website's icon
-    favicon: /img/favicon.ico
+    favicon: /img/icons/favicon.ico
     # Web application manifests configuration
     # https://developer.mozilla.org/en-US/docs/Web/Manifest
     manifest:
@@ -181,20 +181,23 @@ donates:
     #     type: afdian
     #     # URL to the "Afdian.net" personal page
     #     url: ''
+
     # Alipay donate button configurations
-    - type: alipay
-      # Alipay qrcode image URL
-      qrcode: ""
+    # - type: alipay
+    # Alipay qrcode image URL
+    #   qrcode: ""
+
     # "Buy me a coffee" donate button configurations
-    # -
-    #     type: buymeacoffee
-    #     # URL to the "Buy me a coffee" page
-    #     url: ''
+    - type: buymeacoffee
+      # URL to the "Buy me a coffee" page
+      url: "https://www.buymeacoffee.com/yi-ge-dian"
+
     # Patreon donate button configurations
     # -
     #     type: patreon
     #     # URL to the Patreon page
     #     url: ''
+
     # Paypal donate button configurations
     # -
     #     type: paypal
@@ -202,10 +205,11 @@ donates:
     #     business: ''
     #     # Currency code
     #     currency_code: USD
+
     # Wechat donate button configurations
-    - type: wechat
-      # Wechat qrcode image URL
-      qrcode: ""
+    # - type: wechat
+    #   # Wechat qrcode image URL
+    #   qrcode: ""
 # Share plugin configurations
 # https://ppoffice.github.io/hexo-theme-icarus/categories/Plugins/Share/
 share:
@@ -233,15 +237,15 @@ widgets:
       # Author name
       author: 一个点
       # Author title
-      author_title: Cloud Native & AI
+      author_title: Cloud Native & Systems & AI
       # Author's current location
       location: Chengdu, China
       # URL or path to the avatar image
-      avatar: /img/avatar.jpg
+      avatar:
       # Whether show the rounded avatar image
       avatar_rounded: false
       # Email address for the Gravatar
-      gravatar:
+      gravatar: wenldong666@outlook.com
       # URL or path for the follow button
       follow_link: https://github.com/yi-ge-dian
       # Links to be shown on the bottom of the profile widget
@@ -282,7 +286,6 @@ widgets:
     #   links:
     #       Hexo: https://hexo.io
     #       Bulma: https://bulma.io
-    
 
     # Recent posts widget configurations
     - # Where should the widget be placed, left sidebar or right sidebar
@@ -293,12 +296,12 @@ widgets:
     - # Where should the widget be placed, left sidebar or right sidebar
       position: right
       type: categories
-    
+
     # # Archives widget configurations
     # - # Where should the widget be placed, left sidebar or right sidebar
     #   position: left
     #   type: archives
-    
+
     # Tags widget configurations
     - # Where should the widget be placed, left sidebar or right sidebar
       position: right
@@ -309,6 +312,7 @@ widgets:
       amount:
       # Whether to show tags count, i.e. number of posts in the tag.
       show_count: true
+
     # Google FeedBurner email subscription widget configurations
     # - # Where should the widget be placed, left sidebar or right sidebar
     #   position: left
@@ -317,6 +321,7 @@ widgets:
     #   description:
     #   # Feedburner ID
     #   feedburner_id: ""
+
     # Google AdSense unit configurations
     # - # Where should the widget be placed, left sidebar or right sidebar
     #   position: left
@@ -325,6 +330,7 @@ widgets:
     #   client_id: ""
     #   # AdSense AD unit ID
     #   slot_id: ""
+
     # Follow.it email subscription widget configurations
     # - # Where should the widget be placed, left sidebar or right sidebar
     #   position: left
@@ -354,7 +360,7 @@ plugins:
         tracking_id:
     # BuSuanZi site/page view counter
     # https://busuanzi.ibruce.info
-    busuanzi: false
+    busuanzi: true
     # CNZZ statistics
     # https://www.umeng.com/web
     cnzz:
@@ -381,7 +387,7 @@ plugins:
     # https://analytics.google.com
     google_analytics:
         # Google Analytics tracking ID
-        tracking_id:
+        tracking_id: G-TDQ2MTLS2V
     # Hotjar user feedback plugin
     # https://www.hotjar.com/
     hotjar:
