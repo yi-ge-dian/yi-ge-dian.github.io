@@ -11,6 +11,8 @@ tags:
  - Kubernetes
  - Serverless
  - OpenFunction
+ - Dapr
+ - Cloud Native
 categories: life
 toc: true
 ---
