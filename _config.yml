@@ -15,7 +15,7 @@ timezone: 'Asia/Shanghai'
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
 url: http://onepoint.link
 root: /
-permalink: :category/:title/
+permalink: :title/
 # permalink: :year/:month/:day/:title/
 permalink_defaults:
 pretty_urls:
