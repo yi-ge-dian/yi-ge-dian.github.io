@@ -5,14 +5,16 @@ updated: "2024-05-15"
 update_time: true
 cover: /img/life/ospp-summer/featured.jpeg
 thumbnail: /img/life/ospp-summer/featured.jpeg
-tags: 
- - 随笔
- - 开源之夏
- - Kubernetes
- - Serverless
- - OpenFunction
- - Dapr
- - Cloud Native
+tags:
+  - Cloud Native
+  - Dapr
+  - Essay
+  - Kind
+  - Kubernetes
+  - Node.js
+  - OpenFunction
+  - OSPP
+  - Serverless
 categories: life
 toc: true
 ---

@@ -3,12 +3,12 @@ title: "第四届全球数据库大赛赛道1：云原生共享内存数据库�
 date: "2024-04-01"
 updated: "2024-04-01"
 update_time: true
-cover: /img/competition/2022-Fourth-Global-Database-Competition-Track-1/featured.jpeg
+# cover: /img/competition/2022-Fourth-Global-Database-Competition-Track-1/featured.jpeg
 thumbnail: /img/competition/2022-Fourth-Global-Database-Competition-Track-1/featured.jpeg
 tags:
-    - RDMA
-    - 数据库
-    - Cloud Native
+  - Cloud Native
+  - Database
+  - RDMA
 categories: competition
 toc: true
 ---
@@ -16,15 +16,6 @@ toc: true
 官网链接：[第四届全球数据库大赛赛道1：云原生共享内存数据库性能优化](https://tianchi.aliyun.com/competition/entrance/531979/introduction?spm=a2c22.12281925.0.0.1e557137HsIUXu)
 
 最终结果 QPS：百万级别
-
-<article class="message is-info">
-  <div class="message-header">
-    <p><i class="fas fa-image"></i> &nbsp; 关于头图</p>
-  </div>
-  <div class="message-body">
-    头图来自 <a href="https://tianchi.aliyun.com/competition/entrance/531979/introduction?spm=a2c22.12281925.0.0.1e557137HsIUXu" target="_blank">阿里云</a>。
-  </div>
-</article>
 
 <!-- more -->
 

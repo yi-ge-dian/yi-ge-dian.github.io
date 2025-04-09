@@ -6,8 +6,8 @@ update_time: true
 cover: /img/life/year-end-summary/2023/featured.jpeg
 thumbnail: /img/life/year-end-summary/2023/featured.jpeg
 tags: 
- - 年终总结
- - 随笔
+  - Essay
+  - Year-end Summary
 categories: life
 ---
 
