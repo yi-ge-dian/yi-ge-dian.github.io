@@ -215,7 +215,7 @@ donates:
 share:
     type: sharethis
     # URL to the ShareThis share plugin script
-    install_url: "https://platform-api.sharethis.com/js/sharethis.js#property=67f08f2f6aa9ea001960de81&product=inline-share-buttons"
+    install_url: "https://platform-api.sharethis.com/js/sharethis.js#property=6894c4910faa3a7358f6b372&product=sop"
 # Sidebar configurations.
 # Please be noted that a sidebar is only visible when it has at least one widget
 sidebar:
