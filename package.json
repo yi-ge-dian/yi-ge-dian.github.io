@@ -12,7 +12,7 @@
     "version": "7.3.0"
   },
   "dependencies": {
-    "bulma-stylus": "^0.8.0",
+    "bulma-stylus": "^0.9.1",
     "hexo": "^8.1.1",
     "hexo-component-inferno": "^3.1.2",
     "hexo-deployer-git": "^4.0.0",
@@ -27,6 +27,6 @@
     "hexo-renderer-stylus": "^3.0.1",
     "hexo-server": "^3.0.0",
     "hexo-theme-landscape": "^1.0.0",
-    "semver": "^7.7.1"
+    "semver": "^7.7.3"
   }
 }
