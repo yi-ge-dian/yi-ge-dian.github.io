@@ -241,11 +241,11 @@ widgets:
       # Author's current location
       location: Chengdu, China
       # URL or path to the avatar image
-      avatar:
+      avatar: /img/avatar.jpg
       # Whether show the rounded avatar image
-      avatar_rounded: false
+      avatar_rounded: true
       # Email address for the Gravatar
-      gravatar: wenldong666@outlook.com
+      gravatar:
       # URL or path for the follow button
       follow_link: https://github.com/yi-ge-dian
       # Links to be shown on the bottom of the profile widget
