@@ -215,7 +215,7 @@ donates:
 share:
     type: sharethis
     # URL to the ShareThis share plugin script
-    install_url: "https://platform-api.sharethis.com/js/sharethis.js#property=6894c4910faa3a7358f6b372&product=sop"
+    install_url: "https://platform-api.sharethis.com/js/sharethis.js#property=694e3e4f70fd5d0337653e78&product=sop"
 # Sidebar configurations.
 # Please be noted that a sidebar is only visible when it has at least one widget
 sidebar:
@@ -241,11 +241,11 @@ widgets:
       # Author's current location
       location: Chengdu, China
       # URL or path to the avatar image
-      avatar:
+      avatar: /img/avatar.jpg
       # Whether show the rounded avatar image
-      avatar_rounded: false
+      avatar_rounded: true
       # Email address for the Gravatar
-      gravatar: wenldong666@outlook.com
+      gravatar:
       # URL or path for the follow button
       follow_link: https://github.com/yi-ge-dian
       # Links to be shown on the bottom of the profile widget
