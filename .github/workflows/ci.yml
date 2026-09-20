@@ -34,10 +34,16 @@ jobs:
             ${{ runner.OS }}-npm-cache
 
       # 4. Install dependencies and build the site
-      - name: Install Dependencies
+      - name: Install Dependencies (site)
         run: npm install
+
+      - name: Install Dependencies (theme)
+        run: npm install
+        working-directory: themes/icarus
+
       - name: Build
         run: npm run build
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
