@@ -1,0 +1,26 @@
+# Sidebar widget configurations
+# http://ppoffice.github.io/hexo-theme-icarus/categories/Widgets/
+widgets:
+  - position: left
+    type: profile
+    author: 一个点
+    author_title: Cloud Native & AI
+    location: Chengdu, China
+    avatar: /img/avatar.jpg
+    follow_link: https://github.com/yi-ge-dian
+    social_links:
+      GitHub:
+        icon: fab fa-github
+        url: https://github.com/yi-ge-dian
+      # Telegram Channel:
+      #   icon: fab fa-telegram
+      #   url: "https://t.me/kaedeharakazuha17"
+      # Twitter:
+      #   icon: fab fa-twitter
+      #   url: "https://twitter.com/nagisakaworu17"
+      Email:
+        icon: fas fa-envelope-square
+        url: "mailto://wenldong@outlook.com"
+      RSS:
+        icon: fas fa-rss
+        url: atom.xml
