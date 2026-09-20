@@ -169,11 +169,11 @@ search:
 # Comment plugin configurations
 # https://ppoffice.github.io/hexo-theme-icarus/categories/Plugins/Comment/
 comment:
-    # type: disqus
+    type: disqus
     # Disqus shortname
-    # shortname: ''
-    type: livere
-    uid: MTAyMC81NjY1My8zMzExNw==
+    shortname: 'onepoint-1'
+    # type: livere
+    # uid: MTAyMC81NjY1My8zMzExNw==
 # Donate plugin configurations
 # https://ppoffice.github.io/hexo-theme-icarus/categories/Plugins/Donation/
 donates:
